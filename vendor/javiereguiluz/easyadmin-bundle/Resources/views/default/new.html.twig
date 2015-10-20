@@ -1,0 +1,45 @@
+{% form_theme form with easyadmin_config('design.form_theme') %}
+
+{% set _entity_config = easyadmin_entity(app.request.query.get('entity')) %}
+{% set _trans_parameters = { '%entity_name%': _entity_config.name|trans, '%entity_label%': _entity_config.label|trans } %}
+
+{% extends _entity_config.templates.layout %}
+
+{% block body_id 'easyadmin-new-' ~ _entity_config.name %}
+{% block body_class 'new new-' ~ _entity_config.name|lower %}
+
+{% block content_title %}
+    {% set _default_title = 'new.page_title'|trans(_trans_parameters, 'EasyAdminBundle') %}
+    {{ _entity_config.new.title|default(_default_title)|trans(_trans_parameters) }}
+{% endblock %}
+
+{% block main %}
+    {% block entity_form %}
+        {{ include(_entity_config.templates.form, { view: 'new' }) }}
+    {% endblock entity_form %}
+{% endblock %}
+
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/select2.min.css') }}">
+    {{ parent() }}
+{% endblock %}
+
+{% block body_javascript %}
+    {{ parent() }}
+
+    <script src="{{ asset('bundles/easyadmin/javascript/jquery.are-you-sure.min.js') }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('#new-form').areYouSure({ 'message': 'You haven\'t saved the changes made on this form.' });
+        });
+    </script>
+
+    <script src="{{ asset('bundles/easyadmin/javascript/select2.min.js') }}"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('#main form select').select2({
+                theme: 'bootstrap'
+            });
+        });
+    </script>
+{% endblock %}

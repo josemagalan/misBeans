@@ -1,0 +1,38 @@
+{% extends 'BaseBundle::/Default/base.html.twig' %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block navbar %}
+    {% include "BaseBundle::/Includes/navbar-unregistered.html.twig" %}
+{% endblock navbar %}
+{% block body %}
+
+    <div class="full-section container-fluid text-center">
+        <div class="blank"></div>
+        <div class="col-lg-6 col-lg-offset-3">
+
+            {% if app.request.hasPreviousSession %}
+                {% for type, messages in app.session.flashbag.all() %}
+                    {% for message in messages %}
+                        <div class="flash-{{ type }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+
+
+            <p>{{ 'registration.confirmed'|trans({'%username%': user.username}) }}</p>
+
+
+            {% if targetUrl %}
+                <p><a href="{{ targetUrl }}">{{ 'registration.back'|trans }}</a></p>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock body %}
+
+{% block footer %}
+    {% include "BaseBundle::/Includes/footer-unregistered.html.twig" %}
+{% endblock footer %}

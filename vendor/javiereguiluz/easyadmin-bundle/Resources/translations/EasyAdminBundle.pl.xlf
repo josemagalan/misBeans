@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="en" target-language="pl" datatype="plaintext" original="file.ext">
+        <body>
+            <!-- page titles -->
+            <trans-unit id="new.page_title">
+                <source>new.page_title</source>
+                <target>Dodaj nowy %entity_name%</target>
+            </trans-unit>
+            <trans-unit id="show.page_title">
+                <source>show.page_title</source>
+                <target>%entity_name% (#%entity_id%)</target>
+            </trans-unit>
+            <trans-unit id="edit.page_title">
+                <source>edit.page_title</source>
+                <target>%entity_name% (#%entity_id%)</target>
+            </trans-unit>
+            <trans-unit id="list.page_title">
+                <source>list.page_title</source>
+                <target>%entity_name%</target>
+            </trans-unit>
+            <trans-unit id="search.page_title">
+                <source>search.page_title</source>
+                <target><![CDATA[{0} Brak wyników|{1} Znaleziono <strong>1</strong> wynik|{2,3,4} Znaleziono <strong>%count%</strong> wyniki|[5,Inf] Znaleziono <strong>%count%</strong> wyników]]></target>
+            </trans-unit>
+
+            <!-- 'search' view -->
+            <trans-unit id="search.no_results">
+                <source>search.no_results</source>
+                <target>Brak wyników.</target>
+            </trans-unit>
+
+            <!-- 'list' view -->
+            <trans-unit id="list.row_actions">
+                <source>list.row_actions</source>
+                <target>Akcje</target>
+            </trans-unit>
+
+            <!-- paginator -->
+            <trans-unit id="paginator.first">
+                <source>paginator.first</source>
+                <target>Pierwsza</target>
+            </trans-unit>
+            <trans-unit id="paginator.previous">
+                <source>paginator.previous</source>
+                <target>Poprzednia</target>
+            </trans-unit>
+            <trans-unit id="paginator.next">
+                <source>paginator.next</source>
+                <target>Następna</target>
+            </trans-unit>
+            <trans-unit id="paginator.last">
+                <source>paginator.last</source>
+                <target>Ostatnia</target>
+            </trans-unit>
+            <trans-unit id="paginator.counter">
+                <source>paginator.counter</source>
+                <target><![CDATA[<strong>%start%</strong> - <strong>%end%</strong> z <strong>%results%</strong>]]></target>
+            </trans-unit>
+
+            <!-- misc. elements -->
+            <trans-unit id="header.close">
+                <source>header.close</source>
+                <target>Zamknij</target>
+            </trans-unit>
+            <trans-unit id="header.logged_in_as">
+                <source>header.logged_in_as</source>
+                <target>Zalogowany jako</target>
+            </trans-unit>
+            <trans-unit id="delete_modal.title">
+                <source>delete_modal.title</source>
+                <target>Czy na pewno chcesz usunąć ten element?</target>
+            </trans-unit>
+            <trans-unit id="delete_modal.content">
+                <source>delete_modal.content</source>
+                <target>Tej operacji nie można anulować.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

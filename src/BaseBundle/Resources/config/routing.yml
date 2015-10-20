@@ -1,0 +1,27 @@
+base_homepage:
+    path:     /{_locale}
+    defaults: { _controller: BaseBundle:Default:index, _locale: es }
+    requirements:
+        _locale: es|en
+
+user_homepage:
+    path:     /{_locale}/userhome
+    defaults: { _controller: BaseBundle:User:userhome, _locale: es }
+    requirements:
+        _locale: es|en
+
+registration:
+    path:     /{_locale}/register
+    defaults: { _controller: BaseBundle:Registration:register, _locale: es }
+    requirements:
+        _locale: es|en
+
+partida_home:
+    path:     /{_locale}/userhome/{id_partida}
+    defaults: { _controller: BaseBundle:Partida:partida, _locale: es }
+    requirements: { id_partida: "\d+", _locale: es|en }
+
+user_profile:
+    path:     /{_locale}/userhome/{id_partida}/{username}
+    defaults: { _controller: BaseBundle:Partida:jugador, _locale: es }
+    requirements: { id_partida: "\d+", _locale: es|en }

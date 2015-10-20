@@ -1,0 +1,87 @@
+{% extends 'BaseBundle::/Default/base.html.twig' %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block header %}
+    <meta name="title" content="MisBeans register. Juegos de economía experimental">
+    <meta name="description" content="Juegos de economía experimental - TFG GII UBU">
+    <title>MisBeans - register</title>
+{% endblock header %}
+
+{% block navbar %}
+    {% include "BaseBundle::/Includes/navbar-unregistered.html.twig" %}
+{% endblock navbar %}
+
+{% block body %}
+
+    <div class="full-section container-fluid">
+        <div class="blank"></div>
+        <div class="col-lg-6 col-lg-offset-3">
+            <form action="{{ path('fos_user_registration_register') }}" {{ form_enctype(form) }} method="POST"
+                  class="form-group">
+                {{ form_errors(form) }}
+                {# username#}
+                <div class="form-group">
+                    {{ form_errors(form.username) }}
+                    {{ form_label(form.username) }}
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
+                        {{ form_widget(form.username, { 'attr': {'class': 'form-control input-sm'} }) }}
+                    </div>
+                    {#'placeholder':'security.login.username'|trans({}, 'FOSUserBundle') } #}
+                </div>
+
+                {# fullname #}
+                <div class="form-group">
+                    {{ form_errors(form.fullname) }}
+                    {{ form_label(form.fullname) }}
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-user-secret fa-fw"></i></span>
+                        {{ form_widget(form.fullname, { 'attr': {'class': 'form-control input-sm'} }) }}
+                    </div>
+                </div>
+
+                {# email #}
+                <div class="form-group">
+                    {{ form_errors(form.email) }}
+                    {{ form_label(form.email) }}
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>
+                        {{ form_widget(form.email, { 'attr': {'class': 'form-control input-sm',} }) }}
+                    </div>
+                </div>
+
+                {# password #}
+                <div class="form-group">
+                    {{ form_errors(form.plainPassword) }}
+                    {{ form_label(form.plainPassword.vars.form.first) }}
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+                        {{ form_widget(form.plainPassword.vars.form.first, { 'attr': {'class': 'form-control input-sm',} }) }}
+                    </div>
+                </div>
+
+                {# password #}
+                <div class="form-group">
+                    {{ form_label(form.plainPassword.vars.form.second) }}
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+                        {{ form_widget(form.plainPassword.vars.form.second, { 'attr': {'class': 'form-control input-sm',} }) }}
+                    </div>
+                </div>
+
+                {{ form_rest(form) }}
+
+                <div class="pull-right">
+                    <input class="btn btn-default" type="submit"
+                           value="{{ 'registration.submit'|trans({}, 'FOSUserBundle') }}"/>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock body %}
+
+{% block footer %}
+    {% include "BaseBundle::/Includes/footer-unregistered.html.twig" %}
+{% endblock footer %}

@@ -1,0 +1,20 @@
+global:
+    language: idioma
+    ubu: Universidad de Burgos
+    register: ¿No tienes cuenta? Regístrate
+
+form:
+    fullName: Nombre completo
+    search: Buscar partida
+    submit: Enviar
+
+userhome:
+    buscar-partida: Buscar partida
+    mis-partidas: Mis partidas
+
+partida:
+    tiempo: Tiempo restante
+    nombre: Nombre
+    fUtilidad: Función de utilidad
+    players: Jugadores
+    deal: Ofertas entrantes y salientes

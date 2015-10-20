@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="en" target-language="sl" datatype="plaintext" original="file.ext">
+        <body>
+            <!-- page titles -->
+            <trans-unit id="new.page_title">
+                <source>new.page_title</source>
+                <target>Ustvarite novo %entity_name%</target>
+            </trans-unit>
+            <trans-unit id="show.page_title">
+                <source>show.page_title</source>
+                <target>%entity_name% (#%entity_id%)</target>
+            </trans-unit>
+            <trans-unit id="edit.page_title">
+                <source>edit.page_title</source>
+                <target>%entity_name% (#%entity_id%)</target>
+            </trans-unit>
+            <trans-unit id="list.page_title">
+                <source>list.page_title</source>
+                <target>%entity_name%</target>
+            </trans-unit>
+            <trans-unit id="search.page_title">
+                <source>search.page_title</source>
+                <target><![CDATA[{0} Rezultati niso bili najdeni|{1} <strong>1</strong> rezultat najden|{2} <strong>%count%</strong> rezultata najdena|{3} <strong>%count%</strong> rezultati najdeni|[5,Inf] <strong>%count%</strong>rezultatov najdenih]]></target>
+            </trans-unit>
+
+            <!-- 'search' view -->
+            <trans-unit id="search.no_results">
+                <source>search.no_results</source>
+                <target>Nobenih rezultatov ni najdenih.</target>
+            </trans-unit>
+
+            <!-- 'list' view -->
+            <trans-unit id="list.row_actions">
+                <source>list.row_actions</source>
+                <target>Akcije</target>
+            </trans-unit>
+
+            <!-- paginator -->
+            <trans-unit id="paginator.first">
+                <source>paginator.first</source>
+                <target>Prva</target>
+            </trans-unit>
+            <trans-unit id="paginator.previous">
+                <source>paginator.previous</source>
+                <target>Prejšnja</target>
+            </trans-unit>
+            <trans-unit id="paginator.next">
+                <source>paginator.next</source>
+                <target>Naslednja</target>
+            </trans-unit>
+            <trans-unit id="paginator.last">
+                <source>paginator.last</source>
+                <target>Zadnja</target>
+            </trans-unit>
+            <trans-unit id="paginator.counter">
+                <source>paginator.counter</source>
+                <target><![CDATA[<strong>%start%</strong> - <strong>%end%</strong> od <strong>%results%</strong>]]></target>
+            </trans-unit>
+
+            <!-- misc. elements -->
+            <trans-unit id="header.close">
+                <source>header.close</source>
+                <target>Zaprite</target>
+            </trans-unit>
+            <trans-unit id="header.logged_in_as">
+                <source>header.logged_in_as</source>
+                <target>Prijavljeni kot</target>
+            </trans-unit>
+            <trans-unit id="delete_modal.title">
+                <source>delete_modal.title</source>
+                <target>Ali res želite izbrisati ta element?</target>
+            </trans-unit>
+            <trans-unit id="delete_modal.content">
+                <source>delete_modal.content</source>
+                <target>Razveljavitev za to operacijo ne obstaja.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
