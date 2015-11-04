@@ -5,12 +5,24 @@ global:
 
 form:
     fullName: Full name
+    email: Email
+    save: Save
     search: Search game
     submit: Submit
+    invalid: Submited data is not valid
+    accept: Accept
+    reject: Reject
+    delete: Delete
+    cancel: Cancel
 
 userhome:
     buscar-partida: Search game
     mis-partidas: My games
+
+user:
+    activity: Activity
+    configuration: Configuration
+    conf-saved: Data updated
 
 partida:
     tiempo: Time left
@@ -18,3 +30,43 @@ partida:
     fUtilidad: Utility function
     players: All players
     deal: Incoming offers and deals
+    fin: Ending date and time
+    max-jugadores: Maximun players
+    max-ofertas: Maximun concurrent deals per player
+    tiempo-oferta: deals term (in minutes)
+    alu-blanca: White bean
+    alu-roja: Red bean
+    alg-utilidad: Utility algorithm
+    algutilidad:
+        1: Simple factor
+    alg-reparto: Distribution algorithm
+    algreparto:
+        1: Random without replacing
+    successful: Game created!
+    error: yout game has not being registered
+
+
+oferta:
+    propuesta-cambio: Deal proposal
+    alu-blanca: White bean
+    alu-roja: Red bean
+    in: Incoming beans
+    out: Outgoing beans
+    successful: Deal sent!
+    max-reached: You have reached the maximun number of concurrent deals
+    status: Actual Status
+    recibe: Recieber
+    envia: Sender
+    accepted: Accepted deal
+    rejected: Rejected deal
+    error: Problems with the transaction
+    delete?: Do you want to delete the deal?
+    correctDel: Deal deleted
+
+adminhome:
+    game-current: Current games
+    game-record: Game records
+    game-name: Game name
+    new: New game
+    left: Time left
+    max-ofertas: If you don't want maximun, choose 0

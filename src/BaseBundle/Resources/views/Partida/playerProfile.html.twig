@@ -1,0 +1,146 @@
+{% extends 'BaseBundle::/Default/base.html.twig' %}
+
+{% trans_default_domain 'BaseBundle' %}
+
+{% block header %}
+    <meta name="title" content="{{ playerInfo[0].username }} - MisBeans. Juegos de economía experimental">
+    <meta name="description" content="Juegos de economía experimental - TFG GII UBU">
+    <title>{{ playerInfo[0].username }} - MisBeans</title>
+{% endblock header %}
+
+{% block navbar %}
+    {% include "BaseBundle::/Includes/navbar-registered.html.twig" %}
+{% endblock navbar %}
+
+{% block body %}
+
+    <div class="container-fluid partida-section">
+
+        <div class="row">
+            <div class="col-lg-9">
+                <a href="{{ path('partida_home',{'id_partida' : partida[0].id }) }}">
+                <h3 class="text-center">{{ partida[0].nombre | capitalize }}</h3></a>
+                {# onclick="location.href='{{ path('partida_home',{'id_partida' : partida[0].id }) }}'"#}
+                <br>
+
+                <div class="row">
+                    <div class="col-md-3 col-md-offset-3 text-right">
+                        <img src="{{ gravatar('{{ playerInfo[0].email }}') }}"/>
+                    </div>
+                    <div class="col-md-3">
+                        <p>{{ playerInfo[0].fullName | capitalize }}</p>
+
+                        <p>{{ playerInfo[0].username }}</p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="col-md-10 col-md-offset-1 oferta">
+                    <h4 class="text-center">{{ 'oferta.propuesta-cambio'|trans({}, 'BaseBundle') }}</h4>
+                    <hr>
+                    {#Alerta con el estado actual#}
+                    <div class="alert alert-info alert-dismissible fade in" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                    aria-hidden="true">×</span></button>
+                        <div class="row">
+                            <div class="col-md-3 col-md-offset-2"><b>{{ 'oferta.status'|trans({}, 'BaseBundle') }}</b>
+                            </div>
+                            <div class="col-md-3">{{ 'oferta.alu-blanca'|trans({}, 'BaseBundle') }}
+                                : {{ partida[0].alu_blanca_actual }}</div>
+                            <div class="col-md-3">{{ 'oferta.alu-roja'|trans({}, 'BaseBundle') }}
+                                : {{ partida[0].alu_roja_actual }}</div>
+                        </div>
+                    </div>
+
+                    <!-- mensajes de sesion para el formulario -->
+                    {% for flashMessage in app.session.flashbag.get('invalid_form') %}
+                        <div class="alert alert-danger alert-dismissible text-center fade in" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                            {{ 'form.invalid'|trans({}, 'BaseBundle') }}
+                        </div>
+                    {% endfor %}
+                    {% for flashMessage in app.session.flashbag.get('max_reached') %}
+                        <div class="alert alert-danger alert-dismissible text-center fade in float" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                            {{ 'oferta.max-reached'|trans({}, 'BaseBundle') }}
+                        </div>
+                    {% endfor %}
+                    {% for flashMessage in app.session.flashbag.get('correct') %}
+                        <div class="alert alert-success text-center alert-dismissible fade in" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                            {{ 'oferta.successful'|trans({}, 'BaseBundle') }}
+                        </div>
+                    {% endfor %}
+
+                    <form action="{{ path('create_deal') }}" {{ form_enctype(form) }} method="POST"
+                          class="form-deal">
+                        <div class="col-md-11 col-md-offset-1">
+                            {{ form_errors(form) }}
+
+                            <div class="form-inline text-center">
+                                <span class="fa fa-2x fa-arrow-down green" data-toggle="tooltip" data-placement="top"
+                                      title="{{ 'oferta.in'|trans({}, 'BaseBundle') }}"></span>
+
+                                {# aluBlancaIn#}
+                                {{ form_errors(form.aluBlancaIn) }}
+                                {{ form_label(form.aluBlancaIn) }}
+                                {{ form_widget(form.aluBlancaIn, { 'attr': {'class': 'form-control input-sm'} }) }}
+
+                                {# aluRojaIn #}
+                                {{ form_errors(form.aluRojaIn) }}
+                                {{ form_label(form.aluRojaIn) }}
+                                {{ form_widget(form.aluRojaIn, { 'attr': {'class': 'form-control input-sm'} }) }}
+
+                            </div>
+                            <br>
+
+                            <div class="form-inline text-center">
+                                <span class="fa fa-2x fa-arrow-up red" data-toggle="tooltip" data-placement="bottom"
+                                      title="{{ 'oferta.out'|trans({}, 'BaseBundle') }}"></span>
+                                {# aluBlancaOut #}
+                                {{ form_errors(form.aluBlancaOut) }}
+                                {{ form_label(form.aluBlancaOut) }}
+                                {{ form_widget(form.aluBlancaOut, { 'attr': {'class': 'form-control input-sm', 'max': partida[0].alu_blanca_actual } }) }}
+
+                                {# aluRojaOut #}
+                                {{ form_errors(form.aluRojaOut) }}
+                                {{ form_label(form.aluRojaOut) }}
+                                {{ form_widget(form.aluRojaOut, { 'attr': {'class': 'form-control input-sm', 'max': partida[0].alu_roja_actual } }) }}
+
+                            </div>
+
+                            {{ form_rest(form) }}
+                        </div>
+
+                        <div class="text-right">
+                            <input class="btn btn-default" type="submit"
+                                   value="{{ 'form.submit'|trans({}, 'BaseBundle') }}"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="column-full" class="col-lg-3 column-full">
+                <h4 class="text-center">{{ 'partida.players'|trans({}, 'BaseBundle') }}</h4>
+                <table class="table table-responsive table-striped text-center">
+                    {% for jugador in jugadores %}
+                        {% if  jugador.id_jugador != user_id %}
+                            <tr onclick="location.href='{{ path('user_profile',{'id_partida' : partida[0].id,
+                                'username' : jugador.username}) }}'">
+                                <td> {{ jugador.username | capitalize }} </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+
+{% block footer %}
+    {% include "BaseBundle::/Includes/footer-registered.html.twig" %}
+{% endblock footer %}

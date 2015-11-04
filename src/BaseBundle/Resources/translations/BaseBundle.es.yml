@@ -5,12 +5,25 @@ global:
 
 form:
     fullName: Nombre completo
+    email: Email
+    save: Guardar
     search: Buscar partida
     submit: Enviar
+    invalid: Los datos introducidos no son válidos
+    accept: Aceptar
+    reject: Declinar
+    delete: Eliminar
+    cancel: Cancelar
 
 userhome:
     buscar-partida: Buscar partida
     mis-partidas: Mis partidas
+
+user:
+    activity: Actividad
+    configuration: Configuración
+    conf-saved: Datos actualizados
+
 
 partida:
     tiempo: Tiempo restante
@@ -18,3 +31,42 @@ partida:
     fUtilidad: Función de utilidad
     players: Jugadores
     deal: Ofertas entrantes y salientes
+    fin: Hora y fecha de fin
+    max-jugadores: Máximo de jugadores
+    max-ofertas: Máximo de ofertas concurrentes por jugador
+    tiempo-oferta: Duración de las ofertas (en minutos)
+    alu-blanca: Alubia blanca
+    alu-roja: Alubia roja
+    alg-utilidad: Algoritmo de utilidad
+    algutilidad:
+        1: Factor simple
+    alg-reparto: Algoritmo de reparto
+    algreparto:
+        1: Aleatorio sin reemplazo
+    successful: ¡Su partida ha sido creada!
+    error: Su partida no ha sido registrada
+
+oferta:
+    propuesta-cambio: Proposición de cambio
+    alu-blanca: Alubia blanca
+    alu-roja: Alubia roja
+    in: Alubias entrantes
+    out: Alubias salientes
+    successful: ¡Oferta enviada!
+    max-reached: Ha alcanzado el número máximo de ofertas concurrentes
+    status: Estado actual
+    recibe: Recibe
+    envia: Remite
+    accepted: Oferta aceptada
+    rejected: Oferta rechazada
+    error: Problemas en la transacción
+    delete?: ¿Quiere eliminar la oferta?
+    correctDel: Oferta eliminada
+
+adminhome:
+    game-current: Partidas en curso
+    game-record: Histórico de partidas
+    game-name: Nombre de la partida
+    new: Nueva partida
+    left: Tiepo restante
+    max-ofertas: Si no quiere máximo, elija 0

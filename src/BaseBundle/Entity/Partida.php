@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Partida
  *
  * @ORM\Table(name="partida", indexes={@ORM\Index(name="id_creador", columns={"id_creador"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="BaseBundle\Entity\PartidaRepository")
  */
 class Partida
 {
@@ -38,9 +38,9 @@ class Partida
     /**
      * @var integer
      *
-     * @ORM\Column(name="tiempo", type="integer", nullable=false)
+     * @ORM\Column(name="fin", type="datetime", nullable=false)
      */
-    private $tiempo;
+    private $fin;
 
     /**
      * @var integer
@@ -184,27 +184,27 @@ class Partida
     }
 
     /**
-     * Set tiempo
+     * Set fin
      *
-     * @param integer $tiempo
+     * @param integer $fin
      *
      * @return Partida
      */
-    public function setTiempo($tiempo)
+    public function setFin($fin)
     {
-        $this->tiempo = $tiempo;
+        $this->fin = $fin;
 
         return $this;
     }
 
     /**
-     * Get tiempo
+     * Get fin
      *
      * @return integer
      */
-    public function getTiempo()
+    public function getFin()
     {
-        return $this->tiempo;
+        return $this->fin;
     }
 
     /**
@@ -378,11 +378,11 @@ class Partida
     /**
      * Set idCreador
      *
-     * @param \BaseBundle\Entity\FosUser $idCreador
+     * @param \BaseBundle\Entity\User $idCreador
      *
      * @return Partida
      */
-    public function setIdCreador(\BaseBundle\Entity\FosUser $idCreador = null)
+    public function setIdCreador(\BaseBundle\Entity\User $idCreador = null)
     {
         $this->idCreador = $idCreador;
 
@@ -392,7 +392,7 @@ class Partida
     /**
      * Get idCreador
      *
-     * @return \BaseBundle\Entity\FosUser
+     * @return \BaseBundle\Entity\User
      */
     public function getIdCreador()
     {
@@ -402,11 +402,11 @@ class Partida
     /**
      * Add idJugador
      *
-     * @param \BaseBundle\Entity\FosUser $idJugador
+     * @param \BaseBundle\Entity\User $idJugador
      *
      * @return Partida
      */
-    public function addIdJugador(\BaseBundle\Entity\FosUser $idJugador)
+    public function addIdJugador(\BaseBundle\Entity\User $idJugador)
     {
         $this->idJugador[] = $idJugador;
 
@@ -416,9 +416,9 @@ class Partida
     /**
      * Remove idJugador
      *
-     * @param \BaseBundle\Entity\FosUser $idJugador
+     * @param \BaseBundle\Entity\User $idJugador
      */
-    public function removeIdJugador(\BaseBundle\Entity\FosUser $idJugador)
+    public function removeIdJugador(\BaseBundle\Entity\User $idJugador)
     {
         $this->idJugador->removeElement($idJugador);
     }

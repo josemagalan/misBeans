@@ -1,0 +1,258 @@
+{% extends 'BaseBundle::/Default/base.html.twig' %}
+
+{% trans_default_domain 'BaseBundle' %}
+
+{% block header %}
+    <meta name="title" content="{{ app.user.username }} - MisBeans. Juegos de economía experimental">
+    <meta name="description" content="Juegos de economía experimental - TFG GII UBU">
+    <title>{{ app.user.username }} - MisBeans</title>
+    <meta http-equiv="refresh" content="20">
+{% endblock header %}
+
+{% block navbar %}
+    {% include "BaseBundle::/Includes/navbar-registered.html.twig" %}
+{% endblock navbar %}
+
+{% block body %}
+
+    <div class="container-fluid partida-section">
+        <div class="row">
+            <div class="col-lg-9">
+                <h2 class="text-center">{{ partida[0].nombre | capitalize }}</h2>
+                <hr>
+
+                <div class="col-md-10 col-md-offset-1">
+
+                    {# Estado de la partida#}
+                    <div class="alert status">
+                        <h4 class="text-center"><b>{{ 'oferta.status'|trans({}, 'BaseBundle') }}</b></h4>
+
+                        <div class="row">
+                            <div class="col-md-4 col-md-offset-2">
+                                <span class="fa fa-2x white-bean fa-cubes">   </span>
+                                {{ 'oferta.alu-blanca'|trans({}, 'BaseBundle') }}
+                                : {{ partida[0].aluBlancaActual }}</div>
+                            <div class="col-md-4 col-md-offset-2">
+                                <span class="fa fa-2x red-bean fa-cubes">   </span>
+                                {{ 'oferta.alu-roja'|trans({}, 'BaseBundle') }}
+                                : {{ partida[0].aluRojaActual }}</div>
+                        </div>
+                        <div class="text-center">
+                            {{ 'partida.fUtilidad'|trans({}, 'BaseBundle') }}:
+                            {% if partida[0].algUtilidad ==1 %}
+                                <var>{{ 'oferta.alu-blanca'|trans({}, 'BaseBundle') }}</var> *
+                                <var>{{ 'oferta.alu-roja'|trans({}, 'BaseBundle') }}</var> =
+                            {% endif %}
+                            {{ partida[0].fUtilidad }}
+                        </div>
+                    </div>
+
+                    {# ofertas entrantes y salientes#}
+                    <h2 class="text-center">{{ 'partida.deal'|trans({}, 'BaseBundle') }}</h2>
+                    <hr>
+                </div>
+
+                <div id="table-mobile-full" class="col-md-10 col-md-offset-1">
+                    {% for flashMessage in app.session.flashbag.get('correct') %}
+                        <div class="alert alert-success text-center alert-dismissible fade in" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                            {{ 'oferta.accepted'|trans({}, 'BaseBundle') }}
+                        </div>
+                    {% endfor %}
+                    {% for flashMessage in app.session.flashbag.get('reject') %}
+                        <div class="alert alert-success text-center alert-dismissible fade in" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                            {{ 'oferta.rejected'|trans({}, 'BaseBundle') }}
+                        </div>
+                    {% endfor %}
+                    {% for flashMessage in app.session.flashbag.get('error') %}
+                        <div class="alert alert-danger text-center alert-dismissible fade in" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                            {{ 'oferta.error'|trans({}, 'BaseBundle') }}
+                        </div>
+                    {% endfor %}
+                    {% for flashMessage in app.session.flashbag.get('correctDel') %}
+                        <div class="alert alert-success text-center alert-dismissible fade in" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                            {{ 'oferta.correctDel'|trans({}, 'BaseBundle') }}
+                        </div>
+                    {% endfor %}
+                    <table class="table table-responsive table-striped table-mobile-full">
+                        <thead>
+                        <tr>
+                            <th class="text-center">{{ 'oferta.envia'|trans({}, 'BaseBundle') }}</th>
+                            <th class="text-center"><i
+                                        class="caret green"></i> {{ 'oferta.alu-blanca'|trans({}, 'BaseBundle') }}</th>
+                            <th class="text-center">{{ 'oferta.alu-roja'|trans({}, 'BaseBundle') }} <i
+                                        class="caret green"></i></th>
+                            <th class="text-center"><i
+                                        class="caret fa-rotate-180 red"></i> {{ 'oferta.alu-blanca'|trans({}, 'BaseBundle') }}
+                            </th>
+                            <th class="text-center">{{ 'oferta.alu-roja'|trans({}, 'BaseBundle') }} <i
+                                        class="caret fa-rotate-180 red"></i></th>
+                        </tr>
+                        </thead>
+                        {% for oferta in oferta_recibida %}
+                            <tr data-toggle="modal" data-target="#myModal{{ oferta.id }}">
+                                <td class="text-center"> {{ oferta.username | capitalize }} </td>
+                                <td class="text-center"> {{ oferta.aluBlancaOut }} </td>
+                                <td class="text-center"> {{ oferta.aluRojaOut }} </td>
+                                <td class="text-center"> {{ oferta.aluBlancaIn }} </td>
+                                <td class="text-center"> {{ oferta.aluRojaIn }} </td>
+                            </tr>
+
+                            <div class="modal fade modal-form" id="myModal{{ oferta.id }}" tabindex="-1" role="dialog"
+                                 aria-labelledby="myModalLabel">
+                                <br>
+
+                                <div class="modal-dialog modal-form" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span></button>
+                                            <br>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                            <form class="form-horizontal"
+                                                  action="{{ path('accept_reject_deal') }}" {{ form_enctype(acceptReject) }}
+                                                  method="post">
+                                                <input type="hidden" id="acceptOrReject_form_idC"
+                                                       name="acceptOrReject_form[idC]" required="required"
+                                                       class="input-group" value={{ oferta.idCreador }}/>
+                                                <input type="hidden" id="acceptOrReject_form_idO"
+                                                       name="acceptOrReject_form[idO]" required="required"
+                                                       class="input-group" value={{ oferta.id }}/>
+                                                <input type="hidden" id="acceptOrReject_form_idD"
+                                                       name="acceptOrReject_form[idD]" required="required"
+                                                       class="input-group" value={{ oferta.idDestinatario }}/>
+                                                <input type="hidden" id="acceptOrReject_form_idP"
+                                                       name="acceptOrReject_form[idP]" required="required"
+                                                       class="input-group" value={{ oferta.idPartida }}/>
+                                                <button type="submit" id="acceptOrReject_form_reject"
+                                                        name="acceptOrReject_form[reject]"
+                                                        class="btn btn-default btn-red">{{ 'form.reject'|trans({}, 'BaseBundle') }}</button>
+                                                {% if oferta.aluBlancaIn > partida[0].aluBlancaActual or oferta.aluRojaIn > partida[0].aluRojaActual %}
+                                                    <button type="button"
+                                                            class="btn btn-default disabled">{{ 'form.accept'|trans({}, 'BaseBundle') }}</button>
+                                                {% else %}
+                                                    <button type="submit" id="acceptOrReject_form_accept"
+                                                            name="acceptOrReject_form[accept]"
+                                                            class="btn btn-default btn-green">{{ 'form.accept'|trans({}, 'BaseBundle') }}</button>
+                                                {% endif %}
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer"></div>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                        {% endfor %}
+                        <thead>
+                        <tr>
+                            <th class="text-center">{{ 'oferta.recibe'|trans({}, 'BaseBundle') }}</th>
+                            <th class="text-center"><i
+                                        class="caret green"></i> {{ 'oferta.alu-blanca'|trans({}, 'BaseBundle') }}</th>
+                            <th class="text-center">{{ 'oferta.alu-roja'|trans({}, 'BaseBundle') }} <i
+                                        class="caret green"></i></th>
+                            <th class="text-center"><i
+                                        class="caret fa-rotate-180 red"></i> {{ 'oferta.alu-blanca'|trans({}, 'BaseBundle') }}
+                            </th>
+                            <th class="text-center">{{ 'oferta.alu-roja'|trans({}, 'BaseBundle') }} <i
+                                        class="caret fa-rotate-180 red"></i></th>
+                        </tr>
+                        </thead>
+                        {% for oferta in oferta_enviada %}
+                            <tr data-toggle="modal" data-target="#myModal{{ oferta.id }}D">
+                                <td class="text-center"> {{ oferta.username | capitalize }} </td>
+                                <td class="text-center"> {{ oferta.aluBlancaIn }} </td>
+                                <td class="text-center"> {{ oferta.aluRojaIn }} </td>
+                                <td class="text-center"> {{ oferta.aluBlancaOut }} </td>
+                                <td class="text-center"> {{ oferta.aluRojaOut }} </td>
+                            </tr>
+
+                            <div class="modal fade modal-form" id="myModal{{ oferta.id }}D" tabindex="-1" role="dialog"
+                                 aria-labelledby="myModalLabel">
+                                <br>
+
+                                <div class="modal-dialog modal-form" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span></button>
+                                            <h4 class="text-center">{{ 'oferta.delete?'|trans({}, 'BaseBundle') }}</h4>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                            <form class="form-horizontal"
+                                                  action="{{ path('delete_deal') }}" {{ form_enctype(delForm) }}
+                                                  method="post">
+                                                <input type="hidden" id="delDeal_form_idC"
+                                                       name="delDeal_form[idC]" required="required"
+                                                       class="input-group" value={{ oferta.idCreador }}/>
+                                                <input type="hidden" id="delDeal_form_idO"
+                                                       name="delDeal_form[idO]" required="required"
+                                                       class="input-group" value={{ oferta.id }}/>
+                                                <input type="hidden" id="delDeal_form_idD"
+                                                       name="delDeal_form[idD]" required="required"
+                                                       class="input-group" value={{ oferta.idDestinatario }}/>
+                                                <input type="hidden" id="delDeal_form_idP"
+                                                       name="delDeal_form[idP]" required="required"
+                                                       class="input-group" value={{ oferta.idPartida }}/>
+                                                <button type="button" data-dismiss="modal"
+                                                        class="btn btn-default">{{ 'form.cancel'|trans({}, 'BaseBundle') }}</button>
+                                                <button type="submit" id="delDeal_form_del"
+                                                        name="delDeal_form[del]"
+                                                        class="btn btn-default btn-red">{{ 'form.delete'|trans({}, 'BaseBundle') }}</button>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer"></div>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                        {% endfor %}
+                    </table>
+                </div>
+
+            </div>
+            <div id="column-full" class="col-lg-3 column-full">
+                <h4 class="text-center">{{ 'partida.players'|trans({}, 'BaseBundle') }}</h4>
+                <table class="table table-responsive table-striped text-center">
+                    {% for jugador in jugadores %}
+                        {% if  jugador.id_jugador != user_id %}
+                            <tr onclick="location.href='{{ path('user_profile',{'id_partida' : partida[0].id,
+                                'username' : jugador.username}) }}'">
+                                <td> {{ jugador.username | capitalize }} </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+
+{% block footer %}
+    {% include "BaseBundle::/Includes/footer-registered.html.twig" %}
+{% endblock footer %}
+
+{% block javascript %}
+    <script src="{{ asset('js/angular/angular.min.js') }}"></script>
+
+    <script>
+        var customInterpolationApp = angular.module('customInterpolationApp', []);
+
+        customInterpolationApp.config(function($interpolateProvider) {
+            $interpolateProvider.startSymbol('//');
+            $interpolateProvider.endSymbol('//');
+        });
+
+
+        customInterpolationApp.controller('DemoController', function() {
+            this.label = "This binding is brought you by // interpolation symbols.";
+        });
+    </script>
+{% endblock javascript %}

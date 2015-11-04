@@ -1,6 +1,5 @@
 TFG GII 2015: Juegos de Economía experimental
 =============================================
-<<<<<<< HEAD
 
 A Symfony project.
 
@@ -63,5 +62,3 @@ It comes configured with the following bundles:
   * **GravatarBundle** - Allows to use Gravatar images for users
 
 =======
-
->>>>>>> origin/master

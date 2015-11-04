@@ -1,0 +1,110 @@
+{% extends 'BaseBundle::/Default/base.html.twig' %}
+
+{% trans_default_domain 'BaseBundle' %}
+
+{% block header %}
+    <meta name="title" content="{{ userData.username }} - MisBeans. Juegos de economía experimental">
+    <meta name="description" content="Juegos de economía experimental - TFG GII UBU">
+    <title>{{ userData.username }} - MisBeans</title>
+{% endblock header %}
+
+{% block navbar %}
+    {% include "BaseBundle::/Includes/navbar-registered.html.twig" %}
+{% endblock navbar %}
+
+{% block body %}
+
+    <div class="container-fluid partida-section">
+        <div class="blank"></div>
+        <div class="col-lg-10 col-lg-offset-1">
+
+            <div class="row">
+                <div class="col-md-1 col-md-offset-4">
+                    <img src="{{ gravatar('{{ userData.email }}') }}"/>
+                </div>
+                <div class="col-md-3">
+                    <p>{{ userData.fullName | capitalize }}</p>
+
+                    <p>{{ userData.username }}</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                <div class="col-sm-2 col-md-2">
+                    <!-- Nav tabs -->
+                    <ul class="catalogo nav nav-tabs nav-stacked" role="tablist">
+                        <li role="presentation"><a href="#configuration" aria-controls="design" role="tab"
+                                                   data-toggle="tab">{{ 'user.configuration'|trans({}, 'BaseBundle') }}</a>
+                        </li>
+                        <li role="presentation" class="active"><a href="#activity" aria-controls="activity" role="tab"
+                                                                  data-toggle="tab">{{ 'user.activity'|trans({}, 'BaseBundle') }}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-sm-10 col-md-10">
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="configuration">
+                            <div class="col-md-11 col-md-offset-1">
+
+                                {# Mensajes de sesión #}
+                                {% for flashMessage in app.session.flashbag.get('correct') %}
+                                    <div class="alert alert-success text-center alert-dismissible fade in" role="alert">
+                                        <button type="button" class="close" data-dismiss="alert"
+                                                aria-label="Close"><span
+                                                    aria-hidden="true">×</span></button>
+                                        {{ 'user.conf-saved'|trans({}, 'BaseBundle') }}
+                                    </div>
+                                {% endfor %}
+
+                                {{ form_start(form, { 'attr': {'class': 'form-group'}}) }}
+                                {{ form_errors(form) }}
+
+                                {# fullName #}
+                                <div class="form-group">
+                                    {{ form_errors(form.fullName) }}
+                                    {{ form_label(form.fullName) }}
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i
+                                                    class="fa fa-user fa-fw"></i></span>
+                                        {{ form_widget(form.fullName, { 'attr': {'class': 'form-control input-group', 'placeholder': userData.fullName,} }) }}
+                                    </div>
+                                </div>
+
+                                {# email #}
+                                <div class="form-group">
+                                    {{ form_errors(form.email) }}
+                                    {{ form_label(form.email) }}
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i
+                                                    class="fa fa-envelope fa-fw"></i></span>
+                                        {{ form_widget(form.email, { 'attr': {'class': 'form-control input-group', 'placeholder': userData.email} }) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{ form_rest(form) }}
+                            <div class="text-right">
+                                <input class="btn btn-default" type="submit"
+                                       value="{{ 'form.save'|trans({}, 'BaseBundle') }}"/>
+                            </div>
+                            <br>
+                            {{ form_end(form) }}
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane" id="activity">
+                            actividad
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock body %}
+
+{% block footer %}
+    {% include "BaseBundle::/Includes/footer-registered.html.twig" %}
+{% endblock footer %}

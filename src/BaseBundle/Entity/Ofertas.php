@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Ofertas
  *
  * @ORM\Table(name="ofertas", indexes={@ORM\Index(name="idCreador", columns={"idCreador"}), @ORM\Index(name="idDestinatario", columns={"idDestinatario"}), @ORM\Index(name="idPartida", columns={"idPartida"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="BaseBundle\Entity\OfertasRepository")
  */
 class Ofertas
 {
@@ -71,9 +71,9 @@ class Ofertas
     private $aluRojaOut;
 
     /**
-     * @var \BaseBundle\Entity\FosUser
+     * @var \BaseBundle\Entity\User
      *
-     * @ORM\ManyToOne(targetEntity="BaseBundle\Entity\FosUser")
+     * @ORM\ManyToOne(targetEntity="BaseBundle\Entity\User")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="idCreador", referencedColumnName="id")
      * })
@@ -81,9 +81,9 @@ class Ofertas
     private $idCreador;
 
     /**
-     * @var \BaseBundle\Entity\FosUser
+     * @var \BaseBundle\Entity\User
      *
-     * @ORM\ManyToOne(targetEntity="BaseBundle\Entity\FosUser")
+     * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="idDestinatario", referencedColumnName="id")
      * })
@@ -93,7 +93,7 @@ class Ofertas
     /**
      * @var \BaseBundle\Entity\Partida
      *
-     * @ORM\ManyToOne(targetEntity="BaseBundle\Entity\Partida")
+     * @ORM\ManyToOne(targetEntity="Partida")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="idPartida", referencedColumnName="id")
      * })
@@ -227,7 +227,7 @@ class Ofertas
      *
      * @return integer
      */
-    public function getAlurojain()
+    public function getAlurojaIn()
     {
         return $this->aluRojaIn;
     }
@@ -283,11 +283,11 @@ class Ofertas
     /**
      * Set idCreador
      *
-     * @param \BaseBundle\Entity\FosUser $idCreador
+     * @param \BaseBundle\Entity\User $idCreador
      *
      * @return Ofertas
      */
-    public function setIdCreador(\BaseBundle\Entity\FosUser $idCreador = null)
+    public function setIdCreador(\BaseBundle\Entity\User $idCreador = null)
     {
         $this->idCreador = $idCreador;
 
@@ -297,7 +297,7 @@ class Ofertas
     /**
      * Get idCreador
      *
-     * @return \BaseBundle\Entity\FosUser
+     * @return \BaseBundle\Entity\User
      */
     public function getIdCreador()
     {
@@ -307,11 +307,11 @@ class Ofertas
     /**
      * Set idDestinatario
      *
-     * @param \BaseBundle\Entity\FosUser $idDestinatario
+     * @param \BaseBundle\Entity\User $idDestinatario
      *
      * @return Ofertas
      */
-    public function setIdDestinatario(\BaseBundle\Entity\FosUser $idDestinatario = null)
+    public function setIdDestinatario(\BaseBundle\Entity\User $idDestinatario = null)
     {
         $this->idDestinatario = $idDestinatario;
 
@@ -321,7 +321,7 @@ class Ofertas
     /**
      * Get idDestinatario
      *
-     * @return \BaseBundle\Entity\FosUser
+     * @return \BaseBundle\Entity\User
      */
     public function getIdDestinatario()
     {

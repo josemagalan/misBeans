@@ -1,0 +1,84 @@
+{% extends 'BaseBundle::/Default/base.html.twig' %}
+
+{% trans_default_domain 'BaseBundle' %}
+
+{% block header %}
+    <meta name="title" content="{{ app.user.username }} - MisBeans. Juegos de economía experimental">
+    <meta name="description" content="Juegos de economía experimental - TFG GII UBU">
+    <title>{{ app.user.username }} - MisBeans</title>
+{% endblock header %}
+
+{% block navbar %}
+    {% include "BaseBundle::/Includes/navbar-registered.html.twig" %}
+{% endblock navbar %}
+
+{% block body %}
+
+    <div class="container-fluid full-section">
+        <div class="blank"></div>
+        <div class="col-lg-6 col-lg-offset-3">
+            {% if app.request.hasPreviousSession %}
+                {% for type, messages in app.session.flashbag.all() %}
+                    {% for message in messages %}
+                        <div class="col-md-6 col-md-offset-3 text-center">
+                            <div class="alert alert-info">
+                                <div class="flash-{{ type }}">
+                                    {{ message }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        {# formulario de búsqueda #}
+        <div class="col-lg-8 col-lg-offset-2">
+            <div class="text-center">
+                <h2>{{ 'userhome.buscar-partida'|trans({}, 'BaseBundle') }}</h2>
+            </div>
+            {{ form_start(form, { 'attr': {'class': 'form-group', 'id': 'search_game'} }) }}
+
+            {# search#}
+            <div class="form-group">
+                {{ form_errors(form.game) }}
+                {#{{ form_label(form.game) }} #}
+                <div class="input-group">
+                    {{ form_widget(form.game, { 'attr': {'class': 'form-control','placeholder':'form.search'|trans({}, 'BaseBundle') } }) }}
+                    <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+
+            {{ form_rest(form) }}
+            {{ form_end(form) }}
+
+            <div class="blank"></div>
+            {# tabla de mis partidas#}
+            <div class="text-center">
+                <h2>{{ 'userhome.mis-partidas'|trans({}, 'BaseBundle') }}</h2>
+                <hr>
+                <table class="table table-responsive table-striped">
+                    <thead>
+                    <tr>
+                        <th class="text-center">{{ 'partida.nombre'|trans({}, 'BaseBundle') }}</th>
+                        <th class="text-center">{{ 'partida.fin'|trans({}, 'BaseBundle') }}</th>
+                    </tr>
+                    </thead>
+                    {% for partida in partidas %}
+                        <tr onclick="location.href='{{ path('partida_home',{'id_partida' : partida.id}) }}'">
+                            <td class="text-center"> {{ partida.nombre | capitalize }} </td>
+                            <td> {{ partida.intervalo |date("%H : %I : %s") }} </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+        </div>
+    </div>
+{% endblock body %}
+
+{% block footer %}
+    {% include "BaseBundle::/Includes/footer-registered.html.twig" %}
+{% endblock footer %}
