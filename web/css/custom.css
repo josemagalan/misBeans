@@ -26,20 +26,6 @@ body, html {
     width: auto;
 }
 
-@media (max-width: 768px) {
-    .toFloor {
-        padding-top: 0;
-    }
-
-    .navbar-custom-registered .right-space {
-        padding-right: 0;
-    }
-
-    .dropdown.gravatar.open li {
-        background-color: white;
-    }
-}
-
 .navbar-custom-registered {
     padding-left: 20px;
     padding-right: 20px;
@@ -56,11 +42,27 @@ body, html {
     width: auto;
 }
 
+@media (max-width: 768px) {
+    .toFloor {
+        padding-top: 0;
+    }
+
+    .navbar-custom-registered .right-space {
+        padding-right: 0;
+    }
+
+    .dropdown.gravatar.open li {
+        background-color: white;
+    }
+}
+
 /*--------------------------------------navbar---------------------------------------------------------------*/
 
 /*--- responsive tables bootstrap hack*/
 @-moz-document url-prefix() {
-    fieldset { display: table-cell; }
+    fieldset {
+        display: table-cell;
+    }
 }
 
 /*------------------
@@ -74,17 +76,12 @@ body, html {
     padding-bottom: 100px;
 }
 
-.full-section h2{
+.full-section h2 {
     padding-bottom: 20px;
 }
 
 .partida-section {
     padding-top: 50px;
-}
-@media (max-width: 768px) {
-    .full-section {
-        padding-bottom: 100%;
-    }
 }
 
 @media (max-width: 992px) {
@@ -109,15 +106,267 @@ body, html {
     padding-top: 80px;
 }
 
-.grey-background {
+.column-full {
+    min-height: 100%;
     background-color: #cccccc;
+    margin: 0 auto -100px;
+    padding-top: 10px;
+    padding-bottom: 100px;
 }
+
+.table-striped tr:hover, .table-striped > tbody > tr:nth-child(odd):hover {
+    background: rgba(0, 102, 173, 1);
+    color: white;
+    -webkit-transition: background-color 0.2s ease-out;
+    -moz-transition: background-color 0.2s ease-out;
+    -o-transition: background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
+}
+
+@media (max-width: 768px) {
+    .column-full {
+        min-height: 0;
+        background-color: #cccccc;
+        margin: 0;
+        padding-bottom: 20px;
+        height: auto !important;
+    }
+
+    .blank {
+        padding-top: 0;
+    }
+
+    .table-striped {
+        table-layout: fixed;
+    }
+
+    .partida-section, .full-section {
+        padding-top: 70px;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .full-section h2 {
+        padding-bottom: 5px;
+    }
+
+    .vert-middle {
+        top: 0;
+        -webkit-transform: translateY(0%);
+        -ms-transform: translateY(0%);
+        transform: translateY(0%);
+    }
+
+    .container-fluid.partida-section {
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 5px;
+        /*left: 0;
+        right: 0;*/
+    }
+}
+
+/*------------------
+--------user--------
+-------------------*/
+
+.list {
+    list-style-type: none;
+    background-color: rgba(0, 102, 173, 1);
+    border-radius: 5px;
+    color: white;
+}
+
+.list li, .list li a {
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
+    padding-bottom: 4px;
+    padding-top: 4px;
+    color: white;
+    -webkit-transition: background-color 0.2s ease-out;
+    -moz-transition: background-color 0.2s ease-out;
+    -o-transition: background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
+}
+
+.list li a:hover {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.tabs {
+    border-left: groove 1px rgba(50, 50, 50, 0.3);
+}
+
+@media (max-width: 768px) {
+    .tabs {
+        border-left: none;
+    }
+}
+
+/*--------------------------------------partida-------------------------------*/
+
+.status {
+    background: rgba(0, 102, 173, 1);
+    color: white;
+    border-radius: 5px;
+}
+
+.red-bean {
+    color: darkred;
+}
+
+.white-bean {
+    color: whitesmoke;
+}
+
+.partida-graph {
+    width: 800px;
+    height: 400px;
+}
+
+@media (max-width: 768px) {
+    .table-mobile-full {
+        width: 100%;
+        margin-left: -5px;
+
+    }
+
+    .partida-graph {
+        width: 250px;
+        height: 100px;
+    }
+}
+
+/*--------------------------------------ofertas-------------------------------*/
+
+.oferta, .blue-form {
+    background-color: #cccccc;
+    border-radius: 5px;
+    padding: 20px;
+    height: auto;
+}
+
+.green {
+    color: limegreen;
+}
+
+.red {
+    color: red;
+}
+
+.form-deal span, .form-deal input {
+    margin-right: 20px;
+}
+
+.float {
+    position: absolute;
+    top: 10px;
+    left: 25%;
+}
+
+.modal-form {
+    top: 0;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.btn-red {
+    background-color: red;
+    color: white;
+    -webkit-transition: background-color 0.3s ease-out;
+    -moz-transition: background-color 0.3s ease-out;
+    -o-transition: background-color 0.3s ease-out;
+    transition: background-color 0.3s ease-out;
+}
+
+.btn-green {
+    background-color: limegreen;
+    color: white;
+    -webkit-transition: background-color 0.3s ease-out;
+    -moz-transition: background-color 0.3s ease-out;
+    -o-transition: background-color 0.3s ease-out;
+    transition: background-color 0.3s ease-out;
+}
+
+@media (max-width: 768px) {
+    .oferta {
+        margin-bottom: 20px;
+    }
+
+    .float {
+        left: 0;
+    }
+}
+
+/*------------------
+-----adminhome--------
+-------------------*/
+
+.btn-crear {
+    width: 60%;
+    background: rgba(0, 102, 173, 1);
+    color: white;
+    -webkit-transition: background-color 0.5s ease-out;
+    -moz-transition: background-color 0.5s ease-out;
+    -o-transition: background-color 0.5s ease-out;
+    transition: background-color 0.5s ease-out;
+}
+
+.btn-crear:hover {
+    background: rgba(0, 102, 173, 0.7);
+    color: white;
+}
+
+.blue-form {
+    background: rgba(0, 102, 173, 1);
+    color: white;
+}
+
+#canvas-holder {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.stats {
+    background-color: #eeeeee;
+    border-radius: 5px;
+    min-height: 1150px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.linechart canvas {
+    max-height: 400px;
+    max-width: 900px;
+}
+
+.blancaBarStats {
+    color: rgba(220, 220, 220, 1);
+}
+
+.rojaBarStats {
+    color: rgba(151, 187, 205, 1);
+}
+
+.utilidadLineStats {
+    color: rgba(50,100,150,1);
+}
+
+@media (max-width: 768px) {
+    .stats {
+        min-height: 0;
+    }
+}
+
+/*--------------------------------------adminhome-------------------------------*/
 
 /*------------------
 -----footer--------
 -------------------*/
 .footer {
-    background: rgba(50, 50, 50, 0.7);
+    background: rgba(107, 107, 107, 1);
     font-size: 12px;
     color: #FFF;
     min-height: 100px;
@@ -138,6 +387,10 @@ body, html {
 
 .footer .dropdown {
     padding-top: 10px;
+}
+
+.jq-dropdown.jq-dropdown-tip li a, .jq-dropdown.jq-dropdown-tip li a:hover {
+    color: rgba(50, 50, 50, 1);
 }
 
 #footer ul.sub-nav {

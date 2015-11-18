@@ -19,7 +19,7 @@
 
         <div class="col-lg-6 col-lg-offset-3">
             <div class="row vert-middle">
-                <div class="col-lg-6 center-block">
+                <div class="col-xs-12 col-lg-6">
                     <form class="form-group" action="{{ path("fos_user_security_check") }}" method="post">
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
 
@@ -56,7 +56,7 @@
                     </form>
                     <a href="{{ path('registration') }}">{{ 'global.register'|trans({}, 'BaseBundle') }}</a>
                 </div>
-                <div class="col-lg-6 text-center">
+                <div class="col-xs-12 col-lg-6 text-center">
                     <img src="{{ asset('img/logos/ubu.gif') }}" alt="UBU logo">
                 </div>
             </div>

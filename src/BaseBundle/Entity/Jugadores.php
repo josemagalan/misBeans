@@ -40,7 +40,7 @@ class Jugadores
      *   }
      * ),
      *   inverseJoinColumns={
-     *     @ORM\JoinColumn(name="id_jugador", referencedColumnName="id")
+     * @ORM\JoinColumn(name="id_jugador", referencedColumnName="id")
      *   }
      *
      * @ORM\Id
@@ -90,12 +90,14 @@ class Jugadores
      * @param int $aluRojaInicial
      * @param int $aluBlancaInicial
      */
-    public function __construct(Partida $idPartida, User $idJugador, $aluRojaInicial, $aluBlancaInicial)
+    public function __construct(Partida $idPartida, User $idJugador, $aluRojaInicial, $aluBlancaInicial, $aluRojaActual, $aluBlancaActual)
     {
         $this->idPartida = $idPartida;
         $this->idJugador = $idJugador;
         $this->aluRojaInicial = $aluRojaInicial;
         $this->aluBlancaInicial = $aluBlancaInicial;
+        $this->aluRojaActual = $aluRojaActual;
+        $this->aluBlancaActual = $aluBlancaActual;
     }
 
     /**

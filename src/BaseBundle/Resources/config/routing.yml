@@ -25,6 +25,11 @@ partida_home:
     defaults: { _controller: BaseBundle:Partida:partida, _locale: es }
     requirements: { id_partida: "\d+", _locale: es|en }
 
+partida_register:
+    path:     /{_locale}/userhome/register/{id_partida}
+    defaults: { _controller: BaseBundle:Partida:partidaRegister, _locale: es }
+    requirements: { id_partida: "\d+", _locale: es|en }
+
 user_profile:
     path:     /{_locale}/userhome/{id_partida}/{username}
     defaults: { _controller: BaseBundle:Partida:jugador, _locale: es }
@@ -63,3 +68,13 @@ new_game:
     path:     /{_locale}/adminhome/new
     defaults: { _controller: BaseBundle:Admin:newGame, _locale: es }
     requirements: { _locale: es|en }
+
+game_statistics:
+    path:     /{_locale}/adminhome/stats/{id_partida}
+    defaults: { _controller: BaseBundle:Admin:statistics, _locale: es }
+    requirements: {id_partida: "\d+", _locale: es|en }
+
+statistics_download_ranking:
+    path:     /{_locale}/adminhome/stats/{id_partida}/download/
+    defaults: { _controller: BaseBundle:Admin:rankingDownload, _locale: es }
+    requirements: {id_partida: "\d+", _locale: es|en }

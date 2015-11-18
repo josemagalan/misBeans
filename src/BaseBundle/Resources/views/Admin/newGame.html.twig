@@ -1,0 +1,173 @@
+{% extends 'BaseBundle::/Default/base.html.twig' %}
+
+{% trans_default_domain 'BaseBundle' %}
+
+{% block header %}
+    <meta name="title" content="{{ app.user.username }} - MisBeans. Juegos de economía experimental">
+    <meta name="description" content="Juegos de economía experimental - TFG GII UBU">
+    <title>{{ app.user.username }} - MisBeans</title>
+{% endblock header %}
+{% block stylesheets %}
+    <link href="{{ asset('css/jquery/jquery.datetimepicker.css') }}" rel="stylesheet" type="text/css">
+{% endblock stylesheets %}
+
+{% block navbar %}
+    {% include "BaseBundle::/Includes/navbar-registered.html.twig" %}
+{% endblock navbar %}
+
+{% block body %}
+
+    <div class="partida-section container-fluid">
+        <div class="row">
+            <div class="col-lg-6 col-lg-offset-3">
+                <h3 class="text-center"> {{ 'adminhome.new'|trans({}, 'BaseBundle') }}</h3>
+                <hr>
+
+                {% for flashMessage in app.session.flashbag.get('correct') %}
+                    <div class="alert alert-success text-center alert-dismissible fade in" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                    aria-hidden="true">×</span></button>
+                        {{ 'partida.successful'|trans({}, 'BaseBundle') }}
+                    </div>
+                {% endfor %}
+
+                {% for flashMessage in app.session.flashbag.get('error') %}
+                    <div class="alert alert-danger text-center alert-dismissible fade in" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                    aria-hidden="true">×</span></button>
+                        {{ 'partida.error'|trans({}, 'BaseBundle') }}
+                    </div>
+                {% endfor %}
+
+                <form action="{{ path('new_game') }}" {{ form_enctype(form) }} method="POST"
+                      class="form-group blue-form">
+
+                    {{ form_errors(form) }}
+                    {# nombre#}
+                    <div class="form-group">
+                        {{ form_errors(form.nombre) }}
+                        {{ form_label(form.nombre) }}
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-pencil-square-o fa-fw"></i></span>
+                            {{ form_widget(form.nombre, { 'attr': {'class': 'form-control input-group'} }) }}
+                        </div>
+                    </div>
+
+                    {# password#}
+                    <div class="form-group">
+                        {{ form_errors(form.password) }}
+                        {{ form_label(form.password) }}
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+                            {{ form_widget(form.password, { 'attr': {'class': 'form-control input-group'} }) }}
+                        </div>
+                    </div>
+
+                    {# fin #}
+                    <div class="form-group">
+                        {{ form_errors(form.fin) }}
+                        {{ form_label(form.fin) }}
+                        <div class="form-group symfony-form-row">
+                            {{ form_widget(form.fin , { 'attr': {'class': 'form-control input-group'} }) }}
+                        </div>
+                    </div>
+
+                    {# maxJugadores#}
+                    <div class="form-group">
+                        {{ form_errors(form.maxJugadores) }}
+                        {{ form_label(form.maxJugadores) }}
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-user-plus fa-fw"></i></span>
+                            {{ form_widget(form.maxJugadores, { 'attr': {'class': 'form-control input-group'} }) }}
+                        </div>
+                    </div>
+
+                    {# maxOfertas#}
+                    <div class="form-group">
+                        {{ form_errors(form.maxOfertas) }}
+                        {{ form_label(form.maxOfertas) }}
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-dashboard fa-fw"></i></div>
+                            {{ form_widget(form.maxOfertas, { 'attr': {'class': 'form-control'} }) }}
+                            <div class="input-group-addon"><i class="fa fa-info-circle" data-toggle="tooltip"
+                                                              data-placement="left"
+                                                              title="{{ 'adminhome.max-ofertas'|trans({}, 'BaseBundle') }}"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# tiempoOferta#}
+                    <div class="form-group">
+                        {{ form_errors(form.tiempoOferta) }}
+                        {{ form_label(form.tiempoOferta) }}
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-hourglass-2 fa-fw"></i></span>
+                            {{ form_widget(form.tiempoOferta, { 'attr': {'class': 'form-control input-group'} }) }}
+                        </div>
+                    </div>
+
+                    {# algUtilidad#}
+                    <div class="form-group">
+                        {{ form_errors(form.algUtilidad) }}
+                        {{ form_label(form.algUtilidad) }}
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-cogs fa-fw"></i></span>
+                            {{ form_widget(form.algUtilidad, { 'attr': {'class': 'form-control input-group'} }) }}
+                        </div>
+                    </div>
+
+                    {# algReparto#}
+                    <div class="form-group">
+                        {{ form_errors(form.algReparto) }}
+                        {{ form_label(form.algReparto) }}
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-cogs fa-fw"></i></span>
+                            {{ form_widget(form.algReparto, { 'attr': {'class': 'form-control input-group'} }) }}
+                        </div>
+                    </div>
+
+                    {# aluRoja#}
+                    <div class="form-group">
+                        {{ form_errors(form.aluRoja) }}
+                        {{ form_label(form.aluRoja) }}
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-cubes red-bean fa-fw"></i></span>
+                            {{ form_widget(form.aluRoja, { 'attr': {'class': 'form-control input-group'} }) }}
+                        </div>
+                    </div>
+
+                    {# aluBlanca#}
+                    <div class="form-group">
+                        {{ form_errors(form.aluBlanca) }}
+                        {{ form_label(form.aluBlanca) }}
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-cubes fa-fw"></i></span>
+                            {{ form_widget(form.aluBlanca, { 'attr': {'class': 'form-control input-group'} }) }}
+                        </div>
+                    </div>
+
+                    {{ form_rest(form) }}
+
+                    <div class="pull-right">
+                        <input class="btn btn-default" type="submit"
+                               value="{{ 'form.submit'|trans({}, 'BaseBundle') }}"/>
+                    </div>
+                    <br>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock body %}
+
+{% block footer %}
+    {% include "BaseBundle::/Includes/footer-registered.html.twig" %}
+{% endblock footer %}
+
+{% block javascript %}
+
+    <script src="{{ asset('js/jquery/jquery.datetimepicker.full.js') }}"></script>
+    <script src="{{ asset('js/newGame.js') }}"></script>
+
+{% endblock javascript %}

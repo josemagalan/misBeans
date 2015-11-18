@@ -1,0 +1,162 @@
+<?php
+
+namespace BaseBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Log
+ *
+ * @ORM\Table(name="log", indexes={@ORM\Index(name="user", columns={"user"})})
+ * @ORM\Entity(repositoryClass="BaseBundle\Entity\LogRepository")
+ */
+class Log
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fecha", type="datetime", nullable=false)
+     */
+    private $fecha = 'CURRENT_TIMESTAMP';
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="actionId", type="integer", nullable=false)
+     */
+    private $actionId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="actionData", type="integer", nullable=true)
+     */
+    private $actionData;
+
+    /**
+     * @var \BaseBundle\Entity\User
+     *
+     * @ORM\ManyToOne(targetEntity="BaseBundle\Entity\User")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="user", referencedColumnName="id")
+     * })
+     */
+    private $user;
+
+
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set fecha
+     *
+     * @param \DateTime $fecha
+     *
+     * @return Log
+     */
+    public function setFecha($fecha)
+    {
+        $this->fecha = $fecha;
+
+        return $this;
+    }
+
+    /**
+     * Get fecha
+     *
+     * @return \DateTime
+     */
+    public function getFecha()
+    {
+        return $this->fecha;
+    }
+
+    /**
+     * Set actionId
+     *
+     * @param boolean $actionId
+     *
+     * @return Log
+     */
+    public function setActionId($actionId)
+    {
+        $this->actionId = $actionId;
+
+        return $this;
+    }
+
+    /**
+     * Get actionId
+     *
+     * @return boolean
+     */
+    public function getActionId()
+    {
+        return $this->actionId;
+    }
+
+    /**
+     * Set actionData
+     *
+     * @param integer $actionData
+     *
+     * @return Log
+     */
+    public function setActionData($actionData)
+    {
+        $this->actionData = $actionData;
+
+        return $this;
+    }
+
+    /**
+     * Get actionData
+     *
+     * @return integer
+     */
+    public function getActionData()
+    {
+        return $this->actionData;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \BaseBundle\Entity\User $user
+     *
+     * @return Log
+     */
+    public function setUser(\BaseBundle\Entity\User $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \BaseBundle\Entity\User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+}

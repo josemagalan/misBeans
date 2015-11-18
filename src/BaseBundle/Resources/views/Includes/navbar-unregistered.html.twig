@@ -15,18 +15,18 @@
             <ul class="nav navbar-nav toFloor">
                 <li>
                     <div class="dropdown">
-                            <span id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true"
-                                  aria-expanded="false">
+                            <span role="button" class="jq-dropdown-relative" data-horizontal-offset="-45" data-vertical-offset="10" data-jq-dropdown="#jq-dropdown-1">
                                 <span class="fa fa-globe"></span> {{ 'global.language'|trans({}, 'BaseBundle') }}
                                 <span class="caret"></span>
                             </span>
-                        <ul class="dropdown-menu" aria-labelledby="dLabel">
-                            <li><a href="{{ path('base_homepage' , { '_locale' : 'en' }) }}">English</a></li>
-                            <li><a href="{{ path('base_homepage' , { '_locale' : 'es' }) }}">Espa&ntilde;ol</a></li>
-                        </ul>
                     </div>
                 </li>
-
+            </ul>
+        </div>
+        <div id="jq-dropdown-1" class="jq-dropdown jq-dropdown-tip">
+            <ul class="jq-dropdown-menu">
+                <li class="text-center"><a href="{{ path('base_homepage' , { '_locale' : 'en' }) }}">English</a></li>
+                <li class="text-center"><a href="{{ path('base_homepage' , { '_locale' : 'es' }) }}">Español</a></li>
             </ul>
         </div>
     </div>

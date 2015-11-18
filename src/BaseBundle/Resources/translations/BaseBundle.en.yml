@@ -4,8 +4,6 @@ global:
     register: Don't even have an account? Get registered
 
 form:
-    fullName: Full name
-    email: Email
     save: Save
     search: Search game
     submit: Submit
@@ -14,12 +12,16 @@ form:
     reject: Reject
     delete: Delete
     cancel: Cancel
+    download: Download
 
 userhome:
     buscar-partida: Search game
     mis-partidas: My games
 
 user:
+    fullName: Full name
+    email: Email
+    username: Username
     activity: Activity
     configuration: Configuration
     conf-saved: Data updated
@@ -27,6 +29,7 @@ user:
 partida:
     tiempo: Time left
     nombre: Name
+    password: Password
     fUtilidad: Utility function
     players: All players
     deal: Incoming offers and deals
@@ -70,3 +73,5 @@ adminhome:
     new: New game
     left: Time left
     max-ofertas: If you don't want maximun, choose 0
+    stats: Statistics
+    ranking: Ranking

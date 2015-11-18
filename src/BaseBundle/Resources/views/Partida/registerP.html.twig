@@ -1,0 +1,53 @@
+{% extends 'BaseBundle::/Default/base.html.twig' %}
+
+{% trans_default_domain 'BaseBundle' %}
+
+{% block header %}
+    <meta name="title" content="MisBeans. Juegos de economía experimental">
+    <meta name="description" content="Juegos de economía experimental - TFG GII UBU">
+    <title>MisBeans</title>
+{% endblock header %}
+
+{% block navbar %}
+    {% include "BaseBundle::/Includes/navbar-registered.html.twig" %}
+{% endblock navbar %}
+{% block body %}
+<div class="full-section container-fluid">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="vert-middle">
+            {{ form_start(form, { 'attr': {'class': 'form-group blue-form'}}) }}
+            {{ form_errors(form) }}
+            {# password #}
+            <div class="form-group">
+                <div class="input-group">
+                                        <span class="input-group-addon"><i
+                                                    class="fa fa-pencil-square-o fa-fw"></i></span>
+                    <input class="form-control" value="{{ partida.nombre }}" readonly>
+                </div>
+                <br>
+                {{ form_errors(form.password) }}
+                {% if not form_errors(form.password) is empty %}
+                <div class="input-group has-error has-feedback">
+                    {% else %}
+                    <div class="input-group">
+                        {% endif %}
+                        <span class="input-group-addon"><i
+                                    class="fa fa-key fa-fw"></i></span>
+                        {{ form_widget(form.password, { 'attr': {'class': 'form-control input-group has-error', 'placeholder': 'partida.password'|trans({}, 'BaseBundle'),} }) }}
+                    </div>
+                </div>
+
+                {{ form_rest(form) }}
+                <div class="text-right">
+                    <input class="btn btn-default" type="submit"
+                           value="{{ 'form.submit'|trans({}, 'BaseBundle') }}"/>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    {% endblock body %}
+
+    {% block footer %}
+    {% include "BaseBundle::/Includes/footer-registered.html.twig" %}
+{% endblock footer %}

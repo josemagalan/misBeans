@@ -1,7 +1,8 @@
+{# navbar Collapse definido con JQuery #}
 <nav class="navbar navbar-custom-registered navbar-fixed-top" role="navigation">
     <div class="container">
         <div class="navbar-header page-scroll">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+            <button type="button" class="navbar-toggle">
                 <i class="fa fa-bars"></i>
             </button>
             <a href="{{ path('user_homepage') }}">
@@ -11,26 +12,28 @@
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-            {#{% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}#}
-                <ul class="nav navbar-nav">
-                    <li class="right-space"><span class="fa fa-4x fa-envelope"></span></li>
-                    <li>
-                        <div class="dropdown gravatar">
-                            <span id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true"
-                                  aria-expanded="false">
+            <ul class="nav navbar-nav">
+                <li class="right-space"><span class="fa fa-4x fa-envelope"></span></li>
+                <li>
+                    <div class="gravatar">
+                            <span role="button" class="jq-dropdown-relative" data-horizontal-offset="-40"
+                                  data-vertical-offset="15" data-jq-dropdown="#jq-dropdown-1">
                                 <img src="{{ gravatar('{{app.user.email}}') }}"/>
                             </span>
-                            <ul class="dropdown-menu" aria-labelledby="dLabel">
-                                <li class="text-center text-capitalize text-info">{{ app.user.username }}</li>
-                                <li><a class="text-center" href="{{ path('fos_user_security_logout') }}">
-                                        {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
-                                    </a></li>
-                            </ul>
-                        </div>
-                    </li>
-                </ul>
-            {#{% endif %}#}
+                    </div>
+                </li>
+            </ul>
         </div>
+    </div>
+    <div id="jq-dropdown-1" class="jq-dropdown jq-dropdown-tip">
+        <ul class="jq-dropdown-menu">
+            <li class="text-center">
+                <a href="{{ path('user_profile_my') }}">{{ app.user.username }}</a></li>
+            <li class="jq-dropdown-divider"></li>
+            <li><a class="text-center" href="{{ path('fos_user_security_logout') }}">
+                    {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
+                </a></li>
+        </ul>
     </div>
     <!-- /.container -->
 </nav>

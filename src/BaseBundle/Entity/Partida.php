@@ -29,6 +29,13 @@ class Partida
     private $nombre;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="password", type="string", length=255, nullable=true)
+     */
+    private $password;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="creado", type="datetime", nullable=false)
@@ -157,6 +164,22 @@ class Partida
     public function getNombre()
     {
         return $this->nombre;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
     }
 
     /**

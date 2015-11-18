@@ -1,4 +1,4 @@
-{% extends 'BaseBundle::/Default/base.html.twig' %}
+{% extends 'BaseBundle::/Default/baseNoBody.html.twig' %}
 
 {% trans_default_domain 'BaseBundle' %}
 
@@ -8,11 +8,12 @@
     <title>{{ app.user.username }} - MisBeans</title>
 {% endblock header %}
 
-{% block navbar %}
-    {% include "BaseBundle::/Includes/navbar-registered.html.twig" %}
-{% endblock navbar %}
-
 {% block body %}
+    <body id="page-top" data-spy="scroll" ng-app="timer-demo" ng-controller="TimerDemoController">
+    <script src="{{ asset('js/angular/angular-timer-bower.js') }}"></script>
+    <script src="{{ asset('js/angular/angular-timer-all.min.js') }}"></script>
+
+    {%  include "BaseBundle::/Includes/navbar-registered.html.twig" %}
 
     <div class="container-fluid full-section">
         <div class="blank"></div>
@@ -37,24 +38,21 @@
             <div class="text-center">
                 <h2>{{ 'userhome.buscar-partida'|trans({}, 'BaseBundle') }}</h2>
             </div>
-            {{ form_start(form, { 'attr': {'class': 'form-group', 'id': 'search_game'} }) }}
-
-            {# search#}
             <div class="form-group">
-                {{ form_errors(form.game) }}
-                {#{{ form_label(form.game) }} #}
                 <div class="input-group">
-                    {{ form_widget(form.game, { 'attr': {'class': 'form-control','placeholder':'form.search'|trans({}, 'BaseBundle') } }) }}
-                    <span class="input-group-btn">
-                    <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
-                    </span>
+                    <input class="form-control" id="search" name="search"
+                           placeholder="{{ 'form.search'|trans({}, 'BaseBundle') }}" type="text"
+                           data-list=".list">
+                    <div class="input-group-addon"><i class="fa fa-search"></i></div>
                 </div>
             </div>
-
-            {{ form_rest(form) }}
-            {{ form_end(form) }}
-
-            <div class="blank"></div>
+            <ul class="list">
+                {% for partida in partidasEnCurso %}
+                    <li>
+                        <a href="{{ url('partida_register',{'id_partida' : partida.id}) }}">{{ partida.nombre | capitalize }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
             {# tabla de mis partidas#}
             <div class="text-center">
                 <h2>{{ 'userhome.mis-partidas'|trans({}, 'BaseBundle') }}</h2>
@@ -69,7 +67,8 @@
                     {% for partida in partidas %}
                         <tr onclick="location.href='{{ path('partida_home',{'id_partida' : partida.id}) }}'">
                             <td class="text-center"> {{ partida.nombre | capitalize }} </td>
-                            <td> {{ partida.intervalo |date("%H : %I : %s") }} </td>
+                            <td class="text-center">  <timer end-time="{{ partida.ms }}">{% verbatim %}{{days}} d  {{hours}} h  {{minutes}} m {{seconds}} s{% endverbatim %}</timer>
+                            {# partida.intervalo |date("%H : %I : %s") #} </td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -77,8 +76,15 @@
 
         </div>
     </div>
-{% endblock body %}
-
-{% block footer %}
     {% include "BaseBundle::/Includes/footer-registered.html.twig" %}
-{% endblock footer %}
+
+    <script src="{{ asset('js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/jquery/jquery.hideseek.min.js') }}"></script>
+    <script src="{{ asset('js/jquery/jquery.dropdown.min.js') }}"></script>
+
+    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('js/userHome.js') }}"></script>
+    <script src="{{ asset('js/custom.js') }}"></script>
+
+    </body>
+{% endblock body %}

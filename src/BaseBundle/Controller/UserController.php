@@ -27,14 +27,13 @@ class UserController extends Controller
         $securityContext = $this->container->get('security.context');
         $this->checkUserRole($securityContext);
 
-
         //declaracion de variables:
         //variables de usuario
         $user = $this->get('security.context')->getToken()->getUser();
         $user_id = $user->getId();
         //variables de partida
         $now = new \DateTime('NOW');
-        $partidasEnCurso = array();
+        $misPartidasEnCurso = array();
 
         //llamada al Entity manager
         $em = $this->getDoctrine()->getManager();
@@ -44,19 +43,16 @@ class UserController extends Controller
         foreach ($partidas as $partida) {
 
             $fin = $partida['fin'];
-            $partida['intervalo'] = date_diff($now, $fin);
-            array_push($partidasEnCurso, $partida);
+            //$partida['intervalo'] = date_diff($now, $fin);
+            //pasar a milisegundos la fecha de fin (Angular usa esa variable)
+            $ms = $fin->getTimestamp() * 1000;
+            $partida['ms'] = $ms;
+
+            array_push($misPartidasEnCurso, $partida);
         }
 
-        $form = $this->createForm(new SearchGameType());
-        $form->handleRequest($request);
-        if ($request->isMethod('POST')) {
-            $data = $form->getData();
-            if ($form->isValid()) {
-                //TODO
-            }
-        }
-        return $this->render('BaseBundle:User:userhome.html.twig', array('form' => $form->createView(), 'partidas' => $partidasEnCurso));
+        $partidasEnCurso = $em->getRepository('BaseBundle:Partida')->findCurrentPartidas();
+        return $this->render('BaseBundle:User:userhome.html.twig', array('partidas' => $misPartidasEnCurso, 'partidasEnCurso' => $partidasEnCurso));
     }
 
 
@@ -93,7 +89,62 @@ class UserController extends Controller
             $this->get('session')->getFlashBag()->add('correct', '');
         }
 
-        return $this->render('BaseBundle:User:profile.html.twig', array('userData' => $userData, 'form' => $form->createView()));
+        //Parte de log: 15 resultados
+        $log = $em->getRepository('BaseBundle:Log')->getUserLog($user_id, 15);
+        $logger = array();
+        foreach ($log as $logData) {
+            $time = $logData['fecha']->format('d-m H:i');
+            $tmp = '';
+            if ($logData['actionId'] == 1) {
+                $nPartida = $em->getRepository('BaseBundle:Partida')->findOneById($logData['actionData']);
+                if ($locale == 'es') {
+                    $tmp = $time . ': Te has unido a la partida ' . $nPartida->getNombre();
+                } else {
+                    $tmp = $time . ': You have joined ' . $nPartida->getNombre();
+                }
+                array_push($logger, $tmp);
+            }
+            if ($logData['actionId'] == 2) {
+                $username = $em->getRepository('BaseBundle:User')->findOneById($logData['actionData']);
+                if ($locale == 'es') {
+                    $tmp = $time . ': Has enviado una oferta a ' . $username->getUsername();
+                } else {
+                    $tmp = $time . ': You have sent a deal to ' . $username->getUsername();
+                }
+                array_push($logger, $tmp);
+            }
+            if ($logData['actionId'] == 3) {
+                $username = $em->getRepository('BaseBundle:User')->findOneById($logData['actionData']);
+                if ($locale == 'es') {
+                    $tmp = $time . ': Has aceptado una oferta de ' . $username->getUsername();
+                } else {
+                    $tmp = $time . ': You have accepted ' . $username->getUsername() . '\'s deal';
+                }
+                array_push($logger, $tmp);
+            }
+
+            if ($logData['actionId'] == 4) {
+                $username = $em->getRepository('BaseBundle:User')->findOneById($logData['actionData']);
+                if ($locale == 'es') {
+                    $tmp = $time . ': Has rechazado una oferta de ' . $username->getUsername();
+                } else {
+                    $tmp = $time . ': You have rejected ' . $username->getUsername() . '\'s deal';
+                }
+                array_push($logger, $tmp);
+            }
+
+            if ($logData['actionId'] == 5) {
+                if ($locale == 'es') {
+                    $tmp = $time . ': Has creado una nueva partida';
+                } else {
+                    $tmp = $time . ': You have created a new game';
+                }
+                array_push($logger, $tmp);
+            }
+        }
+
+        return $this->render('BaseBundle:User:profile.html.twig', array('userData' => $userData,
+            'form' => $form->createView(), 'logger' => $logger));
     }
 
     /**

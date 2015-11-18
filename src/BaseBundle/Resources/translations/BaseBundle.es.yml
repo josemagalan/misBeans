@@ -4,8 +4,6 @@ global:
     register: ¿No tienes cuenta? Regístrate
 
 form:
-    fullName: Nombre completo
-    email: Email
     save: Guardar
     search: Buscar partida
     submit: Enviar
@@ -14,12 +12,16 @@ form:
     reject: Declinar
     delete: Eliminar
     cancel: Cancelar
+    download: Descargar
 
 userhome:
     buscar-partida: Buscar partida
     mis-partidas: Mis partidas
 
 user:
+    fullName: Nombre completo
+    email: Email
+    username: Usuario
     activity: Actividad
     configuration: Configuración
     conf-saved: Datos actualizados
@@ -28,6 +30,7 @@ user:
 partida:
     tiempo: Tiempo restante
     nombre: Nombre
+    password: Contraseña
     fUtilidad: Función de utilidad
     players: Jugadores
     deal: Ofertas entrantes y salientes
@@ -70,3 +73,5 @@ adminhome:
     new: Nueva partida
     left: Tiepo restante
     max-ofertas: Si no quiere máximo, elija 0
+    stats: Estadísticas
+    ranking: Ránking

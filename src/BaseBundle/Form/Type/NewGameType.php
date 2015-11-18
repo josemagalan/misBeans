@@ -14,6 +14,7 @@ class NewGameType extends AbstractType
     {
         $builder
             ->add('nombre', 'text', array('required' => true, 'label' => 'partida.nombre', 'translation_domain' => 'BaseBundle'))
+            ->add('password', 'password', array('required' => false, 'label' => 'partida.password', 'translation_domain' => 'BaseBundle'))
             ->add('fin', 'datetime', array('required' => true,
                 'label' => 'partida.fin', 'translation_domain' => 'BaseBundle',
                 'date_widget' => "single_text",

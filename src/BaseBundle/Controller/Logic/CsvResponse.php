@@ -1,0 +1,96 @@
+<?php
+
+namespace BaseBundle\Controller\Logic;
+
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+ * Export data to CSV
+ *
+ * Class CsvResponse
+ * @package BaseBundle\Controller\Logic
+ */
+class CsvResponse extends Response
+{
+    protected $data = array();
+    protected $filename = 'export.csv';
+    protected $delim = ";";
+
+    public function __construct(array $data, $filename, $status = 200, $headers = array())
+    {
+        $this->filename = $filename;
+        parent::__construct('', $status, $headers);
+
+        $this->setData($data);
+    }
+
+    /**
+     * Adds data to CSV file
+     *
+     * @param array $data
+     * @return Response
+     */
+    public function setData(array $data)
+    {
+        $output = fopen('php://temp', 'r+');
+
+        $headerDisplayed = false;
+
+        foreach ($data as $row) {
+
+            if (!$headerDisplayed) {
+                // Use the keys from $data as the titles
+                fputcsv($output, array_keys($row), $this->delim);
+                $headerDisplayed = true;
+            }
+            fputcsv($output, $row, $this->delim);
+        }
+
+        rewind($output);
+        $this->data = '';
+        while ($line = fgets($output)) {
+            $this->data .= $line;
+        }
+
+        $this->data .= fgets($output);
+
+        return $this->update();
+    }
+
+    /**
+     * Returns file name
+     *
+     * @return int|string
+     */
+    public function getFilename()
+    {
+        return $this->filename;
+    }
+
+    /**
+     * Set new file name
+     *
+     * @param $filename
+     * @return Response
+     */
+    public function setFilename($filename)
+    {
+        $this->filename = $filename;
+        return $this->update();
+    }
+
+    /**
+     * Updates document adding headers
+     *
+     * @return Response
+     */
+    protected function update()
+    {
+        $this->headers->set('Content-Disposition', sprintf('attachment; filename="%s"', $this->filename));
+
+        if (!$this->headers->has('Content-Type')) {
+            $this->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        }
+        return $this->setContent($this->data);
+    }
+}

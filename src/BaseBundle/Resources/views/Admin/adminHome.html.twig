@@ -1,0 +1,80 @@
+{% extends 'BaseBundle::/Default/baseNoBody.html.twig' %}
+
+{% trans_default_domain 'BaseBundle' %}
+
+{% block header %}
+    <meta name="title" content="{{ app.user.username }} - MisBeans. Juegos de economía experimental">
+    <meta name="description" content="Juegos de economía experimental - TFG GII UBU">
+    <title>{{ app.user.username }} - MisBeans</title>
+{% endblock header %}
+
+{% block body %}
+    <body id="page-top" data-spy="scroll" ng-app="timer-demo" ng-controller="TimerDemoController">
+    <script src="{{ asset('js/angular/angular-timer-bower.js') }}"></script>
+    <script src="{{ asset('js/angular/angular-timer-all.min.js') }}"></script>
+
+    {% include "BaseBundle::/Includes/navbar-admin.html.twig" %}
+
+    <div class="container-fluid partida-section">
+        <div class="row">
+            <div class=" col-lg-9">
+                <h2 class="text-center">{{ 'adminhome.game-current'|trans({}, 'BaseBundle') }}</h2>
+                <hr>
+
+                <div class="col-lg-10 col-lg-offset-1">
+                    {# mis partidas en curso#}
+                    <table class="table table-responsive table-striped table-hover text-center">
+                        <thead>
+                        <tr>
+                            <td><i class="fa fa-info"></i></td>
+                            <td>{{ 'adminhome.game-name'|trans({}, 'BaseBundle') }}</td>
+                            <td>{{ 'adminhome.left'|trans({}, 'BaseBundle') }}</td>
+                        </tr>
+                        </thead>
+                        {% for partida in partidasEnCurso %}
+                            <tr onclick="location.href='{{ path('game_statistics',{'id_partida' : partida.id,}) }}'">
+                                <td> {{ partida.id }} </td>
+                                <td> {{ partida.nombre | capitalize }} </td>
+                                <td>
+                                    <timer end-time="{{ partida.ms }}">{% verbatim %}
+                                    {{days}} d  {{hours}} h  {{minutes}} m {{seconds}} s{% endverbatim %}</timer>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+
+                    <hr>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-lg btn-crear"
+                                onclick="location.href='{{ path('new_game',{}) }}'">
+                            {{ 'adminhome.new'|trans({}, 'BaseBundle') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="column-full" class="col-sm-12 col-lg-3 column-full">
+                <h4 class="text-center">{{ 'adminhome.game-record'|trans({}, 'BaseBundle') }}</h4>
+                <table class="table table-responsive table-striped text-center">
+                    {% for partida in partidasHistorico %}
+                        <tr onclick="location.href='{{ path('game_statistics',{'id_partida' : partida.id,}) }}'">
+                            <td> {{ partida.id }} </td>
+                            <td> {{ partida.nombre | capitalize }} </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% include "BaseBundle::/Includes/footer-registered.html.twig" %}
+
+    <script src="{{ asset('js/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/jquery/jquery.hideseek.min.js') }}"></script>
+    <script src="{{ asset('js/jquery/jquery.dropdown.min.js') }}"></script>
+
+    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('js/userHome.js') }}"></script>
+    <script src="{{ asset('js/custom.js') }}"></script>
+
+    </body>
+{% endblock body %}

@@ -19,10 +19,10 @@
         <div class="col-lg-10 col-lg-offset-1">
 
             <div class="row">
-                <div class="col-md-1 col-md-offset-4">
+                <div class="col-xs-6 col-md-3 col-md-offset-3 text-right">
                     <img src="{{ gravatar('{{ userData.email }}') }}"/>
                 </div>
-                <div class="col-md-3">
+                <div class="col-xs-6 col-md-3">
                     <p>{{ userData.fullName | capitalize }}</p>
 
                     <p>{{ userData.username }}</p>
@@ -35,15 +35,16 @@
                 <div class="col-sm-2 col-md-2">
                     <!-- Nav tabs -->
                     <ul class="catalogo nav nav-tabs nav-stacked" role="tablist">
-                        <li role="presentation"><a href="#configuration" aria-controls="design" role="tab"
+                        <li role="presentation" class="active"><a href="#configuration" aria-controls="design" role="tab"
                                                    data-toggle="tab">{{ 'user.configuration'|trans({}, 'BaseBundle') }}</a>
                         </li>
-                        <li role="presentation" class="active"><a href="#activity" aria-controls="activity" role="tab"
+                        <li role="presentation"><a href="#activity" aria-controls="activity" role="tab"
                                                                   data-toggle="tab">{{ 'user.activity'|trans({}, 'BaseBundle') }}</a>
                         </li>
                     </ul>
+                    <br>
                 </div>
-                <div class="col-sm-10 col-md-10">
+                <div class="tabs col-sm-10 col-md-10">
                     <!-- Tab panes -->
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="configuration">
@@ -95,7 +96,13 @@
                         </div>
 
                         <div role="tabpanel" class="tab-pane" id="activity">
-                            actividad
+                            <ul class="list-group">
+                            {% for log in logger %}
+                                <li class="list-group-item list-group-item-text">
+                                    {{ log }}
+                                </li>
+                            {% endfor %}
+                                </ul>
                         </div>
                     </div>
                 </div>
@@ -105,6 +112,6 @@
     </div>
 {% endblock body %}
 
-{% block footer %}
-    {% include "BaseBundle::/Includes/footer-registered.html.twig" %}
-{% endblock footer %}
+        {% block footer %}
+            {% include "BaseBundle::/Includes/footer-registered.html.twig" %}
+        {% endblock footer %}

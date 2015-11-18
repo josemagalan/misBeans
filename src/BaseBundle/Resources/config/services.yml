@@ -7,3 +7,4 @@ services:
         class: BaseBundle\Form\Type\RegistrationType
         tags:
             - { name: form.type, alias: baseBundle_registration }
+

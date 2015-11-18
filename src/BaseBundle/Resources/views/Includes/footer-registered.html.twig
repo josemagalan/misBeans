@@ -10,17 +10,18 @@
             </div>
             <div class="col-md-1 col-md-offset-2 text-center">
                 <div id="footer" class="parent">
-                            <span id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true"
-                                  aria-expanded="false">
+                            <span role="button" class="jq-dropdown-relative" data-horizontal-offset="-40" data-vertical-offset="-90" data-jq-dropdown="#jq-dropdown-2">
                                 <span class="fa fa-globe"></span> {{ 'global.language'|trans({}, 'BaseBundle') }}
                                 <span class="caret fa-rotate-180"></span>
                             </span>
-                    <ul class="col-lg-12 sub-nav" aria-labelledby="dLabel">
-                        <li><a href="{{ path('base_homepage' , { '_locale' : 'en' }) }}">English</a></li>
-                        <li><a href="{{ path('base_homepage' , { '_locale' : 'es' }) }}">Espa&ntilde;ol</a></li>
-                    </ul>
                 </div>
             </div>
         </div>
+    </div>
+    <div id="jq-dropdown-2" class="jq-dropdown jq-dropdown-tip">
+        <ul class="jq-dropdown-menu">
+            <li class="text-center"><a href="{{ path('base_homepage' , { '_locale' : 'en' }) }}">English</a></li>
+            <li class="text-center"><a href="{{ path('base_homepage' , { '_locale' : 'es' }) }}">Español</a></li>
+        </ul>
     </div>
 </footer>
