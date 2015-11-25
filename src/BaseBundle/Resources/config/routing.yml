@@ -5,7 +5,7 @@ base_homepage:
         _locale: es|en
 
 user_homepage:
-    path:     /{_locale}/userhome
+    path:     /{_locale}/userhome/
     defaults: { _controller: BaseBundle:User:userhome, _locale: es }
     requirements:
         _locale: es|en
@@ -38,12 +38,12 @@ user_profile:
 user_profile_my:
     path:     /{_locale}/userhome/profile
     defaults: { _controller: BaseBundle:User:profile, _locale: es }
-    requirements: { id_partida: "\d+", _locale: es|en }
+    requirements: { _locale: es|en }
 
 create_deal:
     path:     /{_locale}/userhome/create_deal
     defaults: { _controller: BaseBundle:Partida:createDeal, _locale: es }
-    requirements: { id_partida: "\d+", _locale: es|en }
+    requirements: { _locale: es|en }
     methods: [POST]
 
 accept_reject_deal:
@@ -78,3 +78,15 @@ statistics_download_ranking:
     path:     /{_locale}/adminhome/stats/{id_partida}/download/
     defaults: { _controller: BaseBundle:Admin:rankingDownload, _locale: es }
     requirements: {id_partida: "\d+", _locale: es|en }
+
+distribute_beans:
+    path:     /{_locale}/adminhome/distribute/{id_partida}
+    defaults: { _controller: BaseBundle:Admin:distributeBeans, _locale: es }
+    requirements: {id_partida: "\d+", _locale: es|en }
+
+change_password:
+    path:     /{_locale}/password
+    defaults: { _controller: BaseBundle:User:changePassword, _locale: es }
+    requirements:
+        _locale: es|en
+    methods: [POST]

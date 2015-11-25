@@ -106,49 +106,54 @@
                         </div>
                     </div>
 
-                    {# algUtilidad#}
+                    {# aluPUsuario -> alubias x usuario #}
                     <div class="form-group">
-                        {{ form_errors(form.algUtilidad) }}
-                        {{ form_label(form.algUtilidad) }}
+                        {{ form_errors(form.aluPUsuario) }}
+                        {{ form_label(form.aluPUsuario) }}
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-cogs fa-fw"></i></span>
-                            {{ form_widget(form.algUtilidad, { 'attr': {'class': 'form-control input-group'} }) }}
+                            {{ form_widget(form.aluPUsuario, { 'attr': {'class': 'form-control input-group'} }) }}
                         </div>
                     </div>
 
-                    {# algReparto#}
+                    {# Ratio (proportion)#}
                     <div class="form-group">
-                        {{ form_errors(form.algReparto) }}
-                        {{ form_label(form.algReparto) }}
+                        {{ form_errors(form.ratio) }}
+                        {{ form_label(form.ratio) }}
                         <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-cogs fa-fw"></i></span>
-                            {{ form_widget(form.algReparto, { 'attr': {'class': 'form-control input-group'} }) }}
+                            <span class="input-group-addon"><i class="fa fa-sliders fa-fw"></i></span>
+                            {{ form_widget(form.ratio, { 'attr': {'class': 'form-control input-group'} }) }}
                         </div>
                     </div>
 
-                    {# aluRoja#}
+                    <p class="text-center"><b>  {{ 'partida.cobDouExp'|trans({}, 'BaseBundle') }} </b></p>
+
+                    {# Exponente Y #}
                     <div class="form-group">
-                        {{ form_errors(form.aluRoja) }}
-                        {{ form_label(form.aluRoja) }}
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-cubes red-bean fa-fw"></i></span>
-                            {{ form_widget(form.aluRoja, { 'attr': {'class': 'form-control input-group'} }) }}
+                        <div class="row text-center">
+                            <div class="col-md-6">
+                                {{ form_errors(form.expY) }}
+                                {{ form_label(form.expY) }}
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-toggle-up fa-fw"></i></span>
+                                    {{ form_widget(form.expY, { 'attr': {'class': 'form-control input-group'} }) }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                {# Exponente Z #}
+
+                                {{ form_errors(form.expZ) }}
+                                {{ form_label(form.expZ) }}
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-toggle-up fa-fw"></i></span>
+                                    {{ form_widget(form.expZ, { 'attr': {'class': 'form-control input-group'} }) }}
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    {# aluBlanca#}
-                    <div class="form-group">
-                        {{ form_errors(form.aluBlanca) }}
-                        {{ form_label(form.aluBlanca) }}
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-cubes fa-fw"></i></span>
-                            {{ form_widget(form.aluBlanca, { 'attr': {'class': 'form-control input-group'} }) }}
-                        </div>
-                    </div>
-
                     {{ form_rest(form) }}
 
-                    <div class="pull-right">
+                    <div class=" form-group pull-right">
                         <input class="btn btn-default" type="submit"
                                value="{{ 'form.submit'|trans({}, 'BaseBundle') }}"/>
                     </div>

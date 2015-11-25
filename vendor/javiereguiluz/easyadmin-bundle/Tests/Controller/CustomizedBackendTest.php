@@ -13,6 +13,7 @@ namespace JavierEguiluz\Bundle\EasyAdminBundle\Tests\Controller;
 
 use Symfony\Component\DomCrawler\Crawler;
 use JavierEguiluz\Bundle\EasyAdminBundle\Tests\Fixtures\AbstractTestCase;
+use Symfony\Component\Form\Extension\DataCollector\FormDataCollector;
 
 class CustomizedBackendTest extends AbstractTestCase
 {
@@ -424,6 +425,34 @@ class CustomizedBackendTest extends AbstractTestCase
         parse_str($queryString, $refererParameters);
 
         $this->assertEquals($parameters, $refererParameters);
+    }
+
+    public function testNewCustomFormOptions()
+    {
+        $this->client->enableProfiler();
+
+        $crawler = $this->requestNewView();
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        // test 'novalidate' attribute
+        $this->assertSame('novalidate', $crawler->filter('#new-form')->first()->attr('novalidate'));
+
+        $form = $crawler->selectButton('Save changes')->form();
+        $form->remove('form[name]');
+        $crawler = $this->client->submit($form);
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        // test validation groups
+        $profile = $this->client->getProfile();
+        try {
+            $formData = $profile->getCollector('form')->getData();
+            $categoryFields = $formData['forms']['form']['children'];
+            $this->assertSame($categoryFields['name']['errors'][0]['message'], 'This value should not be null.');
+        } catch (\Exception $e) {
+            // TODO: remove this condition when support for Symfony 2.3 is dropped
+            // In Symfony 2.3 FormDataCollector does not exist. Search in response content.
+            $this->assertContains('This value should not be null.', $crawler->filter('.error-block')->first()->text());
+        }
     }
 
     public function testSearchViewPageMainMenu()

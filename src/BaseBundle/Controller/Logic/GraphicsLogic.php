@@ -17,10 +17,11 @@ class GraphicsLogic extends Controller
      *
      * @param array $data
      * @param $mode
-     * @param $algUtilidad
+     * @param $partida
      * @return array
      */
-    public function beansStatus(array $data, $mode, $algUtilidad = 1)
+    //TODO: Futilidad mal
+    public function beansStatus(array $data, $mode, $partida)
     {
         //1--player->creador
         //2--player->destinatario
@@ -29,13 +30,13 @@ class GraphicsLogic extends Controller
         if ($mode == 1) {
             $roja = $data['aluRojaIn'] - $data['aluRojaOut'];
             $blanca = $data['aluBlancaIn'] - $data['aluBlancaOut'];
-            $fUtilidad = $logic->calculateFUtilidad($roja, $blanca, $algUtilidad);
+            $fUtilidad = $logic->calculateFUtilidad($roja, $blanca, $partida);
             $resultado = array('aluRoja' => $roja, 'aluBlanca' => $blanca, 'fUtilidad' => $fUtilidad);
         }
         if ($mode == 2) {
             $roja = $data['aluRojaOut'] - $data['aluRojaIn'];
             $blanca = $data['aluBlancaOut'] - $data['aluBlancaIn'];
-            $fUtilidad = $logic->calculateFUtilidad($roja, $blanca, $algUtilidad);
+            $fUtilidad = $logic->calculateFUtilidad($roja, $blanca, $partida);
             $resultado = array('aluRoja' => $roja, 'aluBlanca' => $blanca, 'fUtilidad' => $fUtilidad);
         }
         return $resultado;

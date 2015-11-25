@@ -3,7 +3,8 @@
 {% trans_default_domain 'BaseBundle' %}
 
 {% block header %}
-    <meta name="title" content="{{ app.user.username }} - MisBeans. Juegos de economía experimental">
+    <meta name="title" content="{{ app.user.username }} - MisBeans. Juegos de economía experimental"
+          xmlns="http://www.w3.org/1999/html">
     <meta name="description" content="Juegos de economía experimental - TFG GII UBU">
     <title>{{ app.user.username }} - MisBeans</title>
     <meta http-equiv="refresh" content="20">
@@ -31,20 +32,19 @@
                             <div class="col-md-4 col-md-offset-2">
                                 <span class="fa fa-2x white-bean fa-cubes">   </span>
                                 {{ 'oferta.alu-blanca'|trans({}, 'BaseBundle') }}
-                                : {{ partida[0].aluBlancaActual }}</div>
+                                : {{ partida.aluBlancaActual }}</div>
                             <div class="col-md-4 col-md-offset-2">
                                 <span class="fa fa-2x red-bean fa-cubes">   </span>
                                 {{ 'oferta.alu-roja'|trans({}, 'BaseBundle') }}
-                                : {{ partida[0].aluRojaActual }}</div>
+                                : {{ partida.aluRojaActual }}</div>
                         </div>
-                        <div class="text-center">
-                            {{ 'partida.fUtilidad'|trans({}, 'BaseBundle') }}:
-                            {% if partida[0].algUtilidad ==1 %}
-                                <var>{{ 'oferta.alu-blanca'|trans({}, 'BaseBundle') }}</var> *
-                                <var>{{ 'oferta.alu-roja'|trans({}, 'BaseBundle') }}</var> =
-                            {% endif %}
-                            {{ partida[0].fUtilidad }}
-                        </div>
+                        <div class="text-center"><p>
+                                &fnof;({{ 'partida.utilidad'|trans({}, 'BaseBundle') }}) =&nbsp;&nbsp;
+                                {{ 'oferta.alu-blanca'|trans({}, 'BaseBundle') }}<sup>{{ partida[0].expY }}</sup>
+                                &nbsp;&nbsp;x&nbsp;&nbsp;
+                                {{ 'oferta.alu-roja'|trans({}, 'BaseBundle') }}<sup>{{ partida[0].expZ }}</sup>
+                                &nbsp;&nbsp;=&nbsp;<b>{{ partida.fUtilidad }}</b>
+                            </p></div>
                     </div>
 
                     {# ofertas entrantes y salientes#}
@@ -135,7 +135,7 @@
                                                 <button type="submit" id="acceptOrReject_form_reject"
                                                         name="acceptOrReject_form[reject]"
                                                         class="btn btn-default btn-red">{{ 'form.reject'|trans({}, 'BaseBundle') }}</button>
-                                                {% if oferta.aluBlancaIn > partida[0].aluBlancaActual or oferta.aluRojaIn > partida[0].aluRojaActual %}
+                                                {% if oferta.aluBlancaIn > partida.aluBlancaActual or oferta.aluRojaIn > partida.aluRojaActual %}
                                                     <button type="button"
                                                             class="btn btn-default disabled">{{ 'form.accept'|trans({}, 'BaseBundle') }}</button>
                                                 {% else %}
@@ -237,7 +237,7 @@
                 <h4 class="text-center">{{ 'partida.players'|trans({}, 'BaseBundle') }}</h4>
                 <table class="table table-responsive table-striped text-center">
                     {% for jugador in jugadores %}
-                        {% if  jugador.id_jugador != user_id %}
+                        {% if  jugador.id_user != user_id %}
                             <tr onclick="location.href='{{ path('user_profile',{'id_partida' : partida[0].id,
                                 'username' : jugador.username}) }}'">
                                 <td> {{ jugador.username | capitalize }} </td>

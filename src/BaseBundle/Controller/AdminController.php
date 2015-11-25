@@ -4,8 +4,11 @@ namespace BaseBundle\Controller;
 
 use BaseBundle\Controller\Logic\CsvResponse;
 use BaseBundle\Controller\Logic\GraphicsLogic;
+use BaseBundle\Controller\Logic\Gravatar;
+use BaseBundle\Controller\Logic\PartidaLogic;
 use BaseBundle\Form\Type\NewGameType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -34,6 +37,9 @@ class AdminController extends Controller
         $admin = $this->get('security.context')->getToken()->getUser();
         $admin_id = $admin->getId();
 
+        //imagen Gravatar
+        $gravatar = $this->getGravatar($admin->getEmail());
+
         //Get Entity manager
         $em = $this->getDoctrine()->getManager();
         //Partidas creadas por ese administrador
@@ -52,7 +58,6 @@ class AdminController extends Controller
             if ($now < $fin) {
                 $ms = $fin->getTimestamp() * 1000;
                 $partida['ms'] = $ms;
-                //$partida['intervalo'] = date_diff($now, $fin);
                 array_push($partidasEnCurso, $partida);
             } else {
                 array_push($partidasHistorico, $partida);
@@ -60,20 +65,11 @@ class AdminController extends Controller
         }
 
         return $this->render('BaseBundle:Admin:adminHome.html.twig',
-            array('partidasEnCurso' => $partidasEnCurso, 'partidasHistorico' => $partidasHistorico));
+            array('partidasEnCurso' => $partidasEnCurso,
+                'partidasHistorico' => $partidasHistorico,
+                'gravatar' => $gravatar,
+            ));
 
-    }
-
-    /**
-     * Check User roles. User must be admin or superAdmin
-     * @param $securityContext
-     * @return RedirectResponse
-     */
-    protected function checkSecurity($securityContext)
-    {
-        if (!$securityContext->isGranted('ROLE_ADMIN') && !$securityContext->isGranted('ROLE_SUPER_ADMIN')) {
-            return new RedirectResponse($this->container->get('router')->generate('base_homepage'));
-        }
     }
 
     /**
@@ -88,6 +84,16 @@ class AdminController extends Controller
         $locale = $request->get('_locale');
         $request->setLocale($locale);
         $request->getSession()->set('_locale', $locale);
+
+        //get User info
+        $admin = $this->get('security.context')->getToken()->getUser();
+        $admin_id = $admin->getId();
+
+        //imagen Gravatar
+        $gravatar = $this->getGravatar($admin->getEmail());
+
+        //Get Entity manager
+        $em = $this->getDoctrine()->getManager();
 
         //create form
         $form = $this->createForm(new NewGameType());
@@ -104,11 +110,9 @@ class AdminController extends Controller
                 return $this->render('BaseBundle:Admin:newGame.html.twig',
                     array(
                         'form' => $form->createView(),
+                        'gravatar' => $gravatar,
                     ));
             }
-
-            $admin_id = $this->get('security.context')->getToken()->getUser()->getId();
-            $em = $this->getDoctrine()->getManager();
             //Esta correcto -> Guardar partida.
             $result = $em->getRepository('BaseBundle:Partida')->SetNewPartida($data, $admin_id);
 
@@ -124,6 +128,7 @@ class AdminController extends Controller
         return $this->render('BaseBundle:Admin:newGame.html.twig',
             array(
                 'form' => $form->createView(),
+                'gravatar' => $gravatar,
             ));
     }
 
@@ -148,6 +153,9 @@ class AdminController extends Controller
         $admin = $this->get('security.context')->getToken()->getUser();
         $admin_id = $admin->getId();
 
+        //imagen Gravatar
+        $gravatar = $this->getGravatar($admin->getEmail());
+
         //Get Entity manager
         $em = $this->getDoctrine()->getManager();
 
@@ -165,10 +173,9 @@ class AdminController extends Controller
 
         //la partida está en curso?
         $now = new \DateTime('NOW');
-        $intervalo = date_diff($now, $fin);
         $now >= $fin ? $partidaInfo['terminado'] = 1 : $partidaInfo['terminado'] = 0;
 
-        $ranking = $em->getRepository('BaseBundle:Jugadores')->getRanking($id_partida);
+        $ranking = $em->getRepository('BaseBundle:UserPartida')->getRanking($id_partida);
 
         // Get session
         $session = $this->container->get('session');
@@ -191,7 +198,7 @@ class AdminController extends Controller
             $tmp['modificado'] = $oferta['modificado'];
             // dato para el grafico de lineas
             $tmp['ratio'] =
-                (abs($oferta['aluBlancaIn'] - $oferta['aluBlancaOut']) / abs($oferta['aluRojaIn'] - $oferta['aluRojaOut']));
+                ( abs($oferta['aluRojaIn'] - $oferta['aluRojaOut']) / abs($oferta['aluBlancaIn'] - $oferta['aluBlancaOut']));
             //datos para el gráfico de barras
             $tmp['rojas'] = abs($oferta['aluRojaIn'] - $oferta['aluRojaOut']);
             $tmp['blancas'] = abs($oferta['aluBlancaIn'] - $oferta['aluBlancaOut']);
@@ -210,6 +217,8 @@ class AdminController extends Controller
                 'rankingAluBlancaStats' => $rankingAluBlancaStats,
                 'lineChart' => $lineChart,
                 'barChart' => $barChart,
+                'gravatar' => $gravatar,
+                'idPartida' => $id_partida,
             ));
     }
 
@@ -236,5 +245,93 @@ class AdminController extends Controller
         $response = new CsvResponse($ranking, $filename);
 
         return $response;
+    }
+
+    /**
+     * Distributes randomly the beans to the players, and starts the game.
+     *
+     * @param Request $request
+     * @param $id_partida
+     * @return RedirectResponse|AccessDeniedException
+     */
+    public function distributeBeansAction(Request $request, $id_partida)
+    {
+
+        //set language
+        $locale = $request->get('_locale');
+        $request->setLocale($locale);
+        $request->getSession()->set('_locale', $locale);
+
+        //Security control. Check user roles. If role is not ROLE_ADMIN -> redirect to homepage
+        $this->checkSecurity($this->container->get('security.context'));
+
+        //get User info
+        $admin = $this->get('security.context')->getToken()->getUser();
+        $admin_id = $admin->getId();
+
+        //imagen Gravatar
+        $gravatar = $this->getGravatar($admin->getEmail());
+
+        //Get Entity manager
+        $em = $this->getDoctrine()->getManager();
+
+        //Check: Yo soy el creador de la partida y tengo acceso
+        $partidaInfo = $em->getRepository('BaseBundle:Partida')->isMyAdminGame($id_partida, $admin_id);
+        if (!count($partidaInfo) > 0) {
+            return new AccessDeniedException('You shall not pass!');
+        }
+
+        $partida = $em->getRepository('BaseBundle:Partida')->findOneById($id_partida);
+
+        $qb = $em->createQueryBuilder();
+        //localizamos el objeto
+        $qb->select('u')
+            ->from('BaseBundle:UserPartida', 'u')
+            ->where(
+                $qb->expr()->eq('u.idPartida', '?1')
+            )
+            ->setParameter(1, $id_partida);
+        $query = $qb->getQuery();
+        $jugadores = $query->getResult();
+        // $nJugadores = intval($query->getSingleScalarResult());
+
+        $logic = new PartidaLogic();
+        $logic->distributeBeansLogic($partida, $jugadores, $em);
+
+        //actualizar partida a empezado
+        $partida->setEmpezado(true);
+        $em->flush();
+
+        return new RedirectResponse($this->get('router')->generate('game_statistics', array('id_partida' => $id_partida)));
+    }
+
+    /**
+     * Check User roles. User must be admin or superAdmin
+     * @param $securityContext
+     * @return RedirectResponse
+     */
+    protected function checkSecurity($securityContext)
+    {
+     try {
+         if (!$securityContext->isGranted('ROLE_ADMIN') && !$securityContext->isGranted('ROLE_SUPER_ADMIN')) {
+             return new RedirectResponse($this->container->get('router')->generate('base_homepage'));
+         }
+     }
+     catch (Exception $e){
+         return new RedirectResponse($this->container->get('router')->generate('base_homepage'));
+     }
+    }
+
+    /**
+     * Gets the gravatar URL for an email
+     *
+     * @param $email
+     * @return String
+     */
+    protected function getGravatar($email)
+    {
+        $grav = new Gravatar($email);
+        $gravatar = $grav->get_gravatar();
+        return $gravatar;
     }
 }

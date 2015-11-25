@@ -20,10 +20,9 @@
         "twig/twig": "~1.20|~2.0"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "~2.7",
         "symfony/asset": "~2.7",
         "symfony/finder": "~2.3",
-        "symfony/form": "~2.7,>=2.7.2",
+        "symfony/form": "~2.7,>=2.7.6",
         "symfony/http-kernel": "~2.3",
         "symfony/intl": "~2.3",
         "symfony/routing": "~2.2",

@@ -11,11 +11,21 @@
 
 namespace JavierEguiluz\Bundle\EasyAdminBundle\DependencyInjection;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\HttpKernel\Kernel;
 
+/**
+ * Resolves all the backend configuration values and most of the entities
+ * configuration. The information that must resolved during runtime is handled
+ * by the Configurator class.
+ *
+ * @author Javier Eguiluz <javier.eguiluz@gmail.com>
+ */
 class EasyAdminExtension extends Extension
 {
     private $views = array('edit', 'list', 'new', 'show');
@@ -49,6 +59,7 @@ class EasyAdminExtension extends Extension
         'field_id' => '@EasyAdmin/default/field_id.html.twig',
         'field_image' => '@EasyAdmin/default/field_image.html.twig',
         'field_integer' => '@EasyAdmin/default/field_integer.html.twig',
+        'field_raw' => '@EasyAdmin/default/field_raw.html.twig',
         'field_simple_array' => '@EasyAdmin/default/field_simple_array.html.twig',
         'field_smallint' => '@EasyAdmin/default/field_smallint.html.twig',
         'field_string' => '@EasyAdmin/default/field_string.html.twig',
@@ -63,6 +74,9 @@ class EasyAdminExtension extends Extension
 
     private $kernelRootDir;
 
+    /**
+     * {@inheritdoc}
+     */
     public function load(array $configs, ContainerBuilder $container)
     {
         $this->kernelRootDir = $container->getParameter('kernel.root_dir');
@@ -72,12 +86,20 @@ class EasyAdminExtension extends Extension
         $backendConfiguration['entities'] = $this->getEntitiesConfiguration($backendConfiguration['entities']);
         $backendConfiguration = $this->processEntityActions($backendConfiguration);
         $backendConfiguration = $this->processEntityTemplates($backendConfiguration);
+        $backendConfiguration['default_entity_name'] = $this->getFirstEntityName($backendConfiguration);
 
         $container->setParameter('easyadmin.config', $backendConfiguration);
 
         // load bundle's services
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+
+        // Don't register our exception listener if debug is enabled
+        if ($container->getParameter('kernel.debug')) {
+            $container->removeDefinition('easyadmin.listener.exception');
+        }
+
+        $this->ensureBackwardCompatibility($container);
     }
 
     /**
@@ -192,7 +214,7 @@ class EasyAdminExtension extends Extension
      *
      * @return array
      */
-    public function processEntityActions(array $backendConfiguration)
+    private function processEntityActions(array $backendConfiguration)
     {
         $entitiesConfiguration = array();
 
@@ -348,7 +370,7 @@ class EasyAdminExtension extends Extension
                 // those options would be 'null' and the template would show some issues
                 if (array_key_exists($actionName, $defaultActionsConfiguration)) {
                     // remove null config options but maintain empty options (this allows to set an empty label for the action)
-                    $normalizedConfiguration = array_filter($normalizedConfiguration, function($element) { return null !== $element; });
+                    $normalizedConfiguration = array_filter($normalizedConfiguration, function ($element) { return null !== $element; });
                     $normalizedConfiguration = array_replace($defaultActionsConfiguration[$actionName], $normalizedConfiguration);
                 }
             }
@@ -499,6 +521,10 @@ class EasyAdminExtension extends Extension
                 if (count($config[$view]['fields']) > 0) {
                     $config[$view]['fields'] = $this->normalizeFieldsConfiguration($config[$view]['fields'], $view, $entityConfiguration);
                 }
+
+                if (in_array($view, array('edit', 'new')) && !isset($config[$view]['form_options'])) {
+                    $config[$view]['form_options'] = array();
+                }
             }
 
             $entities[$entityName] = $config;
@@ -600,11 +626,61 @@ class EasyAdminExtension extends Extension
     /**
      * Checks whether the given string is valid as a PHP method name.
      *
-     * @param  string  $name
-     * @return boolean
+     * @param string $name
+     *
+     * @return bool
      */
     private function isValidMethodName($name)
     {
         return 0 !== preg_match('/^-?[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $name);
+    }
+
+    /**
+     * It returns the name of the first entity configured in the backend. It's
+     * mainly used to redirect the homepage of the backend to the listing of the
+     * first configured entity.
+     *
+     * @param array $backendConfiguration
+     *
+     * @return string
+     */
+    private function getFirstEntityName(array $backendConfiguration)
+    {
+        $entityNames = array_keys($backendConfiguration['entities']);
+
+        return isset($entityNames[0]) ? $entityNames[0] : null;
+    }
+
+    /**
+     * Makes some tweaks in order to ensure backward compatibilities
+     * with supported versions of Symfony components.
+     *
+     * @param ContainerBuilder $container
+     */
+    private function ensureBackwardCompatibility(ContainerBuilder $container)
+    {
+        // BC for Symfony 2.3 and Request Stack
+        $isRequestStackAvailable = version_compare(Kernel::VERSION, '2.4.0', '>=');
+        if (!$isRequestStackAvailable) {
+            $needsSetRequestMethodCall = array('easyadmin.listener.request_post_initialize', 'easyadmin.form.type.extension');
+            foreach ($needsSetRequestMethodCall as $serviceId) {
+                $container
+                    ->getDefinition($serviceId)
+                    ->addMethodCall('setRequest', array(
+                        new Reference('request', ContainerInterface::NULL_ON_INVALID_REFERENCE, false),
+                    ))
+                ;
+            }
+        }
+
+        // BC for legacy form component
+        $useLegacyFormComponent = false === class_exists('Symfony\\Component\\Form\\Util\\StringUtil');
+        if (!$useLegacyFormComponent) {
+            $container
+                ->getDefinition('easyadmin.form.type')
+                ->clearTag('form.type')
+                ->addTag('form.type')
+            ;
+        }
     }
 }

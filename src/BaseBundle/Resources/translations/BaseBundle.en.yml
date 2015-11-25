@@ -25,12 +25,15 @@ user:
     activity: Activity
     configuration: Configuration
     conf-saved: Data updated
+    changePass: Change password
+    error: Error updating data
 
 partida:
     tiempo: Time left
     nombre: Name
     password: Password
     fUtilidad: Utility function
+    utilidad: utility
     players: All players
     deal: Incoming offers and deals
     fin: Ending date and time
@@ -39,15 +42,16 @@ partida:
     tiempo-oferta: deals term (in minutes)
     alu-blanca: White bean
     alu-roja: Red bean
-    alg-utilidad: Utility algorithm
-    algutilidad:
-        1: Simple factor
-    alg-reparto: Distribution algorithm
-    algreparto:
-        1: Random without replacing
+    started: Started
+    expY: Exponent Y
+    expZ: Exponent Z
+    aluPUsuario: Beans per user
+    cobDouExp: Cobb Douglas exponents
     successful: Game created!
     error: yout game has not being registered
-
+    proportion: Ratio red beans over white beans
+    alreadyStarted: Game has already started and you can't
+    ended: Game ended
 
 oferta:
     propuesta-cambio: Deal proposal
@@ -75,3 +79,4 @@ adminhome:
     max-ofertas: If you don't want maximun, choose 0
     stats: Statistics
     ranking: Ranking
+    repartir: Distribute Beans

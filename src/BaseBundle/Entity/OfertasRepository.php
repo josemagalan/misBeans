@@ -33,7 +33,7 @@ class OfertasRepository extends EntityRepository
         $connection = $entityManager->getConnection();
 
         $dql = "INSERT INTO ofertas (idPartida, idCreador, idDestinatario, creado, estado, aluBlancaIn, aluRojaIn, aluBlancaOut, aluRojaOut)
-                VALUES (:idPartida, :userId, :idPlayer, now(), 0, :aluBlancaIn, :aluRojaIn, :aluBlancaOut, :aluRojaOut)";
+                VALUES (:idPartida, :userId, :idPlayer, now(),0, :aluBlancaIn, :aluRojaIn, :aluBlancaOut, :aluRojaOut)";
 
         $statement = $connection->prepare($dql);
 
@@ -49,70 +49,22 @@ class OfertasRepository extends EntityRepository
     }
 
     /**
-     * Comprueba Ofertas recibidas por idDestinatario
-     *
-     * @param $idDestinatario
-     * @return array
-     */
-    public function findRecievedOffers($idDestinatario)
-    {
-        $entityManager = $this->getEntityManager();
-
-        $dql = "SELECT IDENTITY(ofertas.idCreador) AS idCreador, ofertas.aluBlancaIn, ofertas.aluRojaIn, ofertas.aluBlancaOut,
-                ofertas.aluRojaOut, ofertas.creado, ofertas.id, IDENTITY(ofertas.idDestinatario) AS idDestinatario,
-                partida.tiempoOferta, partida.id AS idPartida, user.username
-                FROM BaseBundle:Ofertas ofertas
-                JOIN BaseBundle:Partida partida WITH partida.id = ofertas.idPartida
-                JOIN BaseBundle:User user WITH user.id = ofertas.idCreador
-                WHERE ofertas.idDestinatario = :idDestinatario AND ofertas.estado = 0";
-
-        $query = $entityManager->createQuery($dql);
-        $query->setParameter('idDestinatario', $idDestinatario);
-
-        return $query->getResult();
-    }
-
-    /**
-     * Comprueba ofertas enviadas por idCreador
-     *
-     * @param $idCreador
-     * @return array
-     */
-    public function findSentOffers($idCreador)
-    {
-        $entityManager = $this->getEntityManager();
-
-        $dql = "SELECT  IDENTITY(ofertas.idDestinatario) AS idDestinatario, ofertas.aluBlancaIn, ofertas.aluRojaIn,
-                ofertas.aluBlancaOut, ofertas.aluRojaOut, ofertas.creado, ofertas.id, IDENTITY(ofertas.idCreador) AS idCreador,
-                partida.tiempoOferta,  partida.id AS idPartida, user.username
-                FROM BaseBundle:Ofertas ofertas
-                JOIN BaseBundle:Partida partida WITH partida.id = ofertas.idPartida
-                JOIN BaseBundle:User user WITH user.id = ofertas.idDestinatario
-                WHERE ofertas.idCreador = :idCreador AND ofertas.estado = 0";
-
-        $query = $entityManager->createQuery($dql);
-        $query->setParameter('idCreador', $idCreador);
-
-        return $query->getResult();
-    }
-
-    /**
      * Actualiza el estado de una partida y la fecha de modificación
      *
-     * @param $status
+     * @param $estado
      * @param $idOferta
      * @return array
      */
-    public function updateStatus($status, $idOferta)
+    public function updateStatus($estado, $idOferta)
     {
         $entityManager = $this->getEntityManager();
 
         $dql = "UPDATE BaseBundle:Ofertas ofertas
-                SET ofertas.estado = :STATUS, ofertas.modificado = CURRENT_TIMESTAMP()
+                SET ofertas.estado = :estado, ofertas.modificado = CURRENT_TIMESTAMP()
                 WHERE ofertas.id = :idOferta";
 
         $query = $entityManager->createQuery($dql);
-        $query->setParameter('status', $status);
+        $query->setParameter('estado', $estado);
         $query->setParameter('idOferta', $idOferta);
 
         return $query->getResult();
@@ -156,8 +108,9 @@ class OfertasRepository extends EntityRepository
 
         $dql = "SELECT ofertas.id
                 FROM BaseBundle:Ofertas ofertas
-                WHERE ofertas.idCreador = :idCreador AND ofertas.idPartida = :idPartida AND ofertas.idDestinatario = :idDestinatario
-                      AND ofertas.id = :id";
+                WHERE ofertas.idCreador = :idCreador AND ofertas.idPartida = :idPartida
+                AND ofertas.idDestinatario = :idDestinatario
+                AND ofertas.id = :id";
 
         $query = $entityManager->createQuery($dql);
         $query->setParameter('idCreador', $idCreador);
@@ -183,8 +136,9 @@ class OfertasRepository extends EntityRepository
 
         $dql = "DELETE
                 FROM BaseBundle:Ofertas ofertas
-                WHERE ofertas.idCreador = :idCreador AND ofertas.idPartida = :idPartida AND ofertas.idDestinatario = :idDestinatario
-                      AND ofertas.id = :id AND ofertas.estado = 0";
+                WHERE ofertas.idCreador = :idCreador AND ofertas.idPartida = :idPartida
+                AND ofertas.idDestinatario = :idDestinatario
+                AND ofertas.id = :id AND ofertas.estado = 0";
 
         $query = $entityManager->createQuery($dql);
         $query->setParameter('idCreador', $idCreador);
@@ -195,7 +149,64 @@ class OfertasRepository extends EntityRepository
         return $query->getResult();
     }
 
-//todo: revisar con findSentOffers y fusion.
+    /**
+     * Comprueba ofertas enviadas por idCreador
+     *
+     * @param $idCreador
+     * @param $idPartida
+     * @return array
+     */
+    public function findSentOffers($idCreador, $idPartida, $estado)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $dql = "SELECT  IDENTITY(ofertas.idDestinatario) AS idDestinatario, ofertas.aluBlancaIn, ofertas.aluRojaIn, ofertas.modificado,
+                ofertas.modificado,ofertas.aluBlancaOut, ofertas.aluRojaOut, ofertas.creado, ofertas.id,
+                IDENTITY(ofertas.idCreador) AS idCreador, partida.tiempoOferta,  partida.id AS idPartida, user.username
+                FROM BaseBundle:Ofertas ofertas
+                JOIN BaseBundle:Partida partida WITH partida.id = ofertas.idPartida
+                JOIN BaseBundle:User user WITH user.id = ofertas.idDestinatario
+                WHERE ofertas.idCreador = :idCreador AND ofertas.estado = :estado
+                AND ofertas.idPartida = :idPartida";
+
+        $query = $entityManager->createQuery($dql);
+        $query->setParameter('idCreador', $idCreador);
+        $query->setParameter('idPartida', $idPartida);
+        $query->setParameter('estado', $estado);
+
+        return $query->getResult();
+    }
+
+
+    /**
+     * Comprueba Ofertas recibidas por idDestinatario
+     *
+     * @param $idDestinatario
+     * @param $idPartida
+     * @return array
+     */
+    public function findRecievedOffers($idDestinatario, $idPartida, $estado)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $dql = "SELECT IDENTITY(ofertas.idCreador) AS idCreador, ofertas.aluBlancaIn, ofertas.aluRojaIn, ofertas.aluBlancaOut,
+                ofertas.aluRojaOut, ofertas.creado, ofertas.id, IDENTITY(ofertas.idDestinatario) AS idDestinatario,
+                partida.tiempoOferta, partida.id AS idPartida, user.username
+                FROM BaseBundle:Ofertas ofertas
+                JOIN BaseBundle:Partida partida WITH partida.id = ofertas.idPartida
+                JOIN BaseBundle:User user WITH user.id = ofertas.idCreador
+                WHERE ofertas.idDestinatario = :idDestinatario AND ofertas.estado = :estado
+                AND ofertas.idPartida = :idPartida";
+
+        $query = $entityManager->createQuery($dql);
+        $query->setParameter('idDestinatario', $idDestinatario);
+        $query->setParameter('idPartida', $idPartida);
+        $query->setParameter('estado', $estado);
+
+        return $query->getResult();
+    }
+
+//TODO: eliminar
     public function dealsInfoSent($idPartida, $idCreador)
     {
         $entityManager = $this->getEntityManager();

@@ -25,6 +25,8 @@ user:
     activity: Actividad
     configuration: Configuración
     conf-saved: Datos actualizados
+    changePass: Cambiar contraseña
+    error: Error al actualizar datos
 
 
 partida:
@@ -32,6 +34,7 @@ partida:
     nombre: Nombre
     password: Contraseña
     fUtilidad: Función de utilidad
+    utilidad: utilidad
     players: Jugadores
     deal: Ofertas entrantes y salientes
     fin: Hora y fecha de fin
@@ -40,14 +43,15 @@ partida:
     tiempo-oferta: Duración de las ofertas (en minutos)
     alu-blanca: Alubia blanca
     alu-roja: Alubia roja
-    alg-utilidad: Algoritmo de utilidad
-    algutilidad:
-        1: Factor simple
-    alg-reparto: Algoritmo de reparto
-    algreparto:
-        1: Aleatorio sin reemplazo
+    proportion: Proporción de rojas sobre blancas
+    started: Empezado
+    expY: Exponente Y
+    expZ: Exponente Z
+    aluPUsuario: Alubias por usuario
+    cobDouExp: Exponentes de Cobb Douglas
     successful: ¡Su partida ha sido creada!
     error: Su partida no ha sido registrada
+    ended: Partida Terminada
 
 oferta:
     propuesta-cambio: Proposición de cambio
@@ -75,3 +79,4 @@ adminhome:
     max-ofertas: Si no quiere máximo, elija 0
     stats: Estadísticas
     ranking: Ránking
+    repartir: Repartir alubias

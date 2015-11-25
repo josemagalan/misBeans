@@ -102,7 +102,7 @@ final class FOSUserEvents
      * This event allows you to modify the default values of the user before binding the form.
      * The event listener method receives a FOS\UserBundle\Event\GetResponseUserEvent instance.
      */
-    const PROFILE_EDIT_INITIALIZE = 'cocinas ';
+    const PROFILE_EDIT_INITIALIZE = 'fos_user.profile.edit.initialize';
 
     /**
      * The PROFILE_EDIT_SUCCESS event occurs when the profile edit form is submitted successfully.

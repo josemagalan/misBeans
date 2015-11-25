@@ -57,6 +57,14 @@
             <div class="text-center">
                 <h2>{{ 'userhome.mis-partidas'|trans({}, 'BaseBundle') }}</h2>
                 <hr>
+                {# si una partida ha empezado, mostrar error generado en Partida controller -> partidaAction #}
+                {% for flashMessage in app.session.flashbag.get('started') %}
+                    <div class="alert alert-danger alert-dismissible text-center fade in float" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                    aria-hidden="true">×</span></button>
+                        {{ 'oferta.max-reached'|trans({}, 'BaseBundle') }}
+                    </div>
+                {% endfor %}
                 <table class="table table-responsive table-striped">
                     <thead>
                     <tr>

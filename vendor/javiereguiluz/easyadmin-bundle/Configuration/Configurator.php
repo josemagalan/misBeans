@@ -11,11 +11,17 @@
 
 namespace JavierEguiluz\Bundle\EasyAdminBundle\Configuration;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use JavierEguiluz\Bundle\EasyAdminBundle\Reflection\EntityMetadataInspector;
 use JavierEguiluz\Bundle\EasyAdminBundle\Reflection\ClassPropertyReflector;
 
+/**
+ * Completes the entities configuration with the information that can only be
+ * determined during runtime, not during the container compilation phase (most
+ * of the entities configuration is resolved in EasyAdminExtension class)
+ *
+ * @author Javier Eguiluz <javier.eguiluz@gmail.com>
+ */
 class Configurator
 {
     private $backendConfig = array();
@@ -35,6 +41,7 @@ class Configurator
         'virtual'   => false, // is a virtual field or a real Doctrine entity property?
         'sortable'  => true,  // listings can be sorted according to the values of this field
         'template'  => null,  // the path of the template used to render the field in 'show' and 'list' views
+        'type_options' => array(), // the options passed to the Symfony Form type used to render the form field
     );
 
     private $doctrineTypeToFormTypeMap = array(
@@ -67,6 +74,16 @@ class Configurator
     }
 
     /**
+     * Exposes the backend configuration to any external method that needs it.
+     *
+     * @return array
+     */
+    public function getBackendConfig()
+    {
+        return $this->backendConfig;
+    }
+
+    /**
      * Processes and returns the full configuration for the given entity name.
      * This configuration includes all the information about the form fields
      * and properties of the entity.
@@ -74,6 +91,8 @@ class Configurator
      * @param string $entityName
      *
      * @return array The full entity configuration
+     *
+     * @throws \InvalidArgumentException when the entity isn't managed by EasyAdmin
      */
     public function getEntityConfiguration($entityName)
     {
@@ -138,7 +157,7 @@ class Configurator
 
         // introspect fields for entity associations (except many-to-many)
         foreach ($entityMetadata->associationMappings as $fieldName => $associationMetadata) {
-            if (ClassMetadataInfo::MANY_TO_MANY !== $associationMetadata['type']) {
+            if (ClassMetadata::MANY_TO_MANY !== $associationMetadata['type']) {
                 $entityPropertiesMetadata[$fieldName] = array(
                     'type'            => 'association',
                     'associationType' => $associationMetadata['type'],
@@ -194,7 +213,7 @@ class Configurator
      *
      * @return array The list of fields to show and their metadata
      */
-    protected function getFieldsForFormBasedViews($view, array $entityConfiguration)
+    private function getFieldsForFormBasedViews($view, array $entityConfiguration)
     {
         if (0 === count($entityConfiguration[$view]['fields'])) {
             $excludedFieldNames = array($entityConfiguration['primary_key_field_name']);
@@ -337,6 +356,9 @@ class Configurator
                         'id' => false,
                         'label' => $fieldName,
                         'sortable' => false,
+                        // if the 'type' is not set explicitly for a virtual field,
+                        // consider it as a string, so the backend displays its contents
+                        'type' => 'text',
                         'virtual' => true,
                     ),
                     $fieldConfiguration
@@ -352,7 +374,7 @@ class Configurator
 
             // virtual fields and associations different from *-to-one cannot be sorted in listings
             $isToManyAssociation = 'association' === $normalizedConfiguration['type']
-                && in_array($normalizedConfiguration['associationType'], array(ClassMetadataInfo::ONE_TO_MANY, ClassMetadataInfo::MANY_TO_MANY));
+                && in_array($normalizedConfiguration['associationType'], array(ClassMetadata::ONE_TO_MANY, ClassMetadata::MANY_TO_MANY));
             if (true === $normalizedConfiguration['virtual'] || $isToManyAssociation) {
                 $normalizedConfiguration['sortable'] = false;
             }
@@ -448,8 +470,8 @@ class Configurator
                 $isPublic = $this->reflector->isPublic($entityConfiguration['class'], $fieldName);
                 $fieldConfiguration['isPublic'] = $isPublic;
 
-                $fieldConfiguration['canBeGet'] = $getter || $isPublic;
-                $fieldConfiguration['canBeSet'] = $setter || $isPublic;
+                $fieldConfiguration['isReadable'] = $getter || $isPublic;
+                $fieldConfiguration['isWritable'] = $setter || $isPublic;
 
                 $entityConfiguration[$view]['fields'][$fieldName] = $fieldConfiguration;
             }
@@ -457,7 +479,6 @@ class Configurator
 
         return $entityConfiguration;
     }
-
 
     /**
      * Determines the template used to render each backend element. This is not
@@ -506,15 +527,5 @@ class Configurator
         return array_key_exists($doctrineType, $this->doctrineTypeToFormTypeMap)
             ? $this->doctrineTypeToFormTypeMap[$doctrineType]
             : $doctrineType;
-    }
-
-    /**
-     * Exposes the backend configuration to any external method that needs it.
-     *
-     * @return array
-     */
-    public function getBackendConfig()
-    {
-        return $this->backendConfig;
     }
 }

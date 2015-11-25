@@ -79,6 +79,18 @@ class Product
     protected $features = array();
 
     /**
+     * Features of the product as a formatted HTML content.
+     * Example:<pre><ul>
+     *     <li><strong>Size</strong>: 13cm x 15cm x 6cm</li>
+     *     <li><strong>Bluetooth</strong>: 4.1</li>
+     * </ul></pre>
+     *
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    protected $htmlFeatures = '';
+
+    /**
      * The price of the product.
      *
      * @var float
@@ -106,7 +118,7 @@ class Product
      * List of categories where the products is
      * (Owning side).
      *
-     * @var Category[]
+     * @var ArrayCollection
      * @ORM\ManyToMany(targetEntity="Category", inversedBy="products")
      * @ORM\JoinTable(name="product_category")
      */
@@ -126,9 +138,7 @@ class Product
      */
     public function __construct()
     {
-        //Initialize categories as a Doctrine Collection
         $this->categories = new ArrayCollection();
-        //Initialize createdAt to now (useful for new product, override by existing one)
         $this->createdAt = new \DateTime();
     }
 
@@ -138,7 +148,7 @@ class Product
      *
      * @param Category $category The category to associate
      */
-    public function addCategory($category)
+    public function addCategory(Category $category)
     {
         $category->addProduct($this);
 
@@ -153,7 +163,7 @@ class Product
      *
      * @param Category $category The category to disassociate
      */
-    public function removeCategory($category)
+    public function removeCategory(Category $category)
     {
         $category->removeProduct($this);
         $this->categories->removeElement($category);
@@ -251,6 +261,26 @@ class Product
     }
 
     /**
+     * Set the list of HTML features.
+     *
+     * @param string $htmlFeatures
+     */
+    public function setHtmlFeatures($htmlFeatures)
+    {
+        $this->htmlFeatures = $htmlFeatures;
+    }
+
+    /**
+     * Get all product HTML features.
+     *
+     * @return string
+     */
+    public function getHtmlFeatures()
+    {
+        return $this->htmlFeatures;
+    }
+
+    /**
      * Set the product image.
      *
      * @param Image $image
@@ -333,7 +363,7 @@ class Product
     /**
      * Get all associated categories.
      *
-     * @return Category[]
+     * @return ArrayCollection
      */
     public function getCategories()
     {
@@ -343,7 +373,7 @@ class Product
     /**
      * Set all categories of the product.
      *
-     * @param Category[] $categories
+     * @param ArrayCollection $categories
      */
     public function setCategories($categories)
     {

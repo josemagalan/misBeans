@@ -15,12 +15,11 @@
         <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
             {#{% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}#}
             <ul class="nav navbar-nav">
-                <li class="right-space"><span class="fa fa-4x fa-envelope"></span></li>
                 <li>
                     <div class="gravatar">
                             <span role="button" class="jq-dropdown-relative" data-horizontal-offset="-40"
                                   data-vertical-offset="15" data-jq-dropdown="#jq-dropdown-1">
-                                <img src="{{ gravatar('{{app.user.email}}') }}"/>
+                                <img src="{{ gravatar }}"/>
                             </span>
                     </div>
                 </li>

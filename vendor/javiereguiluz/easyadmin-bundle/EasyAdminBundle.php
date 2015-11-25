@@ -11,11 +11,17 @@
 
 namespace JavierEguiluz\Bundle\EasyAdminBundle;
 
+use JavierEguiluz\Bundle\EasyAdminBundle\DependencyInjection\Compiler\EasyAdminFormTypePass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Class EasyAdminBundle.
+ * @author Maxime Steinhausser <maxime.steinhausser@gmail.com>
  */
 class EasyAdminBundle extends Bundle
 {
+    public function build(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new EasyAdminFormTypePass());
+    }
 }

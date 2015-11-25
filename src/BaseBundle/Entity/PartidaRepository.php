@@ -53,14 +53,13 @@ class PartidaRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
 
-        $dql = "SELECT partida.fin,partida.nombre,partida.id, partida.creado, partida.algUtilidad,
-        jugadores.aluRojaActual, jugadores.aluBlancaActual, jugadores.fUtilidad
+        $dql = "SELECT partida, userpartida.aluRojaActual, userpartida.aluBlancaActual, userpartida.fUtilidad
         FROM BaseBundle:Partida partida
-        JOIN BaseBundle:Jugadores jugadores WITH partida.id = jugadores.idPartida
-        WHERE jugadores.idJugador = :idJugador AND jugadores.idPartida = :idPartida";
+        JOIN BaseBundle:UserPartida userpartida WITH partida.id = userpartida.idPartida
+        WHERE userpartida.idUser = :idUser AND userpartida.idPartida = :idPartida";
 
         $query = $entityManager->createQuery($dql);
-        $query->setParameter('idJugador', $user_id);
+        $query->setParameter('idUser', $user_id);
         $query->setParameter('idPartida', $id_partida);
 
         return $query->getResult();
@@ -81,9 +80,9 @@ class PartidaRepository extends EntityRepository
         $connection = $entityManager->getConnection();
 
         $dql = "INSERT INTO partida (nombre, password, creado, id_creador, fin, max_jugadores, max_ofertas, tiempo_oferta,
-                alg_utilidad, alg_reparto, alu_roja, alu_blanca)
-                VALUES (:nombre,:password, now(), :idCreador, :fin, :maxJugadores, :maxOfertas, :tiempoOferta, :algUtilidad,
-                :algReparto, :aluRoja, :aluBlanca)";
+                ratio,  alu_por_usuario, exp_y, exp_z)
+                VALUES (:nombre,:password, now(), :idCreador, :fin, :maxJugadores, :maxOfertas, :tiempoOferta, :ratio,
+                :aluPUsuario, :expY, :expZ)";
 
         $statement = $connection->prepare($dql);
 
@@ -94,10 +93,10 @@ class PartidaRepository extends EntityRepository
         $statement->bindValue('maxJugadores', $data['maxJugadores']);
         $statement->bindValue('maxOfertas', $data['maxOfertas']);
         $statement->bindValue('tiempoOferta', $data['tiempoOferta']);
-        $statement->bindValue('algUtilidad', $data['algUtilidad']);
-        $statement->bindValue('algReparto', $data['algReparto']);
-        $statement->bindValue('aluRoja', $data['aluRoja']);
-        $statement->bindValue('aluBlanca', $data['aluBlanca']);
+        $statement->bindValue('ratio', $data['ratio']);
+        $statement->bindValue('aluPUsuario', $data['aluPUsuario']);
+        $statement->bindValue('expY', $data['expY']);
+        $statement->bindValue('expZ', $data['expZ']);
 
         return $statement->execute();
     }
@@ -114,7 +113,7 @@ class PartidaRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
 
-        $dql = "SELECT partida.nombre, partida.fin,partida.creado,partida.id, partida.algUtilidad
+        $dql = "SELECT partida.id, partida.nombre, partida.creado, partida.fin, partida.empezado
         FROM BaseBundle:Partida partida
         WHERE partida.id = :id AND partida.idCreador = :idCreador";
 

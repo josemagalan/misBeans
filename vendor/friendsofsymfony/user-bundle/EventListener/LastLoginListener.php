@@ -39,6 +39,7 @@ class LastLoginListener implements EventSubscriberInterface
     public function onImplicitLogin(UserEvent $event)
     {
         $user = $event->getUser();
+
         $user->setLastLogin(new \DateTime());
         $this->userManager->updateUser($user);
     }

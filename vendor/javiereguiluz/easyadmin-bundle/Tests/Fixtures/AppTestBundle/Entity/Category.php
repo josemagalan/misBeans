@@ -12,6 +12,7 @@ namespace JavierEguiluz\Bundle\EasyAdminBundle\Tests\Fixtures\AppTestBundle\Enti
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Category.
@@ -38,13 +39,14 @@ class Category
      *
      * @var string
      * @ORM\Column(type="string")
+     * @Assert\NotNull(groups={"Validate"})
      */
     protected $name;
 
     /**
      * Product in the category.
      *
-     * @var Product[]
+     * @var ArrayCollection
      * @ORM\ManyToMany(targetEntity="Product", mappedBy="categories")
      **/
     protected $products;
@@ -64,7 +66,6 @@ class Category
      */
     public function __construct()
     {
-        //Initialize product as a Doctrine Collection
         $this->products = new ArrayCollection();
     }
 
@@ -128,7 +129,7 @@ class Category
     /**
      * Return all product associated to the category.
      *
-     * @return Product[]
+     * @return ArrayCollection
      */
     public function getProducts()
     {
@@ -136,22 +137,11 @@ class Category
     }
 
     /**
-     * Set all products in the category.
-     *
-     * @param Product[] $products
-     */
-    public function setProducts($products)
-    {
-        $this->products->clear();
-        $this->products = new ArrayCollection($products);
-    }
-
-    /**
      * Add a product in the category.
      *
      * @param $product Product The product to associate
      */
-    public function addProduct($product)
+    public function addProduct(Product $product)
     {
         if (!$this->products->contains($product)) {
             $this->products[] = $product;
@@ -161,7 +151,7 @@ class Category
     /**
      * @param Product $product
      */
-    public function removeProduct($product)
+    public function removeProduct(Product $product)
     {
         $this->products->removeElement($product);
     }

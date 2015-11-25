@@ -1,0 +1,19 @@
+{% set _entity_config = easyadmin_entity(app.request.query.get('entity')) %}
+{% extends [
+    _entity_config.templates.layout|default(''),
+    easyadmin_config('design.templates.layout'),
+    '@EasyAdmin/default/layout.html.twig'
+] %}
+
+{% block body_class 'error' %}
+{% block page_title 'ERROR' %}
+
+{% block content %}
+    <div class="error-description">
+        <h1>Error</h1>
+
+        <div class="error-message">
+            <p class="lead">{{ exception.safeMessage }}</p>
+        </div>
+    </div>
+{% endblock %}

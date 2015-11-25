@@ -1,31 +1,37 @@
 TFG GII 2015: Juegos de Economía experimental
 =============================================
 
-A Symfony project.
+A Symfony project for Universidad de Burgos.
+
+
 
 What's inside?
 --------------
 
-This Symfony Standard Edition is configured with the following Settings:
+This Symfony project is configured with the following Settings:
 
-  * A BaseBundle Where src with own code is located;
+  * A BaseBundle Where src with own code is located.
 
-  * Twig as the only configured template engine;
+  * Twig as the only configured template engine.
 
-  * Doctrine ORM/DBAL;
+  * Doctrine ORM/DBAL
 
-  * Swiftmailer;
+  * Swiftmailer.
 
   * Annotations enabled for everything.
   
-  * YAML as default mapping
+  * YAML as default mapping.
   
   * FosUser Bundle to manage users securiry settings.
+
+  * AngularJS and JQuery for front-end developing.
+
+  * Gravatar for users avatars.
   
 
 It comes configured with the following bundles:
 
-  * **FrameworkBundle** - The core Symfony framework bundle
+  * [**FrameworkBundle**] - The core Symfony framework bundle
 
   * [**SensioFrameworkExtraBundle**] - Adds several enhancements, including
     template and routing annotation capability
@@ -45,20 +51,33 @@ It comes configured with the following bundles:
   * [**AsseticBundle**] - Adds support for Assetic, an asset processing
     library
 
-  * **WebProfilerBundle** (in dev/test env) - Adds profiling functionality and
+  * [**WebProfilerBundle**] (in dev/test env) - Adds profiling functionality and
     the web debug toolbar
 
-  * **SensioDistributionBundle** (in dev/test env) - Adds functionality for
+  * [**SensioDistributionBundle**] (in dev/test env) - Adds functionality for
     configuring and working with Symfony distributions
 
-  * [**SensioGeneratorBundle**][13] (in dev/test env) - Adds code generation
+  * [**SensioGeneratorBundle**] (in dev/test env) - Adds code generation
     capabilities
 
-  * **DebugBundle** (in dev/test env) - Adds Debug and VarDumper component
+  * [**DebugBundle**] (in dev/test env) - Adds Debug and VarDumper component
     integration
 	
-  * **EasyAdminBundle** - Adds backend administrator to manage the selected Entities
-  
-  * **GravatarBundle** - Allows to use Gravatar images for users
+  * [**EasyAdminBundle**] - Adds backend administrator to manage the selected Entities
 
-=======
+  * [**FOSUserBundle**] - Friends of Symfony user Bundle to manage users. Provides
+    authentication functionality
+
+License
+--------------
+
+Creative Commons license Attribution 4.0 International (CC BY 4.0):
+
+  * **You are free to**:
+      * Share — copy and redistribute the material in any medium or format
+      * Adapt — remix, transform, and build upon the material
+      
+  * **Under the following terms**:
+      * Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made.
+
+This proyect is approved for Free Cultural Works.

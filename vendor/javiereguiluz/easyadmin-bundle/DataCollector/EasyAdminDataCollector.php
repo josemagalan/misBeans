@@ -16,6 +16,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use JavierEguiluz\Bundle\EasyAdminBundle\Configuration\Configurator;
 
+/**
+ * Collects information about the requests related to EasyAdmin and displays
+ * it both in the web debug toolbar and in the profiler.
+ *
+ * @author Javier Eguiluz <javier.eguiluz@gmail.com>
+ */
 class EasyAdminDataCollector extends DataCollector
 {
     private $configurator;
@@ -28,8 +34,8 @@ class EasyAdminDataCollector extends DataCollector
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
         $backendConfiguration = $this->configurator->getBackendConfig();
-        $entityName = $request->query->get('entity');
-        $currentEntityConfiguration = $entityName ? $backendConfiguration['entities'][$entityName] : null;
+        $entityName = $request->query->get('entity', null);
+        $currentEntityConfiguration = array_key_exists($entityName, $backendConfiguration['entities']) ? $backendConfiguration['entities'][$entityName] : array();
 
         $this->data = array(
             'num_entities' => count($backendConfiguration['entities']),
@@ -41,7 +47,8 @@ class EasyAdminDataCollector extends DataCollector
 
     private function getEasyAdminParameters(Request $request)
     {
-        if ('admin' !== $request->attributes->get('_route')) {
+        // 'admin' is the deprecated route name that will be removed in version 2.0.
+        if (!in_array($request->attributes->get('_route'), array('easyadmin', 'admin'))) {
             return;
         }
 

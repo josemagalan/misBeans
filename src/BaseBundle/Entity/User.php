@@ -2,49 +2,65 @@
 
 namespace BaseBundle\Entity;
 
-
-use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use FOS\UserBundle\Model\User as BaseUser;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="fos_user")
+ * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="BaseBundle\Entity\UserRepository")
  */
 class User extends BaseUser
 {
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
 
     /**
-     * User full name
+     * @var string
      *
-     * @ORM\Column(type="string", length=255)
-     *
+     * @ORM\Column(name="full_name", type="string", length=255, nullable=false)
      */
     protected $fullName;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\ManyToMany(targetEntity="BaseBundle\Entity\Partida", mappedBy="idUser")
+     */
+    protected $idPartida;
 
+    /**
+     * Constructor
+     */
     public function __construct()
     {
+        $this->idPartida = new \Doctrine\Common\Collections\ArrayCollection();
         parent::__construct();
     }
 
+
     /**
-     * @return string
+     * Get id
+     *
+     * @return int
      */
-    public function getFullName()
+    public function getId()
     {
-        return $this->fullName;
+        return $this->id;
     }
 
     /**
+     * Set fullName
+     *
      * @param string $fullName
-     * @return string
+     *
+     * @return User
      */
     public function setFullName($fullName)
     {
@@ -53,5 +69,49 @@ class User extends BaseUser
         return $this;
     }
 
+    /**
+     * Get fullName
+     *
+     * @return string
+     */
+    public function getFullName()
+    {
+        return $this->fullName;
+    }
 
+
+
+    /**
+     * Add idPartida
+     *
+     * @param \BaseBundle\Entity\Partida $idPartida
+     *
+     * @return User
+     */
+    public function addIdPartida(\BaseBundle\Entity\Partida $idPartida)
+    {
+        $this->idPartida[] = $idPartida;
+
+        return $this;
+    }
+
+    /**
+     * Remove idPartida
+     *
+     * @param \BaseBundle\Entity\Partida $idPartida
+     */
+    public function removeIdPartida(\BaseBundle\Entity\Partida $idPartida)
+    {
+        $this->idPartida->removeElement($idPartida);
+    }
+
+    /**
+     * Get idPartida
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getIdPartida()
+    {
+        return $this->idPartida;
+    }
 }

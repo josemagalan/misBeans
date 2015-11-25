@@ -43,7 +43,7 @@ class Partida
     private $creado;
 
     /**
-     * @var integer
+     * @var \DateTime
      *
      * @ORM\Column(name="fin", type="datetime", nullable=false)
      */
@@ -71,32 +71,39 @@ class Partida
     private $tiempoOferta;
 
     /**
-     * @var boolean
+     * @var float
      *
-     * @ORM\Column(name="alg_utilidad", type="boolean", nullable=false)
+     * @ORM\Column(name="ratio", type="float", precision=10, scale=0, nullable=false)
      */
-    private $algUtilidad;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="alg_reparto", type="boolean", nullable=false)
-     */
-    private $algReparto;
+    private $ratio;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="alu_roja", type="integer", nullable=false)
+     * @ORM\Column(name="alu_por_usuario", type="integer", nullable=false)
      */
-    private $aluRoja;
+    private $aluPorUsuario;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="alu_blanca", type="integer", nullable=false)
+     * @ORM\Column(name="exp_y", type="integer", nullable=false)
      */
-    private $aluBlanca;
+    private $expY;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="exp_z", type="integer", nullable=false)
+     */
+    private $expZ;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="empezado", type="boolean", nullable=false)
+     */
+    private $empezado = '0';
 
     /**
      * @var \BaseBundle\Entity\User
@@ -112,23 +119,23 @@ class Partida
      * @var \Doctrine\Common\Collections\Collection
      *
      * @ORM\ManyToMany(targetEntity="BaseBundle\Entity\User", inversedBy="idPartida")
-     * @ORM\JoinTable(name="jugadores",
+     * @ORM\JoinTable(name="userpartida",
      *   joinColumns={
      *     @ORM\JoinColumn(name="id_partida", referencedColumnName="id")
      *   },
      *   inverseJoinColumns={
-     *     @ORM\JoinColumn(name="id_jugador", referencedColumnName="id")
+     *     @ORM\JoinColumn(name="id_user", referencedColumnName="id")
      *   }
      * )
      */
-    private $idJugador;
+    private $idUser;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->idJugador = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->idUser = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
 
@@ -167,19 +174,27 @@ class Partida
     }
 
     /**
+     * Set password
+     *
+     * @param string $password
+     *
+     * @return Partida
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Get password
+     *
      * @return string
      */
     public function getPassword()
     {
         return $this->password;
-    }
-
-    /**
-     * @param string $password
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
     }
 
     /**
@@ -209,7 +224,7 @@ class Partida
     /**
      * Set fin
      *
-     * @param integer $fin
+     * @param \DateTime $fin
      *
      * @return Partida
      */
@@ -223,7 +238,7 @@ class Partida
     /**
      * Get fin
      *
-     * @return integer
+     * @return \DateTime
      */
     public function getFin()
     {
@@ -303,99 +318,123 @@ class Partida
     }
 
     /**
-     * Set algUtilidad
+     * Set ratio
      *
-     * @param boolean $algUtilidad
+     * @param float $ratio
      *
      * @return Partida
      */
-    public function setAlgUtilidad($algUtilidad)
+    public function setRatio($ratio)
     {
-        $this->algUtilidad = $algUtilidad;
+        $this->ratio = $ratio;
 
         return $this;
     }
 
     /**
-     * Get algUtilidad
+     * Get ratio
      *
-     * @return boolean
+     * @return float
      */
-    public function getAlgUtilidad()
+    public function getRatio()
     {
-        return $this->algUtilidad;
+        return $this->ratio;
     }
 
     /**
-     * Set algReparto
+     * Set aluPorUsuario
      *
-     * @param boolean $algReparto
+     * @param integer $aluPorUsuario
      *
      * @return Partida
      */
-    public function setAlgReparto($algReparto)
+    public function setAluPorUsuario($aluPorUsuario)
     {
-        $this->algReparto = $algReparto;
+        $this->aluPorUsuario = $aluPorUsuario;
 
         return $this;
     }
 
     /**
-     * Get algReparto
-     *
-     * @return boolean
-     */
-    public function getAlgReparto()
-    {
-        return $this->algReparto;
-    }
-
-    /**
-     * Set aluRoja
-     *
-     * @param integer $aluRoja
-     *
-     * @return Partida
-     */
-    public function setAluRoja($aluRoja)
-    {
-        $this->aluRoja = $aluRoja;
-
-        return $this;
-    }
-
-    /**
-     * Get aluRoja
+     * Get aluPorUsuario
      *
      * @return integer
      */
-    public function getAluRoja()
+    public function getAluPorUsuario()
     {
-        return $this->aluRoja;
+        return $this->aluPorUsuario;
     }
 
     /**
-     * Set aluBlanca
+     * Set expY
      *
-     * @param integer $aluBlanca
+     * @param integer $expY
      *
      * @return Partida
      */
-    public function setAluBlanca($aluBlanca)
+    public function setExpY($expY)
     {
-        $this->aluBlanca = $aluBlanca;
+        $this->expY = $expY;
 
         return $this;
     }
 
     /**
-     * Get aluBlanca
+     * Get expY
      *
      * @return integer
      */
-    public function getAluBlanca()
+    public function getExpY()
     {
-        return $this->aluBlanca;
+        return $this->expY;
+    }
+
+    /**
+     * Set expZ
+     *
+     * @param integer $expZ
+     *
+     * @return Partida
+     */
+    public function setExpZ($expZ)
+    {
+        $this->expZ = $expZ;
+
+        return $this;
+    }
+
+    /**
+     * Get expZ
+     *
+     * @return integer
+     */
+    public function getExpZ()
+    {
+        return $this->expZ;
+    }
+
+    /**
+     * Set empezado
+     *
+     * @param boolean $empezado
+     *
+     * @return Partida
+     */
+    public function setEmpezado($empezado)
+    {
+        $this->empezado = $empezado;
+
+        return $this;
+    }
+
+    /**
+     * Get empezado
+     *
+     * @return boolean
+     */
+    public function getEmpezado()
+    {
+        return $this->empezado;
     }
 
     /**
@@ -423,36 +462,36 @@ class Partida
     }
 
     /**
-     * Add idJugador
+     * Add idUser
      *
-     * @param \BaseBundle\Entity\User $idJugador
+     * @param \BaseBundle\Entity\User $idUser
      *
      * @return Partida
      */
-    public function addIdJugador(\BaseBundle\Entity\User $idJugador)
+    public function addIdUser(\BaseBundle\Entity\User $idUser)
     {
-        $this->idJugador[] = $idJugador;
+        $this->idUser[] = $idUser;
 
         return $this;
     }
 
     /**
-     * Remove idJugador
+     * Remove idUser
      *
-     * @param \BaseBundle\Entity\User $idJugador
+     * @param \BaseBundle\Entity\User $idUser
      */
-    public function removeIdJugador(\BaseBundle\Entity\User $idJugador)
+    public function removeIdUser(\BaseBundle\Entity\User $idUser)
     {
-        $this->idJugador->removeElement($idJugador);
+        $this->idUser->removeElement($idUser);
     }
 
     /**
-     * Get idJugador
+     * Get idUser
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getIdJugador()
+    public function getIdUser()
     {
-        return $this->idJugador;
+        return $this->idUser;
     }
 }

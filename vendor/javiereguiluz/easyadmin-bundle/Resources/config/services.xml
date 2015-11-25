@@ -4,34 +4,53 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-
         <service id="easyadmin.twig.extension" class="JavierEguiluz\Bundle\EasyAdminBundle\Twig\EasyAdminTwigExtension" public="false">
-            <argument type="service" id="easyadmin.configurator"></argument>
+            <argument type="service" id="easyadmin.configurator" />
             <argument>%kernel.debug%</argument>
             <tag name="twig.extension" />
         </service>
 
         <service id="easyadmin.configurator" class="JavierEguiluz\Bundle\EasyAdminBundle\Configuration\Configurator">
             <argument>%easyadmin.config%</argument>
-            <argument type="service" id="easyadmin.metadata_inspector"></argument>
-            <argument type="service" id="easyadmin.property_reflector"></argument>
+            <argument type="service" id="easyadmin.metadata_inspector" />
+            <argument type="service" id="easyadmin.property_reflector" />
         </service>
 
         <service id="easyadmin.metadata_inspector" class="JavierEguiluz\Bundle\EasyAdminBundle\Reflection\EntityMetadataInspector" public="false">
-            <argument type="service" id="doctrine"></argument>
+            <argument type="service" id="doctrine" />
         </service>
 
-        <service id="easyadmin.property_reflector" class="JavierEguiluz\Bundle\EasyAdminBundle\Reflection\ClassPropertyReflector" public="false"></service>
+        <service id="easyadmin.property_reflector" class="JavierEguiluz\Bundle\EasyAdminBundle\Reflection\ClassPropertyReflector" public="false" />
 
-        <service id="easyadmin.listener.exception" class="JavierEguiluz\Bundle\EasyAdminBundle\Listener\ExceptionListener">
-            <argument type="service" id="templating"></argument>
-            <argument>%kernel.debug%</argument>
-            <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" />
+        <service id="easyadmin.listener.exception" class="JavierEguiluz\Bundle\EasyAdminBundle\EventListener\ExceptionListener">
+            <argument type="service" id="templating" />
+            <argument type="string">easyadmin.listener.exception:showExceptionPageAction</argument>
+            <argument type="service" id="logger" on-invalid="null" />
+            <tag name="monolog.logger" channel="request" />
+            <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" priority="-64" />
         </service>
 
         <service id="easyadmin.data_collector" class="JavierEguiluz\Bundle\EasyAdminBundle\DataCollector\EasyAdminDataCollector" public="false">
-            <argument type="service" id="easyadmin.configurator"></argument>
+            <argument type="service" id="easyadmin.configurator" />
             <tag name="data_collector" template="@EasyAdmin/data_collector/easyadmin.html.twig" id="easyadmin" />
+        </service>
+
+        <service id="easyadmin.form.type" class="JavierEguiluz\Bundle\EasyAdminBundle\Form\Type\EasyAdminFormType">
+            <argument type="service" id="easyadmin.configurator" />
+            <argument>%easyadmin.config%</argument>
+            <argument /> <!-- type guesser chain -->
+            <tag name="form.type" alias="easyadmin" />
+        </service>
+
+        <service id="easyadmin.form.type.extension" class="JavierEguiluz\Bundle\EasyAdminBundle\Form\Extension\EasyAdminExtension">
+            <argument type="service" id="request_stack" on-invalid="null" />
+            <tag name="form.type_extension" alias="form" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType" />
+        </service>
+
+        <service id="easyadmin.listener.request_post_initialize" class="JavierEguiluz\Bundle\EasyAdminBundle\EventListener\RequestPostInitializeListener">
+            <argument type="service" id="doctrine" />
+            <argument type="service" id="request_stack" on-invalid="null" />
+            <tag name="kernel.event_listener" event="easy_admin.post_initialize" method="initializeRequest" />
         </service>
     </services>
 </container>

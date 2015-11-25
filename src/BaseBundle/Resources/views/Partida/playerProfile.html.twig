@@ -3,9 +3,9 @@
 {% trans_default_domain 'BaseBundle' %}
 
 {% block header %}
-    <meta name="title" content="{{ playerInfo[0].username }} - MisBeans. Juegos de economía experimental">
+    <meta name="title" content="{{ playerInfo.username }} - MisBeans. Juegos de economía experimental">
     <meta name="description" content="Juegos de economía experimental - TFG GII UBU">
-    <title>{{ playerInfo[0].username }} - MisBeans</title>
+    <title>{{ playerInfo.username }} - MisBeans</title>
 {% endblock header %}
 
 {% block navbar %}
@@ -25,12 +25,12 @@
 
                 <div class="row">
                     <div class="col-xs-6 col-md-3 col-md-offset-3 text-right">
-                        <img src="{{ gravatar('{{ playerInfo[0].email }}') }}"/>
+                        <img src="{{ playerGravatar }}"/>
                     </div>
                     <div class="col-xs-6 col-md-3">
-                        <p>{{ playerInfo[0].fullName | capitalize }}</p>
+                        <p><b>{{ playerInfo.fullName | capitalize }}</b></p>
 
-                        <p>{{ playerInfo[0].username }}</p>
+                        <p><i>{{ playerInfo.username }}</i></p>
                     </div>
                 </div>
 
@@ -128,7 +128,7 @@
                 <h4 class="text-center">{{ 'partida.players'|trans({}, 'BaseBundle') }}</h4>
                 <table class="table table-responsive table-striped text-center">
                     {% for jugador in jugadores %}
-                        {% if  jugador.id_jugador != user_id %}
+                        {% if  app.user.id != jugador.id_user %}
                             <tr onclick="location.href='{{ path('user_profile',{'id_partida' : partida[0].id,
                                 'username' : jugador.username}) }}'">
                                 <td> {{ jugador.username | capitalize }} </td>

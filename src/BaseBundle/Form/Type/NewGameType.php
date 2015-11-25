@@ -23,7 +23,7 @@ class NewGameType extends AbstractType
                 'label' => 'partida.max-jugadores', 'translation_domain' => 'BaseBundle',
                 'scale' => 0,
                 'attr' => array('step' => '1',
-                    'min' => '0',
+                    'min' => '1',
                     'max' => '500'),
             ))
             ->add('maxOfertas', 'integer', array('required' => true,
@@ -36,34 +36,41 @@ class NewGameType extends AbstractType
                 'label' => 'partida.tiempo-oferta', 'translation_domain' => 'BaseBundle',
                 'scale' => 0,
                 'attr' => array('step' => '1',
-                    'min' => '0',
+                    'min' => '1',
                     'max' => '720'),
             ))
-            ->add('algUtilidad', 'choice', array(
-                'label' => 'partida.alg-utilidad', 'translation_domain' => 'BaseBundle',
-                'choice_list' => new ChoiceList(
-                    array(1,),
-                    array('partida.algutilidad.1',)
-                )
+            ->add('aluPUsuario', 'integer', array('required' => true,
+                'label' => 'partida.aluPUsuario', 'translation_domain' => 'BaseBundle',
+                'scale' => 0,
+                'attr' => array('step' => '1',
+                    'min' => '1'),
             ))
-            ->add('algReparto', 'choice', array(
+            /*->add('algReparto', 'choice', array(
                 'label' => 'partida.alg-reparto', 'translation_domain' => 'BaseBundle',
                 'choice_list' => new ChoiceList(
                     array(1,),
                     array('partida.algreparto.1',)
                 )
+            ))*/
+            //proporcion de alubia roja sobre blanca
+            ->add('ratio', 'integer', array('required' => true,
+                'label' => 'partida.proportion', 'translation_domain' => 'BaseBundle',
+                'scale' => 0,
+                'attr' => array('step' => '0.1',
+                    'min' => '0.1',
+                    'max' => '0.9'),
             ))
-            ->add('aluRoja', 'integer', array('required' => true,
-                'label' => 'partida.alu-roja', 'translation_domain' => 'BaseBundle',
+            ->add('expY', 'integer', array('required' => true,
+                'label' => 'partida.expY', 'translation_domain' => 'BaseBundle',
                 'scale' => 0,
                 'attr' => array('step' => '1',
-                    'min' => '0'),
+                    'min' => '1'),
             ))
-            ->add('aluBlanca', 'integer', array('required' => true,
-                'label' => 'partida.alu-blanca', 'translation_domain' => 'BaseBundle',
+            ->add('expZ', 'integer', array('required' => true,
+                'label' => 'partida.expZ', 'translation_domain' => 'BaseBundle',
                 'scale' => 0,
                 'attr' => array('step' => '1',
-                    'min' => '0'),
+                    'min' => '1'),
             ))
         ;
     }
