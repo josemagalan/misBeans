@@ -18,6 +18,15 @@ use Doctrine\ORM\EntityRepository;
 class LogRepository extends EntityRepository
 {
 
+    /**
+     * Saves action in Log
+     *
+     * @param int $userId
+     * @param int $actionId
+     * @param int $actionData
+     * @return bool
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function action2log($userId, $actionId, $actionData)
     {
 
@@ -37,6 +46,13 @@ class LogRepository extends EntityRepository
         return $statement->execute();
     }
 
+    /**
+     * Return user Log
+     *
+     * @param int $userId
+     * @param int $limit
+     * @return array
+     */
     public function getUserLog($userId, $limit)
     {
         $entityManager = $this->getEntityManager();

@@ -2,9 +2,11 @@
 
 namespace BaseBundle\Controller;
 
+use BaseBundle\Controller\Logic\AdminLogic;
 use BaseBundle\Controller\Logic\CsvResponse;
 use BaseBundle\Controller\Logic\GraphicsLogic;
 use BaseBundle\Controller\Logic\Gravatar;
+use BaseBundle\Controller\Logic\Loglogic;
 use BaseBundle\Controller\Logic\PartidaLogic;
 use BaseBundle\Form\Type\NewGameType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -25,22 +27,22 @@ class AdminController extends Controller
      */
     public function adminHomeAction(Request $request)
     {
-        //set language
         $locale = $request->get('_locale');
         $request->setLocale($locale);
         $request->getSession()->set('_locale', $locale);
 
-        //Security control. Check user roles. If role is not ROLE_ADMIN -> redirect to homepage
-        $this->checkSecurity($this->container->get('security.context'));
+        //Security control. Check user roles.
+        $response = $this->checkSecurity($request);
+        if ($response instanceof RedirectResponse) {
+            return $response;
+        }
 
         //get User info
         $admin = $this->get('security.context')->getToken()->getUser();
         $admin_id = $admin->getId();
 
-        //imagen Gravatar
         $gravatar = $this->getGravatar($admin->getEmail());
 
-        //Get Entity manager
         $em = $this->getDoctrine()->getManager();
         //Partidas creadas por ese administrador
         $partidas = $em->getRepository('BaseBundle:Partida')->findAdminPardidas($admin_id);
@@ -80,19 +82,21 @@ class AdminController extends Controller
      */
     public function newGameAction(Request $request)
     {
-        //set language
         $locale = $request->get('_locale');
         $request->setLocale($locale);
         $request->getSession()->set('_locale', $locale);
 
-        //get User info
-        $admin = $this->get('security.context')->getToken()->getUser();
+        //Security control. Check user roles.
+        $response = $this->checkSecurity($request);
+        if ($response instanceof RedirectResponse) {
+            return $response;
+        }
+
+        $admin = $this->getUser();
         $admin_id = $admin->getId();
 
-        //imagen Gravatar
         $gravatar = $this->getGravatar($admin->getEmail());
 
-        //Get Entity manager
         $em = $this->getDoctrine()->getManager();
 
         //create form
@@ -119,7 +123,7 @@ class AdminController extends Controller
             if ($result) {
                 $this->get('session')->getFlashBag()->add(
                     'correct', '');
-                $em->getRepository('BaseBundle:Log')->action2log($admin_id, 5, null);
+                $em->getRepository('BaseBundle:Log')->action2log($admin_id, Loglogic::NUEVAPARTIDA, null);
             } else {
                 $this->get('session')->getFlashBag()->add(
                     'error', '');
@@ -136,79 +140,62 @@ class AdminController extends Controller
      *  Get the ranking and other visual statistics of a game
      *
      * @param Request $request
-     * @param $id_partida
+     * @param int $id_partida
      * @return \Symfony\Component\HttpFoundation\Response|AccessDeniedException
      */
     public function statisticsAction(Request $request, $id_partida)
     {
-        //set language
         $locale = $request->get('_locale');
         $request->setLocale($locale);
         $request->getSession()->set('_locale', $locale);
 
-        //Security control. Check user roles. If role is not ROLE_ADMIN -> redirect to homepage
-        $this->checkSecurity($this->container->get('security.context'));
+        //Security control. Check user roles.
+        $response = $this->checkSecurity($request);
+        if ($response instanceof RedirectResponse) {
+            return $response;
+        }
 
-        //get User info
-        $admin = $this->get('security.context')->getToken()->getUser();
+        $admin = $this->getUser();
         $admin_id = $admin->getId();
-
-        //imagen Gravatar
         $gravatar = $this->getGravatar($admin->getEmail());
-
-        //Get Entity manager
         $em = $this->getDoctrine()->getManager();
 
         //Check: Yo soy el creador de la partida y tengo acceso
         $partidaInfo = $em->getRepository('BaseBundle:Partida')->isMyAdminGame($id_partida, $admin_id);
         if (!count($partidaInfo) > 0) {
             return new AccessDeniedException('You shall not pass!');
+        } else {
+            $partidaInfo = $partidaInfo[0];
+            //pasar a ms el fin de la partida
+            $fin = $partidaInfo['fin'];
+            $ms = $fin->getTimestamp() * 1000;
+            $partidaInfo['ms'] = $ms;
+
+            //la partida está en curso?
+            $now = new \DateTime('NOW');
+            $now >= $fin ? $partidaInfo['terminado'] = PartidaLogic::TERMINADO : $partidaInfo['terminado'] = PartidaLogic::ENCURSO;
+
+            $ranking = $em->getRepository('BaseBundle:UserPartida')->getRanking($id_partida);
+
+            $session = $this->container->get('session');
+            $session->set('ranking', $ranking);
+            $session->set('Pnombre', $partidaInfo['nombre']);
+
+            $graphics = new GraphicsLogic();
+            $adminLogic = new AdminLogic();
+            /*-------tarta------*/
+            $rankingFutlitidadStats = $graphics->donutJsArray($ranking, 'fUtilidad');
+            $rankingAluRojaStats = $graphics->donutJsArray($ranking, 'aluRojaActual');
+            $rankingAluBlancaStats = $graphics->donutJsArray($ranking, 'aluBlancaActual');
+
+            /*-------barras en detalle---*/
+            $ofertasMod = $adminLogic->barChartGraphics($em,$id_partida);
+
+            //creamos el array para graficar los ratios
+            $lineChart = $graphics->linesRatioJsArray($ofertasMod);
+            //creamos el array para graficar las alubias
+            $barChart = $graphics->barBeansJsArray($ofertasMod);
         }
-        //arrayList to array
-        $partidaInfo = $partidaInfo[0];
-        //pasar a ms el fin de la partida y guardarlo (Angular usa esa variable)
-        $fin = $partidaInfo['fin'];
-        $ms = $fin->getTimestamp() * 1000;
-        $partidaInfo['ms'] = $ms;
-
-        //la partida está en curso?
-        $now = new \DateTime('NOW');
-        $now >= $fin ? $partidaInfo['terminado'] = 1 : $partidaInfo['terminado'] = 0;
-
-        $ranking = $em->getRepository('BaseBundle:UserPartida')->getRanking($id_partida);
-
-        // Get session
-        $session = $this->container->get('session');
-        $session->set('ranking', $ranking);
-        $session->set('Pnombre', $partidaInfo['nombre']);
-
-        //Generar gráficos
-        $graphics = new GraphicsLogic();
-        /*-------tarta------*/
-        $rankingFutlitidadStats = $graphics->donutJsArray($ranking, 'fUtilidad');
-        $rankingAluRojaStats = $graphics->donutJsArray($ranking, 'aluRojaActual');
-        $rankingAluBlancaStats = $graphics->donutJsArray($ranking, 'aluBlancaActual');
-
-        /*-------barras en detalle---*/
-        $ofertas = $em->getRepository('BaseBundle:Ofertas')->findAllGameDeals($id_partida);
-        $ofertasMod = array();
-        foreach ($ofertas as $oferta) {
-            $tmp = array();
-            //dato común
-            $tmp['modificado'] = $oferta['modificado'];
-            // dato para el grafico de lineas
-            $tmp['ratio'] =
-                ( abs($oferta['aluRojaIn'] - $oferta['aluRojaOut']) / abs($oferta['aluBlancaIn'] - $oferta['aluBlancaOut']));
-            //datos para el gráfico de barras
-            $tmp['rojas'] = abs($oferta['aluRojaIn'] - $oferta['aluRojaOut']);
-            $tmp['blancas'] = abs($oferta['aluBlancaIn'] - $oferta['aluBlancaOut']);
-            array_push($ofertasMod, $tmp);
-        }
-        //creamos el array para graficar los ratios
-        $lineChart = $graphics->linesRatioJsArray($ofertasMod);
-        //creamos el array para graficar las alubias
-        $barChart = $graphics->barBeansJsArray($ofertasMod);
-
         return $this->render('BaseBundle:Admin:stats.html.twig',
             array('ranking' => $ranking,
                 'partida' => $partidaInfo,
@@ -226,22 +213,24 @@ class AdminController extends Controller
     /**
      * Takes the ranking statistics of a game and builds a downloadable csv
      *
+     * @param Request $request
      * @return CsvResponse
      */
-    public function rankingDownloadAction()
+    public function rankingDownloadAction(Request $request)
     {
 
-        //Security control. Check user roles. If role is not ROLE_ADMIN -> redirect to homepage
-        $this->checkSecurity($this->container->get('security.context'));
+        //Security control. Check user roles.
+        $response = $this->checkSecurity($request);
+        if ($response instanceof RedirectResponse) {
+            return $response;
+        }
 
-        // Get session
         $session = $this->container->get('session');
 
         $ranking = $session->get('ranking');
         $nombre = $session->get('Pnombre');
         $filename = "Ranking" . $nombre . ".csv";
 
-        //Export data to csv
         $response = new CsvResponse($ranking, $filename);
 
         return $response;
@@ -251,81 +240,71 @@ class AdminController extends Controller
      * Distributes randomly the beans to the players, and starts the game.
      *
      * @param Request $request
-     * @param $id_partida
+     * @param int $id_partida
      * @return RedirectResponse|AccessDeniedException
      */
     public function distributeBeansAction(Request $request, $id_partida)
     {
-
-        //set language
         $locale = $request->get('_locale');
         $request->setLocale($locale);
         $request->getSession()->set('_locale', $locale);
 
-        //Security control. Check user roles. If role is not ROLE_ADMIN -> redirect to homepage
-        $this->checkSecurity($this->container->get('security.context'));
+        //Security control. Check user roles.
+        $response = $this->checkSecurity($request);
+        if ($response instanceof RedirectResponse) {
+            return $response;
+        }
 
-        //get User info
-        $admin = $this->get('security.context')->getToken()->getUser();
-        $admin_id = $admin->getId();
-
-        //imagen Gravatar
-        $gravatar = $this->getGravatar($admin->getEmail());
-
-        //Get Entity manager
+        $admin_id = $this->getUser()->getId();
         $em = $this->getDoctrine()->getManager();
 
         //Check: Yo soy el creador de la partida y tengo acceso
         $partidaInfo = $em->getRepository('BaseBundle:Partida')->isMyAdminGame($id_partida, $admin_id);
         if (!count($partidaInfo) > 0) {
             return new AccessDeniedException('You shall not pass!');
+        } else {
+            $partida = $em->getRepository('BaseBundle:Partida')->findOneById($id_partida);
+
+            $qb = $em->createQueryBuilder();
+            //localizamos el objeto
+            $qb->select('u')
+                ->from('BaseBundle:UserPartida', 'u')
+                ->where(
+                    $qb->expr()->eq('u.idPartida', '?1')
+                )
+                ->setParameter(1, $id_partida);
+            $query = $qb->getQuery();
+            $jugadores = $query->getResult();
+
+            $logic = new PartidaLogic();
+            $logic->distributeBeansLogic($partida, $jugadores, $em);
+
+            //actualizar partida a empezado
+            $partida->setEmpezado(true);
+            $em->flush();
+
+            return new RedirectResponse($this->get('router')->generate('game_statistics', array('id_partida' => $id_partida)));
         }
-
-        $partida = $em->getRepository('BaseBundle:Partida')->findOneById($id_partida);
-
-        $qb = $em->createQueryBuilder();
-        //localizamos el objeto
-        $qb->select('u')
-            ->from('BaseBundle:UserPartida', 'u')
-            ->where(
-                $qb->expr()->eq('u.idPartida', '?1')
-            )
-            ->setParameter(1, $id_partida);
-        $query = $qb->getQuery();
-        $jugadores = $query->getResult();
-        // $nJugadores = intval($query->getSingleScalarResult());
-
-        $logic = new PartidaLogic();
-        $logic->distributeBeansLogic($partida, $jugadores, $em);
-
-        //actualizar partida a empezado
-        $partida->setEmpezado(true);
-        $em->flush();
-
-        return new RedirectResponse($this->get('router')->generate('game_statistics', array('id_partida' => $id_partida)));
     }
 
     /**
      * Check User roles. User must be admin or superAdmin
-     * @param $securityContext
+     * @param Request $request
      * @return RedirectResponse
+     * @internal param $securityContext
      */
-    protected function checkSecurity($securityContext)
+    private function checkSecurity(Request $request)
     {
-     try {
-         if (!$securityContext->isGranted('ROLE_ADMIN') && !$securityContext->isGranted('ROLE_SUPER_ADMIN')) {
-             return new RedirectResponse($this->container->get('router')->generate('base_homepage'));
-         }
-     }
-     catch (Exception $e){
-         return new RedirectResponse($this->container->get('router')->generate('base_homepage'));
-     }
+        $securityContext = $this->get('security.authorization_checker');
+        if (false === $securityContext->isGranted('ROLE_ADMIN') && false === $securityContext->isGranted('ROLE_SUPER_ADMIN')) {
+            return new RedirectResponse($this->container->get('router')->generate('base_homepage'));
+        }
     }
 
     /**
      * Gets the gravatar URL for an email
      *
-     * @param $email
+     * @param String $email
      * @return String
      */
     protected function getGravatar($email)

@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <title>API Documentation</title>
+    <meta name="author" content=""/>
+    <meta name="description" content=""/>
+
+    <link href="../css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/prism.css" rel="stylesheet" media="all"/>
+    <link href="../css/template.css" rel="stylesheet" media="all"/>
+    
+    <!--[if lt IE 9]>
+    <script src="../js/html5.js"></script>
+    <![endif]-->
+    <script src="../js/jquery-1.11.0.min.js"></script>
+    <script src="../js/ui/1.10.4/jquery-ui.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/jquery.smooth-scroll.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <!-- TODO: Add http://jscrollpane.kelvinluck.com/ to style the scrollbars for browsers not using webkit-->
+    <script type="text/javascript">
+    function loadExternalCodeSnippets() {
+        Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+            var src = pre.getAttribute('data-src');
+            var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
+            var language = 'php';
+
+            var code = document.createElement('code');
+            code.className = 'language-' + language;
+
+            pre.textContent = '';
+
+            code.textContent = 'Loading…';
+
+            pre.appendChild(code);
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('GET', src, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+
+                    if (xhr.status < 400 && xhr.responseText) {
+                        code.textContent = xhr.responseText;
+
+                        Prism.highlightElement(code);
+                    }
+                    else if (xhr.status >= 400) {
+                        code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
+                    }
+                    else {
+                        code.textContent = '✖ Error: File does not exist or is empty';
+                    }
+                }
+            };
+
+            xhr.send(null);
+        });
+    }
+
+    $(document).ready(function(){
+        loadExternalCodeSnippets();
+    });
+    $('#source-view').on('shown', function () {
+        loadExternalCodeSnippets();
+    })
+</script>
+
+    <link rel="shortcut icon" href="../images/favicon.ico"/>
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-touch-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-touch-icon-114x114.png"/>
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <i class="icon-ellipsis-vertical"></i>
+            </a>
+            <a class="brand" href="../index.html">API Documentation</a>
+
+            <div class="nav-collapse">
+                <ul class="nav pull-right">
+                                        <li class="dropdown">
+                        <a href="../index.html" class="dropdown-toggle" data-toggle="dropdown">
+                            API Documentation <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                                                        <li><a href="../namespaces/BaseBundle.html">\BaseBundle</a></li>
+                                                        <li><a href="../namespaces/FOS.html">\FOS</a></li>
+                                                    </ul>
+                    </li>
+                                        <li class="dropdown" id="charts-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Charts <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../graphs/class.html">
+                                    <i class="icon-list-alt"></i>&#160;Class hierarchy diagram
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown" id="reports-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Reports <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../reports/errors.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">300</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/markers.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/deprecated.html">
+                                                                                                            <i class="icon-list-alt"></i>&#160;Deprecated <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--<div class="go_to_top">-->
+    <!--<a href="#___" style="color: inherit">Back to top&#160;&#160;<i class="icon-upload icon-white"></i></a>-->
+    <!--</div>-->
+</div>
+
+<div id="___" class="container-fluid">
+        <section class="row-fluid">
+        <div class="span2 sidebar">
+                                <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-688182611"></a>
+                                <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
+            </div>
+            <div id="namespace-688182611" class="accordion-body collapse in">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1170074323"></a>
+                                <a href="../namespaces/BaseBundle.html" style="margin-left: 30px; padding-left: 0">BaseBundle</a>
+            </div>
+            <div id="namespace-1170074323" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1467661058"></a>
+                                <a href="../namespaces/BaseBundle.Controller.html" style="margin-left: 30px; padding-left: 0">Controller</a>
+            </div>
+            <div id="namespace-1467661058" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-246477262"></a>
+                                <a href="../namespaces/BaseBundle.Controller.Logic.html" style="margin-left: 30px; padding-left: 0">Logic</a>
+            </div>
+            <div id="namespace-246477262" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/BaseBundle.Controller.Logic.AdminLogic.html">AdminLogic</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Controller.Logic.CsvResponse.html">CsvResponse</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Controller.Logic.GraphicsLogic.html">GraphicsLogic</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Controller.Logic.Gravatar.html">Gravatar</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Controller.Logic.Loglogic.html">Loglogic</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Controller.Logic.OfertaLogic.html">OfertaLogic</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Controller.Logic.PartidaLogic.html">PartidaLogic</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/BaseBundle.Controller.AdminController.html">AdminController</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Controller.DefaultController.html">DefaultController</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Controller.PartidaController.html">PartidaController</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Controller.RegistrationController.html">RegistrationController</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Controller.UserController.html">UserController</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-2092762888"></a>
+                                <a href="../namespaces/BaseBundle.DependencyInjection.html" style="margin-left: 30px; padding-left: 0">DependencyInjection</a>
+            </div>
+            <div id="namespace-2092762888" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/BaseBundle.DependencyInjection.BaseExtension.html">BaseExtension</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.DependencyInjection.Configuration.html">Configuration</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-375394438"></a>
+                                <a href="../namespaces/BaseBundle.Entity.html" style="margin-left: 30px; padding-left: 0">Entity</a>
+            </div>
+            <div id="namespace-375394438" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/BaseBundle.Entity.Log.html">Log</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Entity.LogRepository.html">LogRepository</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Entity.Ofertas.html">Ofertas</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Entity.OfertasRepository.html">OfertasRepository</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Entity.Partida.html">Partida</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Entity.PartidaRepository.html">PartidaRepository</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Entity.User.html">User</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Entity.UserPartida.html">UserPartida</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Entity.UserPartidaRepository.html">UserPartidaRepository</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Entity.UserRepository.html">UserRepository</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-58431197"></a>
+                                <a href="../namespaces/BaseBundle.Form.html" style="margin-left: 30px; padding-left: 0">Form</a>
+            </div>
+            <div id="namespace-58431197" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1606079513"></a>
+                                <a href="../namespaces/BaseBundle.Form.Type.html" style="margin-left: 30px; padding-left: 0">Type</a>
+            </div>
+            <div id="namespace-1606079513" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/BaseBundle.Form.Type.AcceptRejectDealType.html">AcceptRejectDealType</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Form.Type.DealProposalType.html">DealProposalType</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Form.Type.DeleteDealType.html">DeleteDealType</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Form.Type.NewGameType.html">NewGameType</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Form.Type.RegistrationType.html">RegistrationType</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Form.Type.UpdateUserType.html">UpdateUserType</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1139816530"></a>
+                                <a href="../namespaces/BaseBundle.Tests.html" style="margin-left: 30px; padding-left: 0">Tests</a>
+            </div>
+            <div id="namespace-1139816530" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1530402960"></a>
+                                <a href="../namespaces/BaseBundle.Tests.Controller.html" style="margin-left: 30px; padding-left: 0">Controller</a>
+            </div>
+            <div id="namespace-1530402960" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Controller.AdminControllerTest.html">AdminControllerTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Controller.DefaultControllerTest.html">DefaultControllerTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Controller.PartidaControllerTest.html">PartidaControllerTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Controller.RegistrationControllerTest.html">RegistrationControllerTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Controller.UserControllerTest.html">UserControllerTest</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-712121159"></a>
+                                <a href="../namespaces/BaseBundle.Tests.Entity.html" style="margin-left: 30px; padding-left: 0">Entity</a>
+            </div>
+            <div id="namespace-712121159" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Entity.Entity.html">Entity</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Entity.LogEntityTest.html">LogEntityTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Entity.OfertasEntityTest.html">OfertasEntityTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Entity.PartidaEntityTest.html">PartidaEntityTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Entity.UserEntityTest.html">UserEntityTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Entity.UserPartidaEntityTest.html">UserPartidaEntityTest</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-337342111"></a>
+                                <a href="../namespaces/BaseBundle.Tests.Forms.html" style="margin-left: 30px; padding-left: 0">Forms</a>
+            </div>
+            <div id="namespace-337342111" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Forms.AcceptRejectDealTypeTest.html">AcceptRejectDealTypeTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Forms.DealProposalTypeTest.html">DealProposalTypeTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Forms.DeleteDealTypeTest.html">DeleteDealTypeTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Forms.NewGameTypeTest.html">NewGameTypeTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Forms.RegistrationTypeTest.html">RegistrationTypeTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Forms.Type.html">Type</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Forms.UpdateUserTypeTest.html">UpdateUserTypeTest</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-961608655"></a>
+                                <a href="../namespaces/BaseBundle.Tests.Logic.html" style="margin-left: 30px; padding-left: 0">Logic</a>
+            </div>
+            <div id="namespace-961608655" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Logic.CsvResponseTest.html">CsvResponseTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Logic.GraphicsLogicTest.html">GraphicsLogicTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Logic.GravatarTest.html">GravatarTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Logic.OfertaLogicTest.html">OfertaLogicTest</a></li>
+                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Logic.PartidaLogicTest.html">PartidaLogicTest</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/BaseBundle.Tests.Auth.html">Auth</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/BaseBundle.BaseBundle.html">BaseBundle</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-92590559"></a>
+                                <a href="../namespaces/FOS.html" style="margin-left: 30px; padding-left: 0">FOS</a>
+            </div>
+            <div id="namespace-92590559" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1199175651"></a>
+                                <a href="../namespaces/FOS.UserBundle.html" style="margin-left: 30px; padding-left: 0">UserBundle</a>
+            </div>
+            <div id="namespace-1199175651" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-2101157076"></a>
+                                <a href="../namespaces/FOS.UserBundle.Model.html" style="margin-left: 30px; padding-left: 0">Model</a>
+            </div>
+            <div id="namespace-2101157076" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/FOS.UserBundle.Model.Group.html">Group</a></li>
+                                                    <li class="class"><a href="../classes/FOS.UserBundle.Model.User.html">User</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        </div>
+    </section>
+    <section class="row-fluid">
+        <div class="span10 offset2">
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <nav>
+                                                <a href="../namespaces/BaseBundle.Controller.Logic.html">\BaseBundle\Controller\Logic</a> <i class="icon-level-up"></i>
+                                            </nav>
+                    <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
+
+                    <h1><small>\BaseBundle\Controller\Logic</small>PartidaLogic</h1>
+                    <p><em>Adds extra functions to calculate beans and utility function</em></p>
+                    <p>Class PartidaLogic</p>
+                    
+                                        
+                    <section id="summary">
+                        <h2>Summary</h2>
+                        <section class="row-fluid heading">
+                            <section class="span4">
+                                <a href="#methods">Methods</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#properties">Properties</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#constants">Constants</a>
+                            </section>
+                        </section>
+                        <section class="row-fluid public">
+                            <section class="span4">
+                                                                    <a href="../classes/BaseBundle.Controller.PartidaController.html#method_partidaRegisterAction" class="">partidaRegisterAction()</a><br />
+                                                                    <a href="../classes/BaseBundle.Controller.PartidaController.html#method_partidaAction" class="">partidaAction()</a><br />
+                                                                    <a href="../classes/BaseBundle.Controller.PartidaController.html#method_acceptRejectAction" class="">acceptRejectAction()</a><br />
+                                                                    <a href="../classes/BaseBundle.Controller.PartidaController.html#method_deleteDealAction" class="">deleteDealAction()</a><br />
+                                                                    <a href="../classes/BaseBundle.Controller.PartidaController.html#method_jugadorAction" class="">jugadorAction()</a><br />
+                                                                    <a href="../classes/BaseBundle.Controller.PartidaController.html#method_createDealAction" class="">createDealAction()</a><br />
+                                                                    <a href="../classes/BaseBundle.Controller.Logic.PartidaLogic.html#method_newPlayer" class="">newPlayer()</a><br />
+                                                                    <a href="../classes/BaseBundle.Controller.Logic.PartidaLogic.html#method_distributeBeansLogic" class="">distributeBeansLogic()</a><br />
+                                                                    <a href="../classes/BaseBundle.Controller.Logic.PartidaLogic.html#method_calculateBeans" class="">calculateBeans()</a><br />
+                                                                    <a href="../classes/BaseBundle.Controller.Logic.PartidaLogic.html#method_calculateFUtilidad" class="">calculateFUtilidad()</a><br />
+                                                                    <a href="../classes/BaseBundle.Controller.Logic.PartidaLogic.html#method_partidaGraphic" class="">partidaGraphic()</a><br />
+                                                                    <a href="../classes/BaseBundle.Controller.Logic.PartidaLogic.html#method_checkInProgress" class="">checkInProgress()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No public properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/BaseBundle.Controller.Logic.PartidaLogic.html#constant_ENCURSO" class="">ENCURSO</a><br />
+                                                                    <a href="../classes/BaseBundle.Controller.Logic.PartidaLogic.html#constant_TERMINADO" class="">TERMINADO</a><br />
+                                                            </section>
+                        </section>
+                        <section class="row-fluid protected">
+                            <section class="span4">
+                                                                    <a href="../classes/BaseBundle.Controller.PartidaController.html#method_getGravatar" class="">getGravatar()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No protected properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                        <section class="row-fluid private">
+                            <section class="span4">
+                                                                    <em>No private methods found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No private properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                    </section>
+                </div>
+                <aside class="span4 detailsbar">
+                                        
+                    
+                    <dl>
+                        <dt>File</dt>
+                            <dd><a href="../files/BaseBundle.Controller.Logic.PartidaLogic.html"><div class="path-wrapper">BaseBundle\Controller\Logic\PartidaLogic.php</div></a></dd>
+                                                <dt>Package</dt>
+                            <dd><div class="namespace-wrapper">Controller\Logic</div></dd>
+                                                <dt>Class hierarchy</dt>
+                            <dd class="hierarchy">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                        <div class="namespace-wrapper">\Symfony\Bundle\FrameworkBundle\Controller\Controller</div>
+                                                                    
+                                        <div class="namespace-wrapper"><a href="../classes/BaseBundle.Controller.PartidaController.html">\BaseBundle\Controller\PartidaController</a></div>
+                                                                                                    <div class="namespace-wrapper">\BaseBundle\Controller\Logic\PartidaLogic</div>
+                            </dd>
+
+                        
+                        
+                        
+                        
+                                                                        </dl>
+                    <h2>Tags</h2>
+                    <table class="table table-condensed">
+                                            <tr><td colspan="2"><em>None found</em></td></tr>
+                                        </table>
+                </aside>
+            </div>
+
+                                    <a id="constants" name="constants"></a>
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Constants</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_ENCURSO" name="constant_ENCURSO" class="anchor"></a>
+            <article id="constant_ENCURSO" class="constant">
+                <h3 class="">ENCURSO</h3>
+                <pre class="signature">ENCURSO</pre>
+                <p><em></em></p>
+                
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_TERMINADO" name="constant_TERMINADO" class="anchor"></a>
+            <article id="constant_TERMINADO" class="constant">
+                <h3 class="">TERMINADO</h3>
+                <pre class="signature">TERMINADO</pre>
+                <p><em></em></p>
+                
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                            
+                        
+                                    <a id="methods" name="methods"></a>
+            <div class="row-fluid">
+                <div class="span8 content class"><h2>Methods</h2></div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_partidaRegisterAction" name="method_partidaRegisterAction" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">partidaRegisterAction()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">partidaRegisterAction(\Symfony\Component\HttpFoundation\Request  <span class="argument">$request</span>,   <span class="argument">$id_partida</span>) : \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response</pre>
+                <p><em>Register an user in a game -&gt; requires password only in case admin requires it.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Symfony\Component\HttpFoundation\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td></td>
+                                <td>$id_partida </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/BaseBundle.Controller.PartidaController.html"><div class="path-wrapper">\BaseBundle\Controller\PartidaController</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_partidaAction" name="method_partidaAction" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">partidaAction()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">partidaAction(\Symfony\Component\HttpFoundation\Request  <span class="argument">$request</span>, integer  <span class="argument">$id_partida</span>) : \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response</pre>
+                <p><em>Controller of games main page</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Symfony\Component\HttpFoundation\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>integer</td>
+                                <td>$id_partida </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/BaseBundle.Controller.PartidaController.html"><div class="path-wrapper">\BaseBundle\Controller\PartidaController</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_acceptRejectAction" name="method_acceptRejectAction" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">acceptRejectAction()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">acceptRejectAction(\Symfony\Component\HttpFoundation\Request  <span class="argument">$request</span>) : \Symfony\Component\HttpFoundation\RedirectResponse</pre>
+                <p><em>Accept or reject a deal</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Symfony\Component\HttpFoundation\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \Symfony\Component\HttpFoundation\RedirectResponse
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/BaseBundle.Controller.PartidaController.html"><div class="path-wrapper">\BaseBundle\Controller\PartidaController</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_deleteDealAction" name="method_deleteDealAction" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">deleteDealAction()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">deleteDealAction(\Symfony\Component\HttpFoundation\Request  <span class="argument">$request</span>) : \Symfony\Component\HttpFoundation\RedirectResponse</pre>
+                <p><em>Delete a deal</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Symfony\Component\HttpFoundation\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \Symfony\Component\HttpFoundation\RedirectResponse
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/BaseBundle.Controller.PartidaController.html"><div class="path-wrapper">\BaseBundle\Controller\PartidaController</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_jugadorAction" name="method_jugadorAction" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">jugadorAction()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">jugadorAction(\Symfony\Component\HttpFoundation\Request  <span class="argument">$request</span>, integer  <span class="argument">$id_partida</span>, String  <span class="argument">$username</span>) : \Symfony\Component\HttpFoundation\Response</pre>
+                <p><em>Controller for another user profile page</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Symfony\Component\HttpFoundation\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>integer</td>
+                                <td>$id_partida </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>String</td>
+                                <td>$username </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \Symfony\Component\HttpFoundation\Response
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/BaseBundle.Controller.PartidaController.html"><div class="path-wrapper">\BaseBundle\Controller\PartidaController</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_createDealAction" name="method_createDealAction" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">createDealAction()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">createDealAction(\Symfony\Component\HttpFoundation\Request  <span class="argument">$request</span>) : \Symfony\Component\HttpFoundation\RedirectResponse</pre>
+                <p><em>Create a new deal</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Symfony\Component\HttpFoundation\Request</td>
+                                <td>$request </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \Symfony\Component\HttpFoundation\RedirectResponse
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/BaseBundle.Controller.PartidaController.html"><div class="path-wrapper">\BaseBundle\Controller\PartidaController</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_newPlayer" name="method_newPlayer" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">newPlayer()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">newPlayer(\BaseBundle\Entity\Partida  <span class="argument">$partida</span>, integer  <span class="argument">$user_id</span>, \Doctrine\Common\Persistence\ObjectManager  <span class="argument">$em</span>) : \BaseBundle\Controller\Logic\RedirectResponse</pre>
+                <p><em>Add a player to a game</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/BaseBundle.Entity.Partida.html">\BaseBundle\Entity\Partida</a></td>
+                                <td>$partida </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>integer</td>
+                                <td>$user_id </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>\Doctrine\Common\Persistence\ObjectManager</td>
+                                <td>$em </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \BaseBundle\Controller\Logic\RedirectResponse
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_distributeBeansLogic" name="method_distributeBeansLogic" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">distributeBeansLogic()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">distributeBeansLogic(\BaseBundle\Entity\Partida  <span class="argument">$partidaData</span>, array  <span class="argument">$jugadores</span>, \Doctrine\Common\Persistence\ObjectManager  <span class="argument">$em</span>) </pre>
+                <p><em>Distributes the beans among the players.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/BaseBundle.Entity.Partida.html">\BaseBundle\Entity\Partida</a></td>
+                                <td>$partidaData </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>array</td>
+                                <td>$jugadores </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>\Doctrine\Common\Persistence\ObjectManager</td>
+                                <td>$em </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_calculateBeans" name="method_calculateBeans" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">calculateBeans()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">calculateBeans(\BaseBundle\Entity\Partida  <span class="argument">$partidaData</span>, integer  <span class="argument">$nJugadores</span>) : array</pre>
+                <p><em>Calculates number of beans based on  of Partida</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/BaseBundle.Entity.Partida.html">\BaseBundle\Entity\Partida</a></td>
+                                <td>$partidaData </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>integer</td>
+                                <td>$nJugadores </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_calculateFUtilidad" name="method_calculateFUtilidad" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">calculateFUtilidad()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">calculateFUtilidad(integer  <span class="argument">$aluRojaActual</span>, integer  <span class="argument">$aluBlancaActual</span>, \BaseBundle\Entity\Partida  <span class="argument">$partida</span>) : integer</pre>
+                <p><em>Calculates utility function based on Cobb Douglas exponents of Partida</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>integer</td>
+                                <td>$aluRojaActual </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>integer</td>
+                                <td>$aluBlancaActual </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td><a href="../classes/BaseBundle.Entity.Partida.html">\BaseBundle\Entity\Partida</a></td>
+                                <td>$partida </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_partidaGraphic" name="method_partidaGraphic" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">partidaGraphic()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">partidaGraphic(\Doctrine\Common\Persistence\ObjectManager  <span class="argument">$em</span>, integer  <span class="argument">$user_id</span>, \BaseBundle\Entity\Partida  <span class="argument">$partida</span>) : array</pre>
+                <p><em>Evolution of beans and utility Funtion in the game</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\Doctrine\Common\Persistence\ObjectManager</td>
+                                <td>$em </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>integer</td>
+                                <td>$user_id </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td><a href="../classes/BaseBundle.Entity.Partida.html">\BaseBundle\Entity\Partida</a></td>
+                                <td>$partida </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_checkInProgress" name="method_checkInProgress" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">checkInProgress()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">checkInProgress(array  <span class="argument">$ofertas</span>, \Doctrine\Common\Persistence\ObjectManager  <span class="argument">$em</span>) : array</pre>
+                <p><em>Checks if a deal is in progress; if not changes it status</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$ofertas </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>\Doctrine\Common\Persistence\ObjectManager</td>
+                                <td>$em </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getGravatar" name="method_getGravatar" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">getGravatar()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getGravatar(String  <span class="argument">$email</span>) : String</pre>
+                <p><em>Gets the gravatar URL for an email</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>String</td>
+                                <td>$email </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    String
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/BaseBundle.Controller.PartidaController.html"><div class="path-wrapper">\BaseBundle\Controller\PartidaController</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    </div>
+    </section>
+
+    <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="source-view-label">PartidaLogic.php</h3>
+        </div>
+        <div class="modal-body">
+            <pre data-src="../files/BaseBundle\Controller\Logic\PartidaLogic.php.txt" class="language-php line-numbers"></pre>
+        </div>
+    </div>
+
+    <footer class="row-fluid">
+        <section class="span10 offset2">
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <section class="row-fluid footer-sections">
+                        <section class="span4">
+                                                        <h1><i class="icon-code"></i></h1>
+                            <div>
+                                <ul>
+                                                                            <li><a href="../namespaces/BaseBundle.html">\BaseBundle</a></li>
+                                                                            <li><a href="../namespaces/FOS.html">\FOS</a></li>
+                                                                    </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-bar-chart"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../graphs/class.html">Class Hierarchy Diagram</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-pushpin"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../reports/errors.html">Errors</a></li>
+                                    <li><a href="../reports/markers.html">Markers</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                    </section>
+                </section>
+            </section>
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <hr />
+                    Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
+                    on December 14th, 2015 at 17:23.
+                </section>
+            </section>
+        </section>
+    </footer>
+</div>
+
+</body>
+</html>

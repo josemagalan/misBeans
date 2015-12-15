@@ -69,6 +69,7 @@ oferta:
     error: Problems with the transaction
     delete?: Do you want to delete the deal?
     correctDel: Deal deleted
+    allSame: All values are the same
 
 adminhome:
     game-current: Current games

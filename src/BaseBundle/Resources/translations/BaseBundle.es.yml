@@ -69,6 +69,7 @@ oferta:
     error: Problemas en la transacción
     delete?: ¿Quiere eliminar la oferta?
     correctDel: Oferta eliminada
+    allSame: Los valores son todos iguales
 
 adminhome:
     game-current: Partidas en curso

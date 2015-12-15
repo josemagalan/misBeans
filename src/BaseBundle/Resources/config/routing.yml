@@ -48,13 +48,13 @@ create_deal:
 
 accept_reject_deal:
     path:     /{_locale}/userhome/accept_reject_deal
-    defaults: { _controller: BaseBundle:Partida:AcceptReject, _locale: es }
+    defaults: { _controller: BaseBundle:Partida:acceptReject, _locale: es }
     requirements: { _locale: es|en }
     methods: [POST]
 
 delete_deal:
     path:     /{_locale}/userhome/delete_deal
-    defaults: { _controller: BaseBundle:Partida:DeleteDeal, _locale: es }
+    defaults: { _controller: BaseBundle:Partida:deleteDeal, _locale: es }
     requirements: { _locale: es|en }
     methods: [POST]
 

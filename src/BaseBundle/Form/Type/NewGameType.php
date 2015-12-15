@@ -75,13 +75,6 @@ class NewGameType extends AbstractType
         ;
     }
 
-    /*public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setDefaults(array(
-            'data_class' => 'BaseBundle\Entity\Partida'
-        ));
-    }*/
-
     public function getName()
     {
         return 'new_game';

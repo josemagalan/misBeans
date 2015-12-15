@@ -90,6 +90,20 @@ class UserPartidaRepository extends EntityRepository
         return $statement->fetchAll();
     }
 
+    public function findByIDS($idUser, $idPartida)
+    {
+        $entityManager = $this->getEntityManager();
+
+        //seleccionar la partida sobre la que se va a trabajar para obtener el objeto y las alubias
+        $dql = "SELECT up FROM  BaseBundle:UserPartida up
+                WHERE up.idUser = :idUser AND up.idPartida = :idPartida";
+        $query = $entityManager->createQuery($dql);
+        $query->setParameter('idUser', $idUser);
+        $query->setParameter('idPartida', $idPartida);
+
+        return $query->getSingleResult();
+    }
+
     /**
      * Actualiza las alubias de un determinado jugador
      *
@@ -101,30 +115,29 @@ class UserPartidaRepository extends EntityRepository
      */
     public function updateBeans($idUser, $idPartida, $aluRoja, $aluBlanca)
     {
-        $entityManager = $this->getEntityManager();
+        try {
+            $entityManager = $this->getEntityManager();
 
-        //seleccionar la partida sobre la que se va a trabajar para obtener el objeto y las alubias
-        $dql = "SELECT up FROM  BaseBundle:UserPartida up
-                WHERE up.idUser = :idUser AND up.idPartida = :idPartida";
-        $query = $entityManager->createQuery($dql);
-        $query->setParameter('idUser', $idUser);
-        $query->setParameter('idPartida', $idPartida);
+            $userPartida = $this->findByIDS($idUser, $idPartida);
 
-        $userPartida = $query->getSingleResult();
+            //el método de cálculo de la utilidad necesita el objeto partida para extraer datos
+            $partida = $entityManager->getRepository('BaseBundle:Partida')->findOneById($idPartida);
+            //clase con los métodos de cáclculo de fUtilidad
+            $logic = new PartidaLogic();
+            $fUtilidad = $logic->calculateFUtilidad($userPartida->getAluRojaActual() + $aluRoja,
+                $userPartida->getAluBlancaActual() + $aluBlanca, $partida);
 
-        //el método de cálculo de la utilidad necesita el objeto partida para extraer datos
-        $partida = $entityManager->getRepository('BaseBundle:Partida')->findOneById($idPartida);
-        //clase con los métodos de cáclculo de fUtilidad
-        $logic = new PartidaLogic();
-        $fUtilidad = $logic->calculateFUtilidad($userPartida->getAluRojaActual() + $aluRoja,
-            $userPartida->getAluBlancaActual() + $aluBlanca, $partida);
+            //añadir a las ya existentes las nuevas
+            $userPartida->setAluRojaActual($userPartida->getAluRojaActual() + $aluRoja);
+            $userPartida->setAluBlancaActual($userPartida->getAluBlancaActual() + $aluBlanca);
+            $userPartida->setFUtilidad($fUtilidad);
 
-        //añadir a las ya existentes las nuevas
-        $userPartida->setAluRojaActual($userPartida->getAluRojaActual() + $aluRoja);
-        $userPartida->setAluBlancaActual($userPartida->getAluBlancaActual() + $aluBlanca);
-        $userPartida->setFUtilidad($fUtilidad);
+            $entityManager->flush($userPartida);
+            return true;
 
-        return $entityManager->flush($userPartida);
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -161,7 +174,7 @@ class UserPartidaRepository extends EntityRepository
 
         $dql = "SELECT user.username, user.fullName, userpartida.fUtilidad, userpartida.aluRojaActual, userpartida.aluBlancaActual
                 FROM BaseBundle:UserPartida userpartida
-                INNER JOIN BaseBundle:User user WITH userpartida.idUser = user.id
+                INNER JOIN BaseBundle:user user WITH userpartida.idUser = user.id
                 INNER JOIN BaseBundle:Partida partida WITH userpartida.idPartida = partida.id
                 WHERE userpartida.idPartida = :idPartida ORDER BY userpartida.fUtilidad DESC";
 

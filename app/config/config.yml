@@ -89,10 +89,5 @@ fos_user:
 
 easy_admin:
     entities:
-        - BaseBundle\Entity\user
-        - BaseBundle\Entity\partida
-
-ornicar_gravatar:
-    rating: g
-    size: 60
-    default: mm
+        - BaseBundle\Entity\User
+        - BaseBundle\Entity\Partida

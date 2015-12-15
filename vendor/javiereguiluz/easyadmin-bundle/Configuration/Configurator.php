@@ -13,7 +13,6 @@ namespace JavierEguiluz\Bundle\EasyAdminBundle\Configuration;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use JavierEguiluz\Bundle\EasyAdminBundle\Reflection\EntityMetadataInspector;
-use JavierEguiluz\Bundle\EasyAdminBundle\Reflection\ClassPropertyReflector;
 
 /**
  * Completes the entities configuration with the information that can only be
@@ -27,7 +26,6 @@ class Configurator
     private $backendConfig = array();
     private $entitiesConfig = array();
     private $inspector;
-    private $reflector;
     private $defaultEntityFields = array();
 
     private $defaultEntityFieldConfiguration = array(
@@ -66,11 +64,10 @@ class Configurator
         'time' => 'time',
     );
 
-    public function __construct(array $backendConfig, EntityMetadataInspector $inspector, ClassPropertyReflector $reflector)
+    public function __construct(array $backendConfig, EntityMetadataInspector $inspector)
     {
         $this->backendConfig = $backendConfig;
         $this->inspector = $inspector;
-        $this->reflector = $reflector;
     }
 
     /**
@@ -122,8 +119,6 @@ class Configurator
         $entityConfiguration['new']['fields'] = $this->getFieldsForFormBasedViews('new', $entityConfiguration);
         $entityConfiguration['search']['fields'] = $this->getFieldsForSearchAction($entityConfiguration);
 
-        $entityConfiguration = $this->introspectGettersAndSetters($entityConfiguration);
-
         $entityConfiguration = $this->processFieldTemplates($entityConfiguration);
 
         $this->entitiesConfig[$entityName] = $entityConfiguration;
@@ -149,24 +144,19 @@ class Configurator
 
         // introspect regular entity fields
         foreach ($entityMetadata->fieldMappings as $fieldName => $fieldMetadata) {
-            // field names are tweaked this way to simplify Twig templates and extensions
-            $fieldName = str_replace('_', '', $fieldName);
-
             $entityPropertiesMetadata[$fieldName] = $fieldMetadata;
         }
 
-        // introspect fields for entity associations (except many-to-many)
+        // introspect fields for entity associations
         foreach ($entityMetadata->associationMappings as $fieldName => $associationMetadata) {
-            if (ClassMetadata::MANY_TO_MANY !== $associationMetadata['type']) {
-                $entityPropertiesMetadata[$fieldName] = array(
-                    'type'            => 'association',
-                    'associationType' => $associationMetadata['type'],
-                    'fieldName'       => $fieldName,
-                    'fetch'           => $associationMetadata['fetch'],
-                    'isOwningSide'    => $associationMetadata['isOwningSide'],
-                    'targetEntity'    => $associationMetadata['targetEntity'],
-                );
-            }
+            $entityPropertiesMetadata[$fieldName] = array(
+                'type'            => 'association',
+                'associationType' => $associationMetadata['type'],
+                'fieldName'       => $fieldName,
+                'fetch'           => $associationMetadata['fetch'],
+                'isOwningSide'    => $associationMetadata['isOwningSide'],
+                'targetEntity'    => $associationMetadata['targetEntity'],
+            );
         }
 
         return $entityPropertiesMetadata;
@@ -374,7 +364,7 @@ class Configurator
 
             // virtual fields and associations different from *-to-one cannot be sorted in listings
             $isToManyAssociation = 'association' === $normalizedConfiguration['type']
-                && in_array($normalizedConfiguration['associationType'], array(ClassMetadata::ONE_TO_MANY, ClassMetadata::MANY_TO_MANY));
+                && ($normalizedConfiguration['associationType'] & ClassMetadata::TO_MANY);
             if (true === $normalizedConfiguration['virtual'] || $isToManyAssociation) {
                 $normalizedConfiguration['sortable'] = false;
             }
@@ -444,40 +434,6 @@ class Configurator
         if (in_array($fieldType, array('bigint', 'integer', 'smallint', 'decimal', 'float'))) {
             return isset($this->backendConfig['formats']['number']) ? $this->backendConfig['formats']['number'] : null;
         }
-    }
-
-    /**
-     * Introspects the getters and setters for the fields used by all views.
-     * This preprocessing saves a lot of further processing when accessing or
-     * setting the value of the entity properties.
-     *
-     * @param array $entityConfiguration
-     *
-     * @return array
-     */
-    private function introspectGettersAndSetters($entityConfiguration)
-    {
-        foreach (array('new', 'edit', 'list', 'show', 'search') as $view) {
-            $fieldsConfiguration = $entityConfiguration[$view]['fields'];
-
-            foreach ($fieldsConfiguration as $fieldName => $fieldConfiguration) {
-                $getter = $this->reflector->getGetter($entityConfiguration['class'], $fieldName);
-                $fieldConfiguration['getter'] = $getter;
-
-                $setter = $this->reflector->getSetter($entityConfiguration['class'], $fieldName);
-                $fieldConfiguration['setter'] = $setter;
-
-                $isPublic = $this->reflector->isPublic($entityConfiguration['class'], $fieldName);
-                $fieldConfiguration['isPublic'] = $isPublic;
-
-                $fieldConfiguration['isReadable'] = $getter || $isPublic;
-                $fieldConfiguration['isWritable'] = $setter || $isPublic;
-
-                $entityConfiguration[$view]['fields'][$fieldName] = $fieldConfiguration;
-            }
-        }
-
-        return $entityConfiguration;
     }
 
     /**

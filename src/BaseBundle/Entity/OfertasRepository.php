@@ -20,10 +20,10 @@ class OfertasRepository extends EntityRepository
     /**
      * Guarda una oferta
      *
-     * @param $user_id
-     * @param $idPlayer
-     * @param $id_partida
-     * @param $data
+     * @param int $user_id
+     * @param int $idPlayer
+     * @param int $id_partida
+     * @param array $data
      * @return bool
      * @throws \Doctrine\DBAL\DBALException
      */
@@ -51,8 +51,8 @@ class OfertasRepository extends EntityRepository
     /**
      * Actualiza el estado de una partida y la fecha de modificación
      *
-     * @param $estado
-     * @param $idOferta
+     * @param int $estado
+     * @param int $idOferta
      * @return array
      */
     public function updateStatus($estado, $idOferta)
@@ -73,8 +73,8 @@ class OfertasRepository extends EntityRepository
     /**
      * Cuenta las ofertas en curso de un usuario
      *
-     * @param $idUser
-     * @param $idPartida
+     * @param int $idUser
+     * @param int $idPartida
      * @return array
      */
     public function countOffers($idUser, $idPartida)
@@ -96,10 +96,10 @@ class OfertasRepository extends EntityRepository
     /**
      * Comprueba que la oferta buscada existe con los datos recibidos
      *
-     * @param $idCreador
-     * @param $idPartida
-     * @param $idOferta
-     * @param $idDestinatario
+     * @param int $idCreador
+     * @param int $idPartida
+     * @param int $idOferta
+     * @param int $idDestinatario
      * @return array
      */
     public function checkDeal($idCreador, $idPartida, $idOferta, $idDestinatario)
@@ -124,10 +124,10 @@ class OfertasRepository extends EntityRepository
     /**
      * Eliminar una deterinada oferta
      *
-     * @param $idCreador
-     * @param $idPartida
-     * @param $idOferta
-     * @param $idDestinatario
+     * @param int $idCreador
+     * @param int $idPartida
+     * @param int $idOferta
+     * @param int $idDestinatario
      * @return array
      */
     public function deleteDeal($idCreador, $idPartida, $idOferta, $idDestinatario)
@@ -152,8 +152,8 @@ class OfertasRepository extends EntityRepository
     /**
      * Comprueba ofertas enviadas por idCreador
      *
-     * @param $idCreador
-     * @param $idPartida
+     * @param int $idCreador
+     * @param int $idPartida
      * @return array
      */
     public function findSentOffers($idCreador, $idPartida, $estado)
@@ -181,8 +181,8 @@ class OfertasRepository extends EntityRepository
     /**
      * Comprueba Ofertas recibidas por idDestinatario
      *
-     * @param $idDestinatario
-     * @param $idPartida
+     * @param int $idDestinatario
+     * @param int $idPartida
      * @return array
      */
     public function findRecievedOffers($idDestinatario, $idPartida, $estado)
@@ -191,7 +191,7 @@ class OfertasRepository extends EntityRepository
 
         $dql = "SELECT IDENTITY(ofertas.idCreador) AS idCreador, ofertas.aluBlancaIn, ofertas.aluRojaIn, ofertas.aluBlancaOut,
                 ofertas.aluRojaOut, ofertas.creado, ofertas.id, IDENTITY(ofertas.idDestinatario) AS idDestinatario,
-                partida.tiempoOferta, partida.id AS idPartida, user.username
+                ofertas.modificado, partida.tiempoOferta, partida.id AS idPartida, user.username
                 FROM BaseBundle:Ofertas ofertas
                 JOIN BaseBundle:Partida partida WITH partida.id = ofertas.idPartida
                 JOIN BaseBundle:User user WITH user.id = ofertas.idCreador
@@ -206,41 +206,10 @@ class OfertasRepository extends EntityRepository
         return $query->getResult();
     }
 
-//TODO: eliminar
-    public function dealsInfoSent($idPartida, $idCreador)
-    {
-        $entityManager = $this->getEntityManager();
-
-        $dql = "SELECT ofertas.id, ofertas.modificado, ofertas.aluBlancaIn, ofertas.aluRojaIn, ofertas.aluBlancaOut, ofertas.aluRojaOut
-                FROM BaseBundle:Ofertas ofertas
-                WHERE ofertas.idCreador = :idCreador AND ofertas.idPartida = :idPartida AND ofertas.estado = 1";
-
-        $query = $entityManager->createQuery($dql);
-        $query->setParameter('idCreador', $idCreador);
-        $query->setParameter('idPartida', $idPartida);
-
-        return $query->getResult();
-    }
-
-    public function dealsInfoRecieved($idPartida, $idDestinatario)
-    {
-        $entityManager = $this->getEntityManager();
-
-        $dql = "SELECT ofertas.id, ofertas.modificado, ofertas.aluBlancaIn, ofertas.aluRojaIn, ofertas.aluBlancaOut, ofertas.aluRojaOut
-                FROM BaseBundle:Ofertas ofertas
-                WHERE ofertas.idDestinatario = :idDestinatario AND ofertas.idPartida = :idPartida AND ofertas.estado = 1";
-
-        $query = $entityManager->createQuery($dql);
-        $query->setParameter('idDestinatario', $idDestinatario);
-        $query->setParameter('idPartida', $idPartida);
-
-        return $query->getResult();
-    }
-
     /**
      * Todas las ofertas que se han hecho en una partida.
      *
-     * @param $idPartida
+     * @param int $idPartida
      * @return array
      */
     public function findAllGameDeals($idPartida)

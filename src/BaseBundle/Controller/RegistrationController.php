@@ -16,6 +16,8 @@ class RegistrationController extends BaseController
 {
 
     /**
+     * Register an unauthenticated user
+     *
      * @param Request $request
      * @return null|RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
@@ -48,7 +50,6 @@ class RegistrationController extends BaseController
             $dispatcher->dispatch(FOSUserEvents::REGISTRATION_SUCCESS, $event);
 
             $userManager->updateUser($user);
-
 
             if (null === $response = $event->getResponse()) {
                 //fos_user_registration_confirmed

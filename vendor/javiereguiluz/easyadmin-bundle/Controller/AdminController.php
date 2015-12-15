@@ -184,13 +184,22 @@ class AdminController extends Controller
     {
         $this->dispatch(EasyAdminEvents::PRE_EDIT);
 
-        if ($this->request->isXmlHttpRequest()) {
-            return $this->ajaxEdit();
-        }
-
         $id = $this->request->query->get('id');
         $easyadmin = $this->request->attributes->get('easyadmin');
         $entity = $easyadmin['item'];
+
+        if ($this->request->isXmlHttpRequest() && $property = $this->request->query->get('property')) {
+            $newValue = 'true' === strtolower($this->request->query->get('newValue'));
+            $fieldsMetadata = $this->entity['list']['fields'];
+
+            if (!isset($fieldsMetadata[$property]) || 'toggle' != $fieldsMetadata[$property]['dataType']) {
+                throw new \Exception(sprintf('The type of the "%s" property is not "toggle".', $property));
+            }
+
+            $this->updateEntityProperty($entity, $property, $newValue);
+
+            return new Response((string) $newValue);
+        }
 
         $fields = $this->entity['edit']['fields'];
 
@@ -364,44 +373,30 @@ class AdminController extends Controller
     }
 
     /**
-     * Modifies the entity properties via an Ajax call. Currently it's used for
-     * changing the value of boolean properties when the user clicks on the
-     * flip switched displayed for boolean values in the 'list' action.
+     * It updates the value of some property of some entity to the new given value.
+     *
+     * @param mixed  $entity   The instance of the entity to modify
+     * @param string $property The name of the property to change
+     * @param bool   $value    The new value of the property
      */
-    protected function ajaxEdit()
+    private function updateEntityProperty($entity, $property, $value)
     {
-        $this->dispatch(EasyAdminEvents::PRE_EDIT);
+        $entityConfig = $this->entity;
 
-        if (!$entity = $this->em->getRepository($this->entity['class'])->find($this->request->query->get('id'))) {
-            throw new \Exception('The entity does not exist.');
+        // the method_exists() check is needed because Symfony 2.3 doesn't have isWritable() method
+        if (method_exists($this->get('property_accessor'), 'isWritable') && !$this->get('property_accessor')->isWritable($entity, $property)) {
+            throw new \Exception(sprintf('The "%s" property of the "%s" entity is not writable.', $property, $entityConfig['name']));
         }
 
-        $propertyName = $this->request->query->get('property');
-        $propertyMetadata = $this->entity['list']['fields'][$propertyName];
+        $this->dispatch(EasyAdminEvents::PRE_UPDATE, array('entity' => $entity, 'newValue' => $value));
 
-        if (!isset($this->entity['list']['fields'][$propertyName]) || 'toggle' != $propertyMetadata['dataType']) {
-            throw new \Exception(sprintf('The "%s" property is not a switchable toggle.', $propertyName));
-        }
+        $this->get('property_accessor')->setValue($entity, $property, $value);
 
-        if (!$propertyMetadata['isWritable']) {
-            throw new \Exception(sprintf('It\'s not possible to toggle the value of the "%s" boolean property of the "%s" entity.', $propertyName, $this->entity['name']));
-        }
-
-        $newValue = ('true' === strtolower($this->request->query->get('newValue'))) ? true : false;
-
-        $this->dispatch(EasyAdminEvents::PRE_UPDATE, array('entity' => $entity, 'newValue' => $newValue));
-        if (null !== $setter = $propertyMetadata['setter']) {
-            $entity->{$setter}($newValue);
-        } else {
-            $entity->{$propertyName} = $newValue;
-        }
-
+        $this->em->persist($entity);
         $this->em->flush();
-        $this->dispatch(EasyAdminEvents::POST_UPDATE, array('entity' => $entity, 'newValue' => $newValue));
+        $this->dispatch(EasyAdminEvents::POST_UPDATE, array('entity' => $entity, 'newValue' => $value));
 
         $this->dispatch(EasyAdminEvents::POST_EDIT);
-
-        return new Response((string) $newValue);
     }
 
     /**
@@ -679,21 +674,6 @@ class AdminController extends Controller
     }
 
     /**
-     * Utility shortcut to render a template as a 404 error page.
-     *
-     * @param string $view
-     * @param array  $parameters
-     *
-     * @deprecated Use an appropriate exception instead of this method.
-     *
-     * @return Response
-     */
-    protected function render404error($view, array $parameters = array())
-    {
-        return $this->render($view, $parameters, new Response('', 404));
-    }
-
-    /**
      * Utility method that checks if the given action is allowed for
      * the current entity.
      *
@@ -753,7 +733,7 @@ class AdminController extends Controller
     private function executeDynamicMethod($methodNamePattern, array $arguments = array())
     {
         $methodName = str_replace('<EntityName>', $this->entity['name'], $methodNamePattern);
-        if (!method_exists($this, $methodName)) {
+        if (!is_callable(array($this, $methodName))) {
             $methodName = str_replace('<EntityName>', '', $methodNamePattern);
         }
 

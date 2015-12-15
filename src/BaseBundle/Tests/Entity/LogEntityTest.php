@@ -1,0 +1,68 @@
+<?php
+
+namespace BaseBundle\Tests\Entity;
+
+
+class LogEntityTest extends Entity
+{
+
+    public function testLog()
+    {
+        parent::mock();
+
+        $this->repository->expects($this->once())
+            ->method('find')
+            ->will($this->returnValue($this->log));
+
+
+        $this->emMod->expects($this->once())
+            ->method('getRepository')
+            ->will($this->returnValue($this->repository));
+
+
+        $log = $this->emMod->getRepository('BaseBundle:Log')->find(0);
+
+        $this->assertEquals($this->now, $log->getFecha());
+        $log->setActionId(3);
+        $this->assertEquals(3, $log->getActionId());
+    }
+
+    public function testUserLogs()
+    {
+        $logs = $this->em->getRepository('BaseBundle:Log')->getUserLog(2, 2);
+        $this->assertTrue(count($logs) > 0);
+
+        $logs = $this->em->getRepository('BaseBundle:Log')->findAll();
+        $this->assertTrue(count($logs) > 0);
+    }
+
+    public function testWriteLog()
+    {
+        $status = $this->em->getRepository('BaseBundle:Log')->action2log(2, 2, 111);
+        $this->assertTrue($status);
+
+
+        $qb = $this->em->createQueryBuilder();
+
+        $qb->select('l')
+            ->from('BaseBundle:Log', 'l')
+            ->where($qb->expr()->andX(
+                $qb->expr()->eq('l.user', '?1'),
+                $qb->expr()->eq('l.actionId', '?2'),
+                $qb->expr()->eq('l.actionData', '?3')
+            ))
+            ->setParameter(1, 2)
+            ->setParameter(2, 2)
+            ->setParameter(3, 111);
+        $query = $qb->getQuery();
+        $single = $query->getSingleResult();
+
+        $this->em->remove($single);
+        $this->em->flush();
+    }
+
+    public function testGetUserLog(){
+        $logs = $this->em->getRepository('BaseBundle:Log')->getUserLog(2, 3);
+        $this->assertTrue(count($logs) > 0);
+    }
+}

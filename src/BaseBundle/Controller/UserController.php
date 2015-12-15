@@ -9,7 +9,6 @@ use BaseBundle\Controller\Logic\Gravatar;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use FOS\UserBundle\Event\GetResponseUserEvent;
 use FOS\UserBundle\FOSUserEvents;
 use FOS\UserBundle\Event\FormEvent;
@@ -25,38 +24,29 @@ class UserController extends Controller
      */
     public function userhomeAction(Request $request)
     {
-        //set language
         $locale = $request->get('_locale');
         $request->setLocale($locale);
         $request->getSession()->set('_locale', $locale);
 
-        //Security control. Check user roles. If role is not ROLE_USER -> redirect to login
-        $securityContext = $this->container->get('security.context');
-        $this->checkUserRole($securityContext);
+        //Security control. Check user roles.
+        $checkAdmin =1;
+        $response = $this->checkUserRole($request, $checkAdmin);
+        if ($response instanceof RedirectResponse) {
+            return $response;
+        }
 
-        //declaracion de variables:
-        //variables de usuario
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
         $user_id = $user->getId();
-        //variables de partida
-        $misPartidasEnCurso = array();
-
-        //imagen Gravatar
+        $em = $this->getDoctrine()->getManager();
         $gravatar = $this->getGravatar($user->getEmail());
 
-        //llamada al Entity manager
-        $em = $this->getDoctrine()->getManager();
-        //búsqueda de partidas
         $partidas = $em->getRepository('BaseBundle:UserPartida')->findMisPardidas($user_id);
-
+        $misPartidasEnCurso = array();
         foreach ($partidas as $partida) {
-
             $fin = $partida['fin'];
-            //$partida['intervalo'] = date_diff($now, $fin);
             //pasar a milisegundos la fecha de fin (Angular usa esa variable)
             $ms = $fin->getTimestamp() * 1000;
             $partida['ms'] = $ms;
-
             array_push($misPartidasEnCurso, $partida);
         }
 
@@ -68,27 +58,28 @@ class UserController extends Controller
             ));
     }
 
-
+    /**
+     * Users profile
+     *
+     * @param Request $request
+     * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
     public function profileAction(Request $request)
     {
-
         //set language
         $locale = $request->get('_locale');
         $request->setLocale($locale);
         $request->getSession()->set('_locale', $locale);
 
-        //Security control. Check user roles. If role is not ROLE_USER -> redirect to login
-        $securityContext = $this->container->get('security.context');
-        $this->checkUserRole($securityContext);
+        //Security control. Check user roles.
+        $response = $this->checkUserRole($request);
+        if ($response instanceof RedirectResponse) {
+            return $response;
+        }
 
-        //user variables
         $user = $this->getUser();
         $user_id = $user->getId();
-
-        //imagen Gravatar
         $gravatar = $this->getGravatar($user->getEmail());
-
-        //call Entity manager
         $em = $this->getDoctrine()->getManager();
 
         $userData = $em->getRepository('BaseBundle:User')->findOneById($user_id);
@@ -106,13 +97,12 @@ class UserController extends Controller
         }
 
         //buscar log de usuario
-        $logic = new Loglogic();
-        $logger = $logic->getLog($user_id, $locale, $em);
+        $logLogic = new Loglogic();
+        $logger = $logLogic->getLog($user_id, $locale, $em);
 
         //actualizar password
         /** @var $formFactory \FOS\UserBundle\Form\Factory\FactoryInterface */
         $formFactory = $this->get('fos_user.change_password.form.factory');
-
         $formPassword = $formFactory->createForm();
         $formPassword->setData($user);
 
@@ -180,27 +170,29 @@ class UserController extends Controller
     /**
      * Checks user Role. Is User_Role is not granted -> Redirect to index homepage
      *
-     * @param $securityContext
+     * @param Request $request
+     * @param int $checkadmin
      * @return RedirectResponse
+     * @internal param $securityContext
      */
-    protected function checkUserRole($securityContext)
+    private function checkUserRole(Request $request, $checkadmin = 0)
     {
-        /*if (is_null($securityContext->getToken())) {
-            return new RedirectResponse($router->generate('usuarios_login'), 307);
-        }*/
-
-        if (!$securityContext->isGranted('ROLE_USER')) {
+        $securityContext = $this->get('security.authorization_checker');
+        if (false === $securityContext->isGranted('ROLE_USER')) {
             return new RedirectResponse($this->container->get('router')->generate('base_homepage'));
+        }
+        elseif($checkadmin && $securityContext->isGranted('ROLE_ADMIN')){
+            return new RedirectResponse($this->container->get('router')->generate('admin_homepage'));
         }
     }
 
     /**
      * Gets the gravatar URL for an email
      *
-     * @param $email
+     * @param String $email
      * @return String
      */
-    protected function getGravatar($email)
+    private function getGravatar($email)
     {
         $grav = new Gravatar($email);
         $gravatar = $grav->get_gravatar();

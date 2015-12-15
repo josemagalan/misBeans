@@ -3,8 +3,9 @@
 namespace BaseBundle\Controller\Logic;
 
 /**
-*  Class Gravatar
-*/
+ * Class Gravatar
+ * @package BaseBundle\Controller\Logic
+ */
 class Gravatar
 {
     private $email = null;
@@ -16,8 +17,7 @@ class Gravatar
     /**
      * Get either a Gravatar URL or complete image tag for a specified email address.
      *
-     * @param string $email The email address
-     * @param string $s Size in pixels, defaults to 80px [ 1 - 2048 ]
+     * @param int|string $s Size in pixels, defaults to 80px [ 1 - 2048 ]
      * @param string $d Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
      * @param string $r Maximum rating (inclusive) [ g | pg | r | x ]
      * @param bool $img True to return a complete IMG tag False for just the URL
@@ -35,6 +35,6 @@ class Gravatar
                 $url .= ' ' . $key . '="' . $val . '"';
             $url .= ' />';
         }
-        return $url;
+        return  (string) $url;
     }
 }

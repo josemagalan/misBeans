@@ -332,8 +332,9 @@ body, html {
 .stats {
     background-color: #eeeeee;
     border-radius: 5px;
-    min-height: 1190px;
+/*min-height: 1190px;*/
     height: auto;
+    width: inherit;
     margin-bottom: 20px;
 }
 

@@ -31,7 +31,7 @@ with unprecedented simplicity.
   * Symfony 2.3+ applications (Silex not supported).
   * Doctrine ORM entities (Doctrine ODM and Propel not supported).
   * Entities with simple primary keys (composite keys not supported).
-  * All kinds of entity associations are supported, except `many-to-many`.
+  * All kinds of entity associations are supported.
   * Entities using inheritance are not supported.
 
 Documentation
@@ -56,7 +56,7 @@ Documentation
 
 > **❮ NOTE ❯** you are reading the documentation of the bundle's **development**
 > version. You can also [read the documentation of the latest stable version ➜]
-> (https://github.com/javiereguiluz/EasyAdminBundle/tree/v1.9.1/).
+> (https://github.com/javiereguiluz/EasyAdminBundle/tree/v1.9.7/).
 
 #### Demo Application
 

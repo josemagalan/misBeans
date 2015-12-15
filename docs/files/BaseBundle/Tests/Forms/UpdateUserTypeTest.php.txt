@@ -1,0 +1,31 @@
+<?php
+
+namespace BaseBundle\Tests\Forms;
+
+
+use BaseBundle\Entity\User;
+use BaseBundle\Form\Type\RegistrationType;
+use BaseBundle\Tests\Auth;
+
+class UpdateUserTypeTest extends Auth
+{
+    public function testType()
+    {
+        $user = $this->em->getRepository('BaseBundle:User')->find(8);
+
+        $type = new RegistrationType($user);
+        $form = $this->formFactory->create($type);
+        $formData = array(
+            'fullName'  => 'Sergio Martín Marquina',
+            'email'  => 'smm0063@alu.ubu.es',
+        );
+        $form->submit($formData);
+        $data = $form->getData();
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertTrue($data instanceof User);
+        $this->assertEquals($data->getEmail(), $user->getEmail());
+        $this->assertEquals($data->getPlainPassword(), $user->getPlainPassword());
+    }
+}
+

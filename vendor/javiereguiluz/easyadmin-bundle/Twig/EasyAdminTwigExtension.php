@@ -11,8 +11,9 @@
 
 namespace JavierEguiluz\Bundle\EasyAdminBundle\Twig;
 
-use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use JavierEguiluz\Bundle\EasyAdminBundle\Configuration\Configurator;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * Defines the filters and functions used to render the bundle's templates.
@@ -22,11 +23,13 @@ use JavierEguiluz\Bundle\EasyAdminBundle\Configuration\Configurator;
 class EasyAdminTwigExtension extends \Twig_Extension
 {
     private $configurator;
+    private $accessor;
     private $debug;
 
-    public function __construct(Configurator $configurator, $debug = false)
+    public function __construct(Configurator $configurator, PropertyAccessor $accessor, $debug = false)
     {
         $this->configurator = $configurator;
+        $this->accessor = $accessor;
         $this->debug = $debug;
     }
 
@@ -108,13 +111,13 @@ class EasyAdminTwigExtension extends \Twig_Extension
     public function renderEntityField(\Twig_Environment $twig, $view, $entityName, $item, array $fieldMetadata)
     {
         $entityConfiguration = $this->configurator->getEntityConfiguration($entityName);
+        $fieldName = $fieldMetadata['property'];
 
-        if (!$fieldMetadata['isReadable']) {
+        try {
+            $value = $this->accessor->getValue($item, $fieldName);
+        } catch(\Exception $e) {
             return $twig->render($entityConfiguration['templates']['label_inaccessible'], array('view' => $view));
         }
-
-        $fieldName = $fieldMetadata['property'];
-        $value = (null !== $getter = $fieldMetadata['getter']) ? $item->{$getter}() : $item->{$fieldName};
 
         try {
             $fieldType = $fieldMetadata['dataType'];
@@ -125,11 +128,6 @@ class EasyAdminTwigExtension extends \Twig_Extension
                 'view' => $view,
             );
 
-            // if the template path doesn't start with '@EasyAdmin/' it's a custom template; use it
-            if ('@EasyAdmin/' !== substr($fieldMetadata['template'], 0, 11)) {
-                return $twig->render($fieldMetadata['template'], $templateParameters);
-            }
-
             if (null === $value) {
                 return $twig->render($entityConfiguration['templates']['label_null'], $templateParameters);
             }
@@ -139,7 +137,7 @@ class EasyAdminTwigExtension extends \Twig_Extension
                 $templateParameters['value'] = strval($value);
             }
 
-            if (in_array($fieldType, array('image'))) {
+            if ('image' === $fieldType) {
                 // absolute URLs (http or https) and protocol-relative URLs (//) are rendered unmodified
                 if (1 === preg_match('/^(http[s]?|\/\/).*/i', $value)) {
                     $imageUrl = $value;
@@ -155,33 +153,27 @@ class EasyAdminTwigExtension extends \Twig_Extension
                 return $twig->render($entityConfiguration['templates']['label_empty'], $templateParameters);
             }
 
-            if (in_array($fieldType, array('association'))) {
-                // if the associated value is a collection, pass it to the template
-                if ($value instanceof PersistentCollection) {
-                    return $twig->render($entityConfiguration['templates']['field_association'], $templateParameters);
-                }
-
+            if ('association' === $fieldType && ($fieldMetadata['associationType'] & ClassMetadata::TO_ONE)) {
                 $targetEntityClassName = $this->getClassShortName($fieldMetadata['targetEntity']);
                 $targetEntityConfig = $this->getEntityConfiguration($targetEntityClassName);
-                $targetEntityPrimaryKeyGetter = (null !== $targetEntityConfig) ? 'get'.ucfirst($targetEntityConfig['primary_key_field_name']) : null;
 
                 // get the most appropriate string representation for the
                 // associated value (this depends on the target entity methods)
                 if (method_exists($value, '__toString')) {
                     $templateParameters['value'] = (string) $value;
-                } elseif (method_exists($value, $targetEntityPrimaryKeyGetter)) {
-                    $templateParameters['value'] = sprintf('%s #%s', $targetEntityConfig['name'], $value->$targetEntityPrimaryKeyGetter());
                 } else {
-                    $templateParameters['value'] = $this->getClassShortName(get_class($value));
+                    try {
+                        // if the target entity has a readable primary key, we
+                        // display a link pointing to its 'show' view
+                        $primaryKeyValue = $this->accessor->getValue($value, $targetEntityConfig['primary_key_field_name']);
+                        $templateParameters['value'] = sprintf('%s #%s', $targetEntityConfig['name'], $primaryKeyValue);
+                        $templateParameters['link_parameters'] = array('entity' => $targetEntityConfig['name'], 'action' => 'show', 'view' => $view, 'id' => $primaryKeyValue);
+                    } catch(\Exception $e) {
+                        // if the primary key value is not readable, just use the class name
+                        // we can't use the $accessor->isReadable() method because it's not available in 2.3 version
+                        $templateParameters['value'] = $targetEntityClassName;
+                    }
                 }
-
-                // if the target entity has a primary key getter, it's displayed
-                // as a link pointing to its 'show' view
-                if (method_exists($value, $targetEntityPrimaryKeyGetter)) {
-                    $templateParameters['link_parameters'] = array('entity' => $targetEntityConfig['name'], 'action' => 'show', 'view' => $view, 'id' => $value->$targetEntityPrimaryKeyGetter());
-                }
-
-                return $twig->render($entityConfiguration['templates']['field_association'], $templateParameters);
             }
 
             return $twig->render($fieldMetadata['template'], $templateParameters);

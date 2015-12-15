@@ -1,0 +1,39 @@
+<?php
+
+namespace BaseBundle\Tests\Controller;
+
+use BaseBundle\Tests\Auth;
+
+class DefaultControllerTest extends Auth
+{
+
+    public function testIndexESNoRegistered()
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/');
+        $this->assertTrue($crawler->filter('html:contains("Nombre de usuario")')->count() > 0);
+    }
+
+    public function testIndexESRegisteredUser()
+    {
+        $this->client->request('GET', '/');
+        $security = $this->client->getContainer()->get('security.authorization_checker');
+
+        //status de redireccion
+        $this->assertEquals(302, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals('/es/userhome/', $this->client->getResponse()->headers->get('location'));
+        $this->assertTrue($security->isGranted('ROLE_USER'));
+        $this->assertTrue($this->client->getResponse()->isRedirect());
+    }
+
+    public function testIndexESRegisteredAdmin()
+    {
+        $admin = $this->createAuthorizedAdmin();
+        $admin->request('GET', '/');
+
+        //status de redireccion
+        $this->assertEquals(302, $admin->getResponse()->getStatusCode());
+        $this->assertEquals('/es/adminhome/', $admin->getResponse()->headers->get('location'));
+        $this->assertTrue($admin->getResponse()->isRedirect());
+    }
+}

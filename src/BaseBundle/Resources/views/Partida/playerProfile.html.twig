@@ -19,7 +19,7 @@
         <div class="row">
             <div class=" col-lg-9">
                 <a href="{{ path('partida_home',{'id_partida' : partida[0].id }) }}">
-                <h3 class="text-center">{{ partida[0].nombre | capitalize }}</h3></a>
+                    <h3 class="text-center">{{ partida[0].nombre | capitalize }}</h3></a>
                 {# onclick="location.href='{{ path('partida_home',{'id_partida' : partida[0].id }) }}'"#}
                 <br>
 
@@ -59,6 +59,13 @@
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                                         aria-hidden="true">×</span></button>
                             {{ 'form.invalid'|trans({}, 'BaseBundle') }}
+                        </div>
+                    {% endfor %}
+                    {% for flashMessage in app.session.flashbag.get('4values') %}
+                        <div class="alert alert-danger alert-dismissible text-center fade in" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                            {{ 'oferta.allSame'|trans({}, 'BaseBundle') }}
                         </div>
                     {% endfor %}
                     {% for flashMessage in app.session.flashbag.get('max_reached') %}

@@ -4,13 +4,17 @@ namespace BaseBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 
+/**
+ * Class PartidaRepository
+ * @package BaseBundle\Entity
+ */
 class PartidaRepository extends EntityRepository
 {
 
     /**
      * Busca las partidas creadas por un determinado administrador
      *
-     * @param $admin_id
+     * @param int $admin_id
      * @return array
      */
     public function findAdminPardidas($admin_id)
@@ -45,8 +49,8 @@ class PartidaRepository extends EntityRepository
 
     /**
      * Información de una determinada partida dado el jugador y el identificador de partida
-     * @param $user_id
-     * @param $id_partida
+     * @param int $user_id
+     * @param int $id_partida
      * @return array
      */
     public function findPartidaInfo($user_id, $id_partida)
@@ -69,8 +73,8 @@ class PartidaRepository extends EntityRepository
     /**
      * Guarda una nueva partida
      *
-     * @param $data
-     * @param $admin_id
+     * @param array $data
+     * @param int $admin_id
      * @return bool
      * @throws \Doctrine\DBAL\DBALException
      */
@@ -104,8 +108,8 @@ class PartidaRepository extends EntityRepository
     /**
      * Comprueba una partida dado un identificador y un creador. Retorna los datos de la misma.
      *
-     * @param $idPartida
-     * @param $idAdmin
+     * @param int $idPartida
+     * @param int $idAdmin
      *
      * @return array
      */

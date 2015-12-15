@@ -15,6 +15,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use JavierEguiluz\Bundle\EasyAdminBundle\Configuration\Configurator;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Dumper\HtmlDumper;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Collects information about the requests related to EasyAdmin and displays
@@ -79,6 +82,33 @@ class EasyAdminDataCollector extends DataCollector
     public function getBackendConfiguration()
     {
         return $this->data['backend_configuration'];
+    }
+
+    /**
+     * It dumps the contents of the given variable. It tries several dumpers in
+     * turn (VarDumper component, Yaml::dump, etc.) and if none is available, it
+     * falls back to PHP's var_export().
+     *
+     * @param mixed $variable
+     *
+     * @return string
+     */
+    public function dump($variable)
+    {
+        $dumpedData = '';
+        if (class_exists('Symfony\Component\VarDumper\Dumper\HtmlDumper')) {
+            $cloner = new VarCloner();
+            $dumper = new HtmlDumper();
+
+            $dumper->dump($cloner->cloneVar($variable), $output = fopen('php://memory', 'r+b'));
+            $dumpedData = stream_get_contents($output, -1, 0);
+        } elseif (class_exists('Symfony\Component\Yaml\Yaml')) {
+            $dumpedData = sprintf('<pre class="sf-dump">%s</pre>', Yaml::dump((array) $variable, 1024));
+        } else {
+            $dumpedData = sprintf('<pre class="sf-dump">%s</pre>', var_export($variable, true));
+        }
+
+        return $dumpedData;
     }
 
     public function getName()
