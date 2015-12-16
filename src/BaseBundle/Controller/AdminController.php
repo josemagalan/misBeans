@@ -94,9 +94,7 @@ class AdminController extends Controller
 
         $admin = $this->getUser();
         $admin_id = $admin->getId();
-
         $gravatar = $this->getGravatar($admin->getEmail());
-
         $em = $this->getDoctrine()->getManager();
 
         //create form
@@ -104,6 +102,7 @@ class AdminController extends Controller
         $form->handleRequest($request);
         if ($form->isValid()) {
             $data = $form->getData();
+            print_r($data);
             // ¿La fecha que introducida es correcta?
             if ($data['fin'] <= new \DateTime('NOW')) {
                 if ($locale == 'es') {
@@ -111,22 +110,24 @@ class AdminController extends Controller
                 } else {
                     $form->get('fin')->addError(new FormError('The entered date is incorrect'));
                 }
-                return $this->render('BaseBundle:Admin:newGame.html.twig',
-                    array(
-                        'form' => $form->createView(),
-                        'gravatar' => $gravatar,
-                    ));
-            }
-            //Esta correcto -> Guardar partida.
-            $result = $em->getRepository('BaseBundle:Partida')->SetNewPartida($data, $admin_id);
-
-            if ($result) {
-                $this->get('session')->getFlashBag()->add(
-                    'correct', '');
-                $em->getRepository('BaseBundle:Log')->action2log($admin_id, Loglogic::NUEVAPARTIDA, null);
+            } elseif ($data['ratio'] <= 0 || $data['ratio'] >= 1) {
+                if ($locale == 'es') {
+                    $form->get('ratio')->addError(new FormError('El valor ha de estar en rango (0.1 - 0.9)'));
+                } else {
+                    $form->get('ratio')->addError(new FormError('Value must be in range (0.1 - 0.9)'));
+                }
             } else {
-                $this->get('session')->getFlashBag()->add(
-                    'error', '');
+                //Esta correcto -> Guardar partida.
+                $result = $em->getRepository('BaseBundle:Partida')->SetNewPartida($data, $admin_id);
+
+                if ($result) {
+                    $this->get('session')->getFlashBag()->add(
+                        'correct', '');
+                    $em->getRepository('BaseBundle:Log')->action2log($admin_id, Loglogic::NUEVAPARTIDA, null);
+                } else {
+                    $this->get('session')->getFlashBag()->add(
+                        'error', '');
+                }
             }
         }
         return $this->render('BaseBundle:Admin:newGame.html.twig',
@@ -189,7 +190,7 @@ class AdminController extends Controller
             $rankingAluBlancaStats = $graphics->donutJsArray($ranking, 'aluBlancaActual');
 
             /*-------barras en detalle---*/
-            $ofertasMod = $adminLogic->barChartGraphics($em,$id_partida);
+            $ofertasMod = $adminLogic->barChartGraphics($em, $id_partida);
 
             //creamos el array para graficar los ratios
             $lineChart = $graphics->linesRatioJsArray($ofertasMod);

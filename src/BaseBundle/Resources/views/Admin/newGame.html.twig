@@ -45,8 +45,8 @@
                     {{ form_errors(form) }}
                     {# nombre#}
                     <div class="form-group">
-                        {{ form_errors(form.nombre) }}
                         {{ form_label(form.nombre) }}
+                        {{ form_errors(form.nombre) }}
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-pencil-square-o fa-fw"></i></span>
                             {{ form_widget(form.nombre, { 'attr': {'class': 'form-control input-group'} }) }}
@@ -55,8 +55,8 @@
 
                     {# password#}
                     <div class="form-group">
-                        {{ form_errors(form.password) }}
                         {{ form_label(form.password) }}
+                        {{ form_errors(form.password) }}
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
                             {{ form_widget(form.password, { 'attr': {'class': 'form-control input-group'} }) }}
@@ -65,8 +65,8 @@
 
                     {# fin #}
                     <div class="form-group">
-                        {{ form_errors(form.fin) }}
                         {{ form_label(form.fin) }}
+                        {{ form_errors(form.fin) }}
                         <div class="form-group symfony-form-row">
                             {{ form_widget(form.fin , { 'attr': {'class': 'form-control input-group'} }) }}
                         </div>
@@ -74,8 +74,8 @@
 
                     {# maxJugadores#}
                     <div class="form-group">
-                        {{ form_errors(form.maxJugadores) }}
                         {{ form_label(form.maxJugadores) }}
+                        {{ form_errors(form.maxJugadores) }}
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-user-plus fa-fw"></i></span>
                             {{ form_widget(form.maxJugadores, { 'attr': {'class': 'form-control input-group'} }) }}
@@ -84,8 +84,8 @@
 
                     {# maxOfertas#}
                     <div class="form-group">
-                        {{ form_errors(form.maxOfertas) }}
                         {{ form_label(form.maxOfertas) }}
+                        {{ form_errors(form.maxOfertas) }}
                         <div class="input-group">
                             <div class="input-group-addon"><i class="fa fa-dashboard fa-fw"></i></div>
                             {{ form_widget(form.maxOfertas, { 'attr': {'class': 'form-control'} }) }}
@@ -98,8 +98,8 @@
 
                     {# tiempoOferta#}
                     <div class="form-group">
-                        {{ form_errors(form.tiempoOferta) }}
                         {{ form_label(form.tiempoOferta) }}
+                        {{ form_errors(form.tiempoOferta) }}
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-hourglass-2 fa-fw"></i></span>
                             {{ form_widget(form.tiempoOferta, { 'attr': {'class': 'form-control input-group'} }) }}
@@ -108,8 +108,8 @@
 
                     {# aluPUsuario -> alubias x usuario #}
                     <div class="form-group">
-                        {{ form_errors(form.aluPUsuario) }}
                         {{ form_label(form.aluPUsuario) }}
+                        {{ form_errors(form.aluPUsuario) }}
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-cogs fa-fw"></i></span>
                             {{ form_widget(form.aluPUsuario, { 'attr': {'class': 'form-control input-group'} }) }}
@@ -118,9 +118,13 @@
 
                     {# Ratio (proportion)#}
                     <div class="form-group">
+                        {{ form_label(form.ratio) }} &nbsp;(0.1 - 0.9)
                         {{ form_errors(form.ratio) }}
-                        {{ form_label(form.ratio) }}
-                        <div class="input-group">
+                        {% if not form_errors(form.ratio) is empty %}
+                        <div class="input-group has-error has-feedback">
+                            {% else %}
+                            <div class="input-group">
+                                {% endif %}
                             <span class="input-group-addon"><i class="fa fa-sliders fa-fw"></i></span>
                             {{ form_widget(form.ratio, { 'attr': {'class': 'form-control input-group'} }) }}
                         </div>
@@ -128,12 +132,13 @@
 
                     <p class="text-center"><b>  {{ 'partida.cobDouExp'|trans({}, 'BaseBundle') }} </b></p>
 
-                    {# Exponente Y #}
+                   {#Exponentes#}
                     <div class="form-group">
                         <div class="row text-center">
                             <div class="col-md-6">
-                                {{ form_errors(form.expY) }}
+                                {# Exponente Y #}
                                 {{ form_label(form.expY) }}
+                                {{ form_errors(form.expY) }}
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-toggle-up fa-fw"></i></span>
                                     {{ form_widget(form.expY, { 'attr': {'class': 'form-control input-group'} }) }}
@@ -141,9 +146,8 @@
                             </div>
                             <div class="col-md-6">
                                 {# Exponente Z #}
-
-                                {{ form_errors(form.expZ) }}
                                 {{ form_label(form.expZ) }}
+                                {{ form_errors(form.expZ) }}
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-toggle-up fa-fw"></i></span>
                                     {{ form_widget(form.expZ, { 'attr': {'class': 'form-control input-group'} }) }}

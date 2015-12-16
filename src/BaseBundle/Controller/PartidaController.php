@@ -53,7 +53,8 @@ class PartidaController extends Controller
                 $partidaLogic = new PartidaLogic();
 
                 if ($partida->getPassword() == null) {
-                    return $partidaLogic->newPlayer($partida, $user_id, $em);
+                    $partidaLogic->newPlayer($partida, $user_id, $em);
+                    return new RedirectResponse($this->container->get('router')->generate('partida_home', array('id_partida' => $id_partida)));
                 } else {
                     //creamos el formulario
                     $form = $this->createFormBuilder()
@@ -65,7 +66,8 @@ class PartidaController extends Controller
                     if ($form->isValid() && $request->isMethod('POST')) {
                         $data = $form->getData();
                         if (strcmp($data['password'], $partida->getPassword()) == 0) {
-                            return $partidaLogic->newPlayer($partida, $user_id, $em);
+                            $partidaLogic->newPlayer($partida, $user_id, $em);
+                            return new RedirectResponse($this->container->get('router')->generate('partida_home', array('id_partida' => $id_partida)));
                         } else {
                             if ($locale == 'es') {
                                 $form->get('password')->addError(new FormError('Contraseña incorrecta'));

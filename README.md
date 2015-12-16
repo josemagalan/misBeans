@@ -31,41 +31,41 @@ This Symfony project is configured with the following Settings:
 
 It comes configured with the following bundles:
 
-  * [**FrameworkBundle**] - The core Symfony framework bundle
+  * **FrameworkBundle** - The core Symfony framework bundle
 
-  * [**SensioFrameworkExtraBundle**] - Adds several enhancements, including
+  * **SensioFrameworkExtraBundle** - Adds several enhancements, including
     template and routing annotation capability
 
-  * [**DoctrineBundle**] - Adds support for the Doctrine ORM
+  * **DoctrineBundle** - Adds support for the Doctrine ORM
 
-  * [**TwigBundle**] - Adds support for the Twig templating engine
+  * **TwigBundle** - Adds support for the Twig templating engine
 
-  * [**SecurityBundle**] - Adds security by integrating Symfony's security
+  * **SecurityBundle** - Adds security by integrating Symfony's security
     component
 
-  * [**SwiftmailerBundle**] - Adds support for Swiftmailer, a library for
+  * **SwiftmailerBundle** - Adds support for Swiftmailer, a library for
     sending emails
 
-  * [**MonologBundle**] - Adds support for Monolog, a logging library
+  * **MonologBundle** - Adds support for Monolog, a logging library
 
-  * [**AsseticBundle**] - Adds support for Assetic, an asset processing
+  * **AsseticBundle** - Adds support for Assetic, an asset processing
     library
 
-  * [**WebProfilerBundle**] (in dev/test env) - Adds profiling functionality and
+  * **WebProfilerBundle** - Adds profiling functionality and
     the web debug toolbar
 
-  * [**SensioDistributionBundle**] (in dev/test env) - Adds functionality for
+  * **SensioDistributionBundle** (in dev/test env) - Adds functionality for
     configuring and working with Symfony distributions
 
-  * [**SensioGeneratorBundle**] (in dev/test env) - Adds code generation
+  * **SensioGeneratorBundle** - Adds code generation
     capabilities
 
-  * [**DebugBundle**] (in dev/test env) - Adds Debug and VarDumper component
+  * **DebugBundle** - Adds Debug and VarDumper component
     integration
 	
-  * [**EasyAdminBundle**] - Adds backend administrator to manage the selected Entities
+  * [**EasyAdminBundle**] (in https://github.com/javiereguiluz/EasyAdminBundle/) - Adds backend administrator to manage the selected Entities
 
-  * [**FOSUserBundle**] - Friends of Symfony user Bundle to manage users. Provides
+  * [**FOSUserBundle**] (in  https://github.com/FriendsOfSymfony/FOSUserBundle/) - Friends of Symfony user Bundle to manage users. Provides
     authentication functionality
 
 License

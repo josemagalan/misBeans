@@ -73,7 +73,7 @@ class Partida
     /**
      * @var float
      *
-     * @ORM\Column(name="ratio", type="float", precision=10, scale=0, nullable=false)
+     * @ORM\Column(name="ratio", type="float", precision=2, scale=1, nullable=false)
      */
     private $ratio;
 

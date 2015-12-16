@@ -4,9 +4,8 @@
 namespace BaseBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+
 
 class NewGameType extends AbstractType
 {
@@ -45,17 +44,10 @@ class NewGameType extends AbstractType
                 'attr' => array('step' => '1',
                     'min' => '1'),
             ))
-            /*->add('algReparto', 'choice', array(
-                'label' => 'partida.alg-reparto', 'translation_domain' => 'BaseBundle',
-                'choice_list' => new ChoiceList(
-                    array(1,),
-                    array('partida.algreparto.1',)
-                )
-            ))*/
             //proporcion de alubia roja sobre blanca
-            ->add('ratio', 'integer', array('required' => true,
+            ->add('ratio', 'number', array('required' => true,
                 'label' => 'partida.proportion', 'translation_domain' => 'BaseBundle',
-                'scale' => 0,
+                'scale' => 1,
                 'attr' => array('step' => '0.1',
                     'min' => '0.1',
                     'max' => '0.9'),
@@ -71,8 +63,7 @@ class NewGameType extends AbstractType
                 'scale' => 0,
                 'attr' => array('step' => '1',
                     'min' => '1'),
-            ))
-        ;
+            ));
     }
 
     public function getName()

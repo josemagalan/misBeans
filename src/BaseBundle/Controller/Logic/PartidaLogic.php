@@ -24,15 +24,12 @@ class PartidaLogic extends PartidaController
      * @param Partida $partida
      * @param int $user_id
      * @param ObjectManager $em
-     * @return RedirectResponse
      */
     public function newPlayer($partida, $user_id, $em)
     {
         $id_partida = $partida->getId();
         $em->getRepository('BaseBundle:UserPartida')->addJugador($user_id, $id_partida);
         $em->getRepository('BaseBundle:Log')->action2log($user_id, Loglogic::INGRESARENPARTIDA, $id_partida);
-
-        return new RedirectResponse($this->get('router')->generate('partida_home', array('id_partida' => $id_partida)));
     }
 
     /**
