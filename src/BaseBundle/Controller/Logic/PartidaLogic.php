@@ -3,7 +3,10 @@
 namespace BaseBundle\Controller\Logic;
 
 use BaseBundle\Controller\PartidaController;
+use BaseBundle\Entity\Ofertas;
 use BaseBundle\Entity\Partida;
+use BaseBundle\Entity\User;
+use BaseBundle\Entity\UserPartida;
 use Doctrine\Common\Persistence\ObjectManager;
 use DateInterval;
 
@@ -15,8 +18,9 @@ use DateInterval;
  */
 class PartidaLogic extends PartidaController
 {
-    const ENCURSO =0;
+    const ENCURSO = 0;
     const TERMINADO = 1;
+    const OFERTASSINLIMITE = 0;
 
     /**
      * Add a player to a game
@@ -32,46 +36,9 @@ class PartidaLogic extends PartidaController
         $em->getRepository('BaseBundle:Log')->action2log($user_id, Loglogic::INGRESARENPARTIDA, $id_partida);
     }
 
-    /**
-     * Distributes the beans among the players.
-     *
-     * @param Partida $partidaData
-     * @param array $jugadores
-     * @param ObjectManager $em
-     */
-    public function distributeBeansLogic($partidaData, $jugadores, $em)
-    {
-        $data = $this->calculateBeans($partidaData, count($jugadores));
-
-        //array con alubias rojas y blancas
-        $alubiasArray = array();
-        for ($i = 1; $i <= $data['totales']; $i++) {
-            $letra = null;
-            if ($i <= $data['aluBlanca']) {
-                $letra = 'B';
-            } else {
-                $letra = 'R';
-            }
-            array_push($alubiasArray, $letra);
-        }
-
-        shuffle($alubiasArray);
-        //dividimos el array en montones de "alubias por usuario" alubias
-        $alubiasArray = array_chunk($alubiasArray, $partidaData->getAluPorUsuario());
-
-        for ($i = 0; $i < count($jugadores); $i++) {
-            $rojas = count(array_keys($alubiasArray[$i], 'R'));
-            $blancas = count(array_keys($alubiasArray[$i], 'B'));
-            $fUtilidad = $this->calculateFUtilidad($rojas, $blancas, $partidaData);
-            // Asignar a cada jugador sus alubias y función de utilidad
-            $em->getRepository('BaseBundle:UserPartida')->distributeBeans($jugadores[$i]->getIdUser(),
-                $partidaData->getId(), $rojas, $blancas, $fUtilidad);
-        }
-    }
-
 
     /**
-     * Calculates number of beans based on  of Partida
+     * Calculates number of beans based on  players registered in a game
      *
      * @param Partida $partidaData
      * @param int $nJugadores
@@ -84,7 +51,7 @@ class PartidaLogic extends PartidaController
         $aluBlanca = (1 - $partidaData->getRatio()) * $alubiasTot;
 
         $alubias = array('aluRoja' => $aluRoja, 'aluBlanca' => $aluBlanca,
-            'totales' => $alubiasTot);
+            'total' => $alubiasTot);
         return $alubias;
     }
 
@@ -107,35 +74,33 @@ class PartidaLogic extends PartidaController
     }
 
     /**
-     * Evolution of beans and utility Funtion in the game
+     * Evolution of beans and utility function in the game
      *
      * @param ObjectManager $em
      * @param int $user_id
      * @param Partida $partida
      * @return array
      */
-    public function partidaGraphic($em, $user_id, $partida)
+    public function partidaEvolution($em, $user_id, $partida)
     {
-        $graphics = new GraphicsLogic();
+        $userPartidaLogic = new UserPartidaLogic();
         $ofertasPartida = array(); //ofertas aceptadas en una partida (tanto de las enviadas como recividas)
 
-        //calcular alubias en funcion de quien ha enviado la oferta
-        //jugador envía la oferta
-        $ofertasOut = $em->getRepository('BaseBundle:Ofertas')->findSentOffers($user_id, $partida->getId(), OfertaLogic::ACEPTADA);
-        foreach ($ofertasOut as $oferta) {
-            $tmp = $graphics->beansStatus($oferta, 1);
-            $tmp['modificado'] = $oferta['modificado'];
-            array_push($ofertasPartida, $tmp);
-        }
-        //Jugador recibe la oferta
-        $ofertasOut = $em->getRepository('BaseBundle:Ofertas')->findRecievedOffers($user_id, $partida->getId(), OfertaLogic::ACEPTADA);
-        foreach ($ofertasOut as $oferta) {
-            $tmp = $graphics->beansStatus($oferta, 2);
-            $tmp['modificado'] = $oferta['modificado'];
+
+        $ofertas = $em->getRepository('BaseBundle:Ofertas')->findAllUserGameDeals($user_id, $partida->getId());
+        foreach ($ofertas as $oferta) {
+            /** @var Ofertas $oferta */
+            //calcular alubias en funcion de si oferta enviada o recibida
+            if ($oferta->getIdCreador()->getId() == $user_id) {
+                $tmp = $userPartidaLogic->beansStatus($oferta, 1);
+            } else {
+                $tmp = $userPartidaLogic->beansStatus($oferta, 2);
+            }
+            $tmp['modificado'] = $oferta->getModificado();
             array_push($ofertasPartida, $tmp);
         }
 
-        // sabemos las alubias de cada transaccion. Recorremos y calculamos la evolución a lo largo de la partida.
+        /** @var UserPartida $userpartida */
         $userpartida = $em->getRepository('BaseBundle:UserPartida')->findByIDS($user_id, $partida->getId());
         $evolucion = array();
 
@@ -179,5 +144,7 @@ class PartidaLogic extends PartidaController
         }
         return $oferta_enCurso;
     }
+
+
 }
 

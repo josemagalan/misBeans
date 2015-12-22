@@ -3,6 +3,7 @@
 
 namespace BaseBundle\Entity;
 
+use BaseBundle\Controller\Logic\OfertaLogic;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -33,12 +34,13 @@ class OfertasRepository extends EntityRepository
         $connection = $entityManager->getConnection();
 
         $dql = "INSERT INTO ofertas (idPartida, idCreador, idDestinatario, creado, estado, aluBlancaIn, aluRojaIn, aluBlancaOut, aluRojaOut)
-                VALUES (:idPartida, :userId, :idPlayer, now(),0, :aluBlancaIn, :aluRojaIn, :aluBlancaOut, :aluRojaOut)";
+                VALUES (:idPartida, :userId, :idPlayer, now(),:estado, :aluBlancaIn, :aluRojaIn, :aluBlancaOut, :aluRojaOut)";
 
         $statement = $connection->prepare($dql);
 
         $statement->bindValue('userId', $user_id);
         $statement->bindValue('idPlayer', intval($idPlayer));
+        $statement->bindValue('estado', OfertaLogic::NOTRATADA);
         $statement->bindValue('idPartida', intval($id_partida));
         $statement->bindValue('aluBlancaIn', $data['aluBlancaIn']);
         $statement->bindValue('aluBlancaOut', $data['aluBlancaOut']);
@@ -71,24 +73,25 @@ class OfertasRepository extends EntityRepository
     }
 
     /**
-     * Cuenta las ofertas en curso de un usuario
+     * Ofertas en curso de un usuario
      *
      * @param int $idUser
      * @param int $idPartida
      * @return array
      */
-    public function countOffers($idUser, $idPartida)
+    public function currentOffers($idUser, $idPartida)
     {
         $entityManager = $this->getEntityManager();
 
-        $dql = "SELECT COUNT(ofertas.id) AS num, partida.maxOfertas
+        $dql = "SELECT ofertas
                 FROM BaseBundle:Ofertas ofertas
                 JOIN BaseBundle:Partida partida WITH partida.id = ofertas.idPartida
-                WHERE ofertas.idCreador = :idUser AND ofertas.idPartida = :idPartida AND ofertas.estado =0";
+                WHERE ofertas.idCreador = :idUser AND ofertas.idPartida = :idPartida AND ofertas.estado = :estado";
 
         $query = $entityManager->createQuery($dql);
         $query->setParameter('idUser', $idUser);
         $query->setParameter('idPartida', $idPartida);
+        $query->setParameter('estado', OfertaLogic::NOTRATADA);
 
         return $query->getResult();
     }
@@ -100,13 +103,15 @@ class OfertasRepository extends EntityRepository
      * @param int $idPartida
      * @param int $idOferta
      * @param int $idDestinatario
-     * @return array
+     * @return Ofertas
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function checkDeal($idCreador, $idPartida, $idOferta, $idDestinatario)
     {
         $entityManager = $this->getEntityManager();
 
-        $dql = "SELECT ofertas.id
+        $dql = "SELECT ofertas
                 FROM BaseBundle:Ofertas ofertas
                 WHERE ofertas.idCreador = :idCreador AND ofertas.idPartida = :idPartida
                 AND ofertas.idDestinatario = :idDestinatario
@@ -118,7 +123,7 @@ class OfertasRepository extends EntityRepository
         $query->setParameter('idDestinatario', $idDestinatario);
         $query->setParameter('id', $idOferta);
 
-        return $query->getResult();
+        return $query->getSingleResult();
     }
 
     /**
@@ -138,13 +143,14 @@ class OfertasRepository extends EntityRepository
                 FROM BaseBundle:Ofertas ofertas
                 WHERE ofertas.idCreador = :idCreador AND ofertas.idPartida = :idPartida
                 AND ofertas.idDestinatario = :idDestinatario
-                AND ofertas.id = :id AND ofertas.estado = 0";
+                AND ofertas.id = :id AND ofertas.estado = :estado";
 
         $query = $entityManager->createQuery($dql);
         $query->setParameter('idCreador', $idCreador);
         $query->setParameter('idPartida', $idPartida);
         $query->setParameter('idDestinatario', $idDestinatario);
         $query->setParameter('id', $idOferta);
+        $query->setParameter('estado', OfertaLogic::NOTRATADA);
 
         return $query->getResult();
     }
@@ -212,16 +218,39 @@ class OfertasRepository extends EntityRepository
      * @param int $idPartida
      * @return array
      */
-    public function findAllGameDeals($idPartida)
+    public function findAllGameDeals($idPartida, $estado)
     {
         $entityManager = $this->getEntityManager();
 
-        $dql = "SELECT ofertas.id, ofertas.modificado, ofertas.aluBlancaIn, ofertas.aluRojaIn, ofertas.aluBlancaOut, ofertas.aluRojaOut
+        $dql = "SELECT ofertas
                 FROM BaseBundle:Ofertas ofertas
-                WHERE ofertas.idPartida = :idPartida AND ofertas.estado = 1";
+                WHERE ofertas.idPartida = :idPartida AND ofertas.estado = :estado";
 
         $query = $entityManager->createQuery($dql);
         $query->setParameter('idPartida', $idPartida);
+        $query->setParameter('estado', $estado);
+
+        return $query->getResult();
+    }
+
+    /**
+     * @param int $idUser
+     * @param int $idPartida
+     * @return array
+     * @internal param User $user
+     */
+    public function findAllUserGameDeals($idUser, $idPartida){
+        $entityManager = $this->getEntityManager();
+
+        $dql = "SELECT ofertas FROM BaseBundle:Ofertas ofertas WHERE
+                (ofertas.idCreador = :userId OR ofertas.idDestinatario = :userId ) AND ofertas.idPartida = :idPartida
+                AND ofertas.estado = :estado
+                ORDER BY ofertas.modificado ASC";
+
+        $query = $entityManager->createQuery($dql);
+        $query->setParameter('userId', $idUser);
+        $query->setParameter('idPartida', $idPartida);
+        $query->setParameter('estado', OfertaLogic::ACEPTADA);
 
         return $query->getResult();
     }

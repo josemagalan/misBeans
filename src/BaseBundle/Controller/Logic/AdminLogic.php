@@ -4,6 +4,7 @@ namespace BaseBundle\Controller\Logic;
 
 
 use BaseBundle\Controller\AdminController;
+use BaseBundle\Entity\Ofertas;
 use Doctrine\Common\Persistence\ObjectManager;
 
 /**
@@ -20,20 +21,49 @@ class AdminLogic extends AdminController
      */
     public function barChartGraphics($em, $id_partida)
     {
-        $ofertas = $em->getRepository('BaseBundle:Ofertas')->findAllGameDeals($id_partida);
+        /** @var Ofertas $ofertas */
+        $ofertas = $em->getRepository('BaseBundle:Ofertas')->findAllGameDeals($id_partida, OfertaLogic::ACEPTADA);
         $ofertasMod = array();
+        /** @var Ofertas $oferta */
         foreach ($ofertas as $oferta) {
             $tmp = array();
-            //dato común
-            $tmp['modificado'] = $oferta['modificado'];
+            $tmp['modificado'] = $oferta->getModificado();
             // dato para el grafico de lineas
-            $tmp['ratio'] =
-                (abs($oferta['aluRojaIn'] - $oferta['aluRojaOut']) / abs($oferta['aluBlancaIn'] - $oferta['aluBlancaOut']));
+            $tmp['ratio'] = (abs($oferta->getAlurojaIn() - $oferta->getAluRojaOut()) /
+                abs($oferta->getAluBlancaIn() - $oferta->getAluBlancaOut()));
             //datos para el gráfico de barras
-            $tmp['rojas'] = abs($oferta['aluRojaIn'] - $oferta['aluRojaOut']);
-            $tmp['blancas'] = abs($oferta['aluBlancaIn'] - $oferta['aluBlancaOut']);
+            $tmp['rojas'] = abs($oferta->getAlurojaIn() - $oferta->getAluRojaOut());
+            $tmp['blancas'] = abs($oferta->getAluBlancaIn() - $oferta->getAluBlancaOut());
             array_push($ofertasMod, $tmp);
         }
         return $ofertasMod;
+    }
+
+    /**
+     * All accepted deals in a game
+     *
+     * @param ObjectManager $em
+     * @param int $id_partida
+     * @return array
+     */
+    public function dealsToArray($em, $id_partida)
+    {
+        /** @var Ofertas $ofertas */
+        $ofertas = $em->getRepository('BaseBundle:Ofertas')->findAllGameDeals($id_partida, OfertaLogic::ACEPTADA);
+        $ofertasPartida = array();
+
+        /** @var Ofertas $oferta */
+        foreach ($ofertas as $oferta) {
+            $tmp = array();
+            $tmp['creador'] = $oferta->getIdCreador()->getUsername();
+            $tmp['destinatario'] = $oferta->getIdDestinatario()->getUsername();
+            $tmp['fecha'] = $oferta->getModificado()->format('d/m/Y H:i:s');
+            $tmp['ratio'] = (abs($oferta->getAlurojaIn() - $oferta->getAluRojaOut()) /
+                abs($oferta->getAluBlancaIn() - $oferta->getAluBlancaOut()));
+            $tmp['rojas'] = abs($oferta->getAlurojaIn() - $oferta->getAluRojaOut());
+            $tmp['blancas'] = abs($oferta->getAluBlancaIn() - $oferta->getAluBlancaOut());
+            array_push($ofertasPartida, $tmp);
+        }
+        return $ofertasPartida;
     }
 }

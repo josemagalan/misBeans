@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="1">
+                <source>Incorrect password</source>
+                <target>Contraseña incorrecta</target>
+            </trans-unit>
+            <trans-unit id="2">
+                <source>Inserted date is not correct</source>
+                <target>La fecha introducida es incorrecta</target>
+            </trans-unit>
+            <trans-unit id="3">
+                <source>Value must be in range (0.1 - 0.9)</source>
+                <target>El valor ha de estar en rango (0.1 - 0.9)</target>
+            </trans-unit>
+            <trans-unit id="4">
+                <source>You have joined </source>
+                <target>Te has unido a la partida </target>
+            </trans-unit>
+            <trans-unit id="5">
+                <source>You have sent a deal to </source>
+                <target>Has enviado una oferta a </target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>You have created a new game</source>
+                <target>Has creado una nueva partida</target>
+            </trans-unit>
+            <trans-unit id="7">
+                <source>You have accepted %username%'s deal</source>
+                <target> Has aceptado una oferta de %username%</target>
+            </trans-unit>
+            <trans-unit id="8">
+                <source>You have rejected %username%'s deal</source>
+                <target> Has rechazado una oferta de %username%</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

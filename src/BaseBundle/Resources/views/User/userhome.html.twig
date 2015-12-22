@@ -75,8 +75,9 @@
                     {% for partida in partidas %}
                         <tr onclick="location.href='{{ path('partida_home',{'id_partida' : partida.id}) }}'">
                             <td class="text-center"> {{ partida.nombre | capitalize }} </td>
-                            <td class="text-center">  <timer end-time="{{ partida.ms }}">{% verbatim %}{{days}} d  {{hours}} h  {{minutes}} m {{seconds}} s{% endverbatim %}</timer>
-                            {# partida.intervalo |date("%H : %I : %s") #} </td>
+                            <td class="text-center">  <timer end-time="{{ partida.ms }}">
+                            {% verbatim %}{{days}} d  {{hours}} h  {{minutes}} m {{seconds}} s{% endverbatim %}</timer>
+                           </td>
                         </tr>
                     {% endfor %}
                 </table>

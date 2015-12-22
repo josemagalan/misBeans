@@ -1,0 +1,69 @@
+<?php
+
+namespace BaseBundle\Controller\Logic;
+
+
+use BaseBundle\Controller\AdminController;
+use BaseBundle\Entity\Ofertas;
+use Doctrine\Common\Persistence\ObjectManager;
+
+/**
+ * Class AdminLogic
+ * @package BaseBundle\Controller\Logic
+ */
+class AdminLogic extends AdminController
+{
+    /**
+     * Calculates red beans and white beans for each accepted deal.
+     * @param ObjectManager $em
+     * @param integer $id_partida
+     * @return array
+     */
+    public function barChartGraphics($em, $id_partida)
+    {
+        /** @var Ofertas $ofertas */
+        $ofertas = $em->getRepository('BaseBundle:Ofertas')->findAllGameDeals($id_partida, OfertaLogic::ACEPTADA);
+        $ofertasMod = array();
+        /** @var Ofertas $oferta */
+        foreach ($ofertas as $oferta) {
+            $tmp = array();
+            $tmp['modificado'] = $oferta->getModificado();
+            // dato para el grafico de lineas
+            $tmp['ratio'] = (abs($oferta->getAlurojaIn() - $oferta->getAluRojaOut()) /
+                abs($oferta->getAluBlancaIn() - $oferta->getAluBlancaOut()));
+            //datos para el gráfico de barras
+            $tmp['rojas'] = abs($oferta->getAlurojaIn() - $oferta->getAluRojaOut());
+            $tmp['blancas'] = abs($oferta->getAluBlancaIn() - $oferta->getAluBlancaOut());
+            array_push($ofertasMod, $tmp);
+        }
+        return $ofertasMod;
+    }
+
+    /**
+     * All accepted deals in a game
+     *
+     * @param ObjectManager $em
+     * @param int $id_partida
+     * @return array
+     */
+    public function dealsToArray($em, $id_partida)
+    {
+        /** @var Ofertas $ofertas */
+        $ofertas = $em->getRepository('BaseBundle:Ofertas')->findAllGameDeals($id_partida, OfertaLogic::ACEPTADA);
+        $ofertasPartida = array();
+
+        /** @var Ofertas $oferta */
+        foreach ($ofertas as $oferta) {
+            $tmp = array();
+            $tmp['creador'] = $oferta->getIdCreador()->getUsername();
+            $tmp['destinatario'] = $oferta->getIdDestinatario()->getUsername();
+            $tmp['fecha'] = $oferta->getModificado()->format('d/m/Y H:i:s');
+            $tmp['ratio'] = (abs($oferta->getAlurojaIn() - $oferta->getAluRojaOut()) /
+                abs($oferta->getAluBlancaIn() - $oferta->getAluBlancaOut()));
+            $tmp['rojas'] = abs($oferta->getAlurojaIn() - $oferta->getAluRojaOut());
+            $tmp['blancas'] = abs($oferta->getAluBlancaIn() - $oferta->getAluBlancaOut());
+            array_push($ofertasPartida, $tmp);
+        }
+        return $ofertasPartida;
+    }
+}

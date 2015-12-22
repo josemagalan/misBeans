@@ -43,16 +43,9 @@ class UserPartidaEntityTest extends Entity
 
     public function testFindMisPardidas()
     {
-        $partidas = $this->em->getRepository('BaseBundle:UserPartida')->findMisPardidas(2);
+        $partidas = $this->em->getRepository('BaseBundle:UserPartida')->findMisPardidas(7);
         $id = $partidas[0]['id'];
         $this->assertEquals(1, $id);
-    }
-
-
-    public function testFindOtherUserInPartidaInfo()
-    {
-        $jugadores = $this->em->getRepository('BaseBundle:UserPartida')->findOtherUserInPartidaInfo(2, 1, 'petete');
-        $this->assertEquals(8, $jugadores[0]['idPlayer']);
     }
 
     public function testFindAllFriends()
@@ -60,11 +53,10 @@ class UserPartidaEntityTest extends Entity
         $jugadores = $this->em->getRepository('BaseBundle:UserPartida')->findAllFriends(1);
         $j1 = $jugadores[0]['id_user'];
         $j2 = $jugadores[1]['id_user'];
-        $j3 = $jugadores[2]['id_user'];
 
-        $this->assertEquals(2, $j1);
-        $this->assertEquals(7, $j2);
-        $this->assertEquals(8, $j3);
+
+        $this->assertEquals(7, $j1);
+        $this->assertEquals(8, $j2);
     }
 
     public function testfindByIDS(){
@@ -76,16 +68,16 @@ class UserPartidaEntityTest extends Entity
 
     public function testDistributeBeans()
     {
-        $this->em->getRepository('BaseBundle:UserPartida')->distributeBeans(7, 1, 100, 100, 10000);
-        $result = $this->em->getRepository('BaseBundle:UserPartida')->distributeBeans(7, 1, 10, 10, 100);
-        $this->assertEquals(1, $result);
+        $this->em->getRepository('BaseBundle:UserPartida')->distributeBeans(7, 7, 100, 100, 10000);
+        $result = $this->em->getRepository('BaseBundle:UserPartida')->distributeBeans(7, 7, 10, 10, 100);
+        $this->assertEquals(0, $result);
     }
 
     public function testRanking()
     {
         $ranking = $this->em->getRepository('BaseBundle:UserPartida')->getRanking(1);
         $name = $ranking[0]['username'];
-        $this->assertEquals('sergyzen', $name);
+        $this->assertEquals('petete', $name);
     }
 
 }

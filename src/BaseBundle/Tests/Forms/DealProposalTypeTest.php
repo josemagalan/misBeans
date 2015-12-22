@@ -3,14 +3,16 @@
 namespace BaseBundle\Tests\Forms;
 
 
+use BaseBundle\Entity\UserPartida;
 use BaseBundle\Form\Type\DealProposalType;
 
 class DealProposalTypeTest extends Type
 {
-    public function testForm(){
-        $partida = array('alu_roja_actual' => 100, 'alu_blanca_actual'=> 200);
-
-        $type = new DealProposalType($partida);
+    public function testForm()
+    {
+        /** @var UserPartida $userPartida */
+        $userPartida = $this->em->getRepository('BaseBundle:UserPartida')->findByIDS(7, 1);
+        $type = new DealProposalType($userPartida);
         $form = $this->formFactory->create($type);
         $formData = array(
             'aluBlancaIn' => 2,

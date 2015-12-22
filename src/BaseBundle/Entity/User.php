@@ -2,6 +2,7 @@
 
 namespace BaseBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 
@@ -40,7 +41,7 @@ class User extends BaseUser
      */
     public function __construct()
     {
-        $this->idPartida = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->idPartida = new ArrayCollection();
         parent::__construct();
     }
 
@@ -113,5 +114,21 @@ class User extends BaseUser
     public function getIdPartida()
     {
         return $this->idPartida;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getExpiresAt()
+    {
+        return $this->expiresAt;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCredentialsExpireAt()
+    {
+        return $this->credentialsExpireAt;
     }
 }

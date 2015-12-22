@@ -8,6 +8,10 @@ use Symfony\Component\Security\Core\Security;
 use FOS\UserBundle\Controller\SecurityController as BaseController;
 use BaseBundle\Entity\Usuarios;
 
+/**
+ * Class DefaultController
+ * @package BaseBundle\Controller
+ */
 class DefaultController extends BaseController
 {
     /**

@@ -12,32 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
  */
 class GraphicsLogic extends Controller
 {
-    /**
-     * Cálculo de alubias que ha habido en una transacción, dependiendo de si se envía o se recibe la oferta
-     *
-     * @param array $data
-     * @param int $mode
-     * @return array
-     */
-    public function beansStatus(array $data, $mode)
-    {
-        //1--player->creador
-        //2--player->destinatario
-        $resultado = array();
-        switch ($mode) {
-            case 1:
-                $roja = $data['aluRojaIn'] - $data['aluRojaOut'];
-                $blanca = $data['aluBlancaIn'] - $data['aluBlancaOut'];
-                $resultado = array('aluRoja' => $roja, 'aluBlanca' => $blanca);
-                break;
-            case 2:
-                $roja = $data['aluRojaOut'] - $data['aluRojaIn'];
-                $blanca = $data['aluBlancaOut'] - $data['aluBlancaIn'];
-                $resultado = array('aluRoja' => $roja, 'aluBlanca' => $blanca);
-                break;
-        }
-        return $resultado;
-    }
 
     /**
      * Genera de manera aleatoria un color en hexadecimal

@@ -7,16 +7,25 @@ use BaseBundle\Controller\Logic\Gravatar;
 use BaseBundle\Controller\Logic\Loglogic;
 use BaseBundle\Controller\Logic\OfertaLogic;
 use BaseBundle\Controller\Logic\PartidaLogic;
+use BaseBundle\Controller\Logic\UserPartidaLogic;
+use BaseBundle\Entity\Ofertas;
+use BaseBundle\Entity\Partida;
+use BaseBundle\Entity\User;
+use BaseBundle\Entity\UserPartida;
 use BaseBundle\Form\Type\AcceptRejectDealType;
 use BaseBundle\Form\Type\DealProposalType;
 use BaseBundle\Form\Type\DeleteDealType;
-use DateInterval;
+use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
+/**
+ * Class PartidaController
+ * @package BaseBundle\Controller
+ */
 class PartidaController extends Controller
 {
 
@@ -41,20 +50,21 @@ class PartidaController extends Controller
         $em = $this->getDoctrine()->getManager();
         $router = $this->container->get('router');
 
-        $jugador = $em->getRepository('BaseBundle:Partida')->findPartidaInfo($user_id, $id_partida);
-        if (count($jugador) > 0) {
+        try {
+            $em->getRepository('BaseBundle:UserPartida')->findByIDS($user_id, $id_partida);
             return new RedirectResponse($this->get('router')->generate('partida_home', array('id_partida' => $id_partida)));
-        } else {
-            //controlar si la partida ha comenzado. Redirigir y devolver error en tal caso
+        } catch (\Exception $e) {
+            /** @var Partida $partida */
             $partida = $em->getRepository('BaseBundle:Partida')->findOneById($id_partida);
-            if ($partida->getEmpezado() == 1) {
+            if ($partida->getEmpezado()) {
                 $this->get('session')->getFlashBag()->add('started', '');
             } else {
                 $partidaLogic = new PartidaLogic();
 
                 if ($partida->getPassword() == null) {
                     $partidaLogic->newPlayer($partida, $user_id, $em);
-                    return new RedirectResponse($this->container->get('router')->generate('partida_home', array('id_partida' => $id_partida)));
+                    return new RedirectResponse($this->container->get('router')->
+                    generate('partida_home', array('id_partida' => $id_partida)));
                 } else {
                     //creamos el formulario
                     $form = $this->createFormBuilder()
@@ -67,16 +77,12 @@ class PartidaController extends Controller
                         $data = $form->getData();
                         if (strcmp($data['password'], $partida->getPassword()) == 0) {
                             $partidaLogic->newPlayer($partida, $user_id, $em);
-                            return new RedirectResponse($this->container->get('router')->generate('partida_home', array('id_partida' => $id_partida)));
+                            return new RedirectResponse($this->container->get('router')->
+                            generate('partida_home', array('id_partida' => $id_partida)));
                         } else {
-                            if ($locale == 'es') {
-                                $form->get('password')->addError(new FormError('Contraseña incorrecta'));
-                            } else {
-                                $form->get('password')->addError(new FormError('Incorrect password'));
-                            }
+                            $form->get('password')->addError(new FormError($this->get('translator')->trans('Incorrect password')));
                         }
                     }
-
                     return $this->render('BaseBundle:Partida:registerP.html.twig',
                         array('partida' => $partida,
                             'form' => $form->createView(),
@@ -84,8 +90,8 @@ class PartidaController extends Controller
                         ));
                 }
             }
+            return new RedirectResponse($router->generate('base_homepage'));
         }
-        return new RedirectResponse($router->generate('base_homepage'));
     }
 
 
@@ -106,54 +112,60 @@ class PartidaController extends Controller
         $request->getSession()->set('_locale', $locale);
 
         $router = $this->container->get('router');
+        /** @var User $user */
         $user = $this->getUser();
         $user_id = $user->getId();
         $gravatar = $this->getGravatar($user->getEmail());
+        /** @var ObjectManager $em */
         $em = $this->getDoctrine()->getManager();
 
-        $partida = $em->getRepository('BaseBundle:Partida')->findPartidaInfo($user_id, $id_partida);
+        try {
+            /** @var Partida $partida */
+            $partida = $em->getRepository('BaseBundle:Partida')->findOneById($id_partida);
+            /** @var UserPartida $userPartida */
+            $userPartida = $em->getRepository('BaseBundle:UserPartida')->findByIDS($user_id, $id_partida);
 
-        ////$partida[0][0] -> objeto Partida
-        $partida = $partida[0];
-        if (count($partida) > 0 && new \DateTime('NOW') < $partida[0]->getFin()) { //El jugador está registrado en la partida
-            $partidaLogic = new PartidaLogic();
+            if (new \DateTime('NOW') < $partida->getFin()) {
+                $partidaLogic = new PartidaLogic();
 
-            //consultar el resto de jugadores
-            $jugadores = $em->getRepository('BaseBundle:UserPartida')->findAllFriends($id_partida);
+                //consultar el resto de jugadores
+                $jugadores = $em->getRepository('BaseBundle:UserPartida')->findAllFriends($id_partida);
 
-            //consultar ofertas pendientes
-            $oferta_recibida = $em->getRepository('BaseBundle:Ofertas')->findRecievedOffers($user_id, $id_partida, OfertaLogic::NOTRATADA);
-            $oferta_recibida_enCurso = $partidaLogic->checkInProgress($oferta_recibida, $em);
+                //consultar ofertas pendientes
+                $oferta_recibida = $em->getRepository('BaseBundle:Ofertas')->findRecievedOffers($user_id, $id_partida, OfertaLogic::NOTRATADA);
+                $oferta_recibida_enCurso = $partidaLogic->checkInProgress($oferta_recibida, $em);
 
-            //consultar ofertas enviadas en curso.
-            $oferta_enviada = $em->getRepository('BaseBundle:Ofertas')->findSentOffers($user_id, $id_partida, OfertaLogic::NOTRATADA);
-            $oferta_enviada_enCurso = $partidaLogic->checkInProgress($oferta_enviada, $em);
+                //consultar ofertas enviadas en curso.
+                $oferta_enviada = $em->getRepository('BaseBundle:Ofertas')->findSentOffers($user_id, $id_partida, OfertaLogic::NOTRATADA);
+                $oferta_enviada_enCurso = $partidaLogic->checkInProgress($oferta_enviada, $em);
 
-            $acceptReject = $this->createForm(new AcceptRejectDealType());
-            $delForm = $this->createForm(new DeleteDealType());
+                $acceptReject = $this->createForm(new AcceptRejectDealType());
+                $delForm = $this->createForm(new DeleteDealType());
 
-            //guardar en sesion el valor de partida
-            $session = $this->container->get('session');
-            $session->set('id_partida', $id_partida);
+                //guardar en sesion el valor de partida
+                $session = $this->container->get('session');
+                $session->set('id_partida', $id_partida);
 
-            /* Grafica de linea para usuario */
-            $graphics = new GraphicsLogic();
-            $evolucion = $partidaLogic->partidaGraphic($em, $user_id, $partida[0]);
-            $lineChart = $graphics->linesUserJsArray($evolucion);
+                /* Grafica de linea para usuario */
+                $graphics = new GraphicsLogic();
+                $evolucion = $partidaLogic->partidaEvolution($em, $user_id, $partida);
+                $lineChart = $graphics->linesUserJsArray($evolucion);
 
-            return $this->render('BaseBundle:Partida:partida.html.twig',
-                array('partida' => $partida,
-                    'jugadores' => $jugadores,
-                    'user_id' => $user_id,
-                    'oferta_recibida' => $oferta_recibida_enCurso,
-                    'oferta_enviada' => $oferta_enviada_enCurso,
-                    'acceptReject' => $acceptReject->createView(),
-                    'delForm' => $delForm->createView(),
-                    'lineChart' => $lineChart,
-                    'gravatar' => $gravatar,
-                ));
+                return $this->render('BaseBundle:Partida:partida.html.twig',
+                    array('partida' => $partida,
+                        'userPartida' => $userPartida,
+                        'jugadores' => $jugadores,
+                        'oferta_recibida' => $oferta_recibida_enCurso,
+                        'oferta_enviada' => $oferta_enviada_enCurso,
+                        'acceptReject' => $acceptReject->createView(),
+                        'delForm' => $delForm->createView(),
+                        'lineChart' => $lineChart,
+                        'gravatar' => $gravatar,
+                    ));
+            }
+        } catch (\Exception $e) {
+            return new RedirectResponse($router->generate('base_homepage'));
         }
-        return new RedirectResponse($router->generate('base_homepage'));
     }
 
     /**
@@ -164,11 +176,10 @@ class PartidaController extends Controller
      */
     public function acceptRejectAction(Request $request)
     {
-        //Get Entity Manager
+        /** @var ObjectManager $em */
         $em = $this->getDoctrine()->getManager();
 
         $acceptReject = $this->createForm(new AcceptRejectDealType());
-
         $acceptReject->handleRequest($request);
         if ($request->isMethod('POST')) {
             $data = $acceptReject->getData();
@@ -178,21 +189,21 @@ class PartidaController extends Controller
                 idP -> idPartida
                 idO -> idOferta
             */
-            $oferta = $em->getRepository('BaseBundle:Ofertas')->
-            checkDeal($data['idC'], $data['idP'], $data['idO'], $data['idD']);
-            if (count($oferta) > 0) { //Los datos de la oferta son correctos
+            try {
+                $em->getRepository('BaseBundle:Ofertas')->checkDeal($data['idC'], $data['idP'], $data['idO'], $data['idD']);
                 if ($acceptReject->get('accept')->isClicked()) {
+
+                    /** @var Ofertas $oferta */
                     $oferta = $em->getRepository('BaseBundle:Ofertas')->findOneById($data['idO']);
+                    $userPartidaLogic = new UserPartidaLogic();
 
                     $aluBlanca = $oferta->getAluBlancaIn() - $oferta->getAluBlancaOut();
                     $aluRoja = $oferta->getAlurojaIn() - $oferta->getAluRojaOut();
-                    $resultado1 = $em->getRepository('BaseBundle:UserPartida')->
-                    updateBeans($data['idC'], $data['idP'], $aluRoja, $aluBlanca);
+                    $resultado1 = $userPartidaLogic->updateBeans($data['idC'], $data['idP'], $aluRoja, $aluBlanca, $em);
 
                     $aluBlanca = $oferta->getAluBlancaOut() - $oferta->getAluBlancaIn();
                     $aluRoja = $oferta->getAluRojaOut() - $oferta->getAlurojaIn();
-                    $resultado2 = $em->getRepository('BaseBundle:UserPartida')->
-                    updateBeans($data['idD'], $data['idP'], $aluRoja, $aluBlanca);
+                    $resultado2 = $userPartidaLogic->updateBeans($data['idD'], $data['idP'], $aluRoja, $aluBlanca, $em);
 
                     $resultado3 = $em->getRepository('BaseBundle:Ofertas')->updateStatus(OfertaLogic::ACEPTADA, $data['idO']);
                     $em->getRepository('BaseBundle:Log')->action2log($data['idD'], Loglogic::ACEPTAROFERTA, $data['idC']);
@@ -208,6 +219,8 @@ class PartidaController extends Controller
                         $this->get('session')->getFlashBag()->add('reject', '');
                     }
                 }
+            } catch (\Exception $e) {
+                $this->get('session')->getFlashBag()->add('error', '');
             }
         }
         //recoger variables de sesión
@@ -226,30 +239,27 @@ class PartidaController extends Controller
      */
     public function deleteDealAction(Request $request)
     {
-        //Get Entity Manager
         $em = $this->getDoctrine()->getManager();
 
         $acceptReject = $this->createForm(new DeleteDealType());
         $acceptReject->handleRequest($request);
-        if ($request->isMethod('POST')) {
-            $data = $acceptReject->getData();
 
-            $oferta = $em->getRepository('BaseBundle:Ofertas')->
-            checkDeal($data['idC'], $data['idP'], $data['idO'], $data['idD']);
-            if (count($oferta) > 0) { //Los datos de la oferta son correctos
+        try {
+            if ($request->isMethod('POST')) {
+                $data = $acceptReject->getData();
+                $em->getRepository('BaseBundle:Ofertas')->checkDeal($data['idC'], $data['idP'], $data['idO'], $data['idD']);
                 if ($acceptReject->get('del')->isClicked()) {
                     $resultado = $em->getRepository('BaseBundle:Ofertas')->
                     deleteDeal($data['idC'], $data['idP'], $data['idO'], $data['idD']);
-
                     if ($resultado) {
-                        $this->get('session')->getFlashBag()->add(
-                            'correctDel', '');
+                        $this->get('session')->getFlashBag()->add('correctDel', '');
                     } else {
-                        $this->get('session')->getFlashBag()->add(
-                            'error', '');
+                        $this->get('session')->getFlashBag()->add('error', '');
                     }
                 }
             }
+        } catch (\Exception $e) {
+            $this->get('session')->getFlashBag()->add('error', '');
         }
         //recoger variables de sesión
         $session = $this->container->get('session');
@@ -274,44 +284,41 @@ class PartidaController extends Controller
         $request->setLocale($locale);
         $request->getSession()->set('_locale', $locale);
 
+        /** @var User $user */
         $user = $this->getUser();
-        $user_id = $user->getId();
         $gravatar = $this->getGravatar($user->getEmail());
         $em = $this->getDoctrine()->getManager();
 
-        $partida = $em->getRepository('BaseBundle:UserPartida')->findOtherUserInPartidaInfo($user_id, $id_partida, $username);
-        if (count($partida) > 0) {
+        try {
+            /** @var User $playerInfo */
             $playerInfo = $em->getRepository('BaseBundle:User')->findOneByUsername($username);
+            /** @var UserPartida $userPartida */
+            $userPartida = $em->getRepository('BaseBundle:UserPartida')->findByIDS($user->getId(), $id_partida);
+            /** @var Partida $partida */
+            $partida = $em->getRepository('BaseBundle:Partida')->findOneById($id_partida);
             $jugadores = $em->getRepository('BaseBundle:UserPartida')->findAllFriends($id_partida);
 
             //get Other user Gravatar
-            $playerGravatar = $this->getGravatar($partida[0]['playerEmail']);
+            $playerGravatar = $this->getGravatar($playerInfo->getEmail());
 
             $session = $this->container->get('session');
             $session->set('id_partida', $id_partida);
             $session->set('player_username', $username);
-            $session->set('idCreador', $user_id);
-            $session->set('idPlayer', $partida[0]['idPlayer']);
-            $session->set('alu_roja_actual', $partida[0]['alu_roja_actual']);
-            $session->set('alu_blanca_actual', $partida[0]['alu_blanca_actual']);
+            $session->set('idPlayer', $playerInfo->getId());
 
-            //deal_proposal form
-            $form = $this->createForm(new DealProposalType($partida[0]));
+            $form = $this->createForm(new DealProposalType($userPartida));
             return $this->render('BaseBundle:Partida:playerProfile.html.twig',
                 array('partida' => $partida,
+                    'userPartida' => $userPartida,
                     'playerInfo' => $playerInfo,
                     'jugadores' => $jugadores,
                     'form' => $form->createView(),
-                    'user_id' => $user_id,
                     'gravatar' => $gravatar,
                     'playerGravatar' => $playerGravatar,
                 ));
-
-        } else {
-            return new RedirectResponse($this->get('router')->generate('partida_home',
-                array('id_partida' => $id_partida)));
+        } catch (\Exception $e) {
+            return new RedirectResponse($this->get('router')->generate('partida_home', array('id_partida' => $id_partida)));
         }
-
     }
 
     /**
@@ -332,36 +339,36 @@ class PartidaController extends Controller
         $id_partida = $session->get('id_partida');
         $username = $session->get('player_username');
         $idPlayer = $session->get('idPlayer');
-        $idCreador = $session->get('idCreador');
-        $aluRojaActual = $session->get('alu_roja_actual');
-        $aluBlancaActual = $session->get('alu_blanca_actual');
+
+        $user_id = $this->getUser()->getId();
 
         $session->remove('id_partida');
         $session->remove('player_username');
         $session->remove('idPlayer');
-        $session->remove('alu_roja_actual');
-        $session->remove('alu_blanca_actual');
 
         //si se ha alcanzado el máximo de ofertas, interrumpir operación
         $em = $this->getDoctrine()->getManager();
-        $nOfertas = $em->getRepository('BaseBundle:Ofertas')->countOffers($idCreador, $id_partida);
-        if ($nOfertas[0]['maxOfertas'] == 0 || $nOfertas[0]['num'] < $nOfertas[0]['maxOfertas']) {
+        $nOfertas = count($em->getRepository('BaseBundle:Ofertas')->currentOffers($user_id, $id_partida));
+        /** @var Partida $partida */
+        $partida = $em->getRepository('BaseBundle:Partida')->findOneById($id_partida);
+        if ($partida->getMaxOfertas() == PartidaLogic::OFERTASSINLIMITE || $nOfertas < $partida->getMaxOfertas()) {
 
-            $partida = array('alu_roja_actual' => $aluRojaActual, 'alu_blanca_actual' => $aluBlancaActual);
-            $form = $this->createForm(new DealProposalType($partida));
-            $form->handleRequest($request);
-            $user_id = $this->getUser()->getId();
+            /** @var UserPartida $userPartida */
+            $userPartida = $em->getRepository('BaseBundle:UserPartida')->findByIDS($user_id, $id_partida);
+            $form = $this->createForm(new DealProposalType($userPartida));
+            $form->handleRequest($request);;
             $data = $form->getData();
-            if ($form->isValid() && $data['aluBlancaOut'] <= $aluBlancaActual && $data['aluRojaOut'] <= $aluRojaActual &&
-                $idPlayer != $user_id
+            if ($form->isValid() && $data['aluBlancaOut'] <= $userPartida->getAluBlancaActual()
+                && $data['aluRojaOut'] <= $userPartida->getAluRojaActual() && $idPlayer != $user_id
             ) {
                 //los 4 valores no pueden ser iguales:
                 if ($data['aluBlancaOut'] == $data['aluRojaOut'] && $data['aluBlancaIn'] == $data['aluRojaIn'] &&
                     $data['aluBlancaOut'] == $data['aluBlancaIn']
                 ) {
                     $this->get('session')->getFlashBag()->add('4values', '');
+                } elseif (!$partida->getEmpezado()) {
+                    $this->get('session')->getFlashBag()->add('notStarted', '');
                 } else {
-                    $em = $this->getDoctrine()->getManager();
                     $em->getRepository('BaseBundle:Ofertas')->SetNewOffer($user_id, $idPlayer, $id_partida, $data);
                     $this->get('session')->getFlashBag()->add('correct', '');
                     $em->getRepository('BaseBundle:Log')->action2log($user_id, Loglogic::NUEVAOFERTA, $idPlayer);

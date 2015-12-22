@@ -18,10 +18,9 @@
 
         <div class="row">
             <div class=" col-lg-9">
-                <a href="{{ path('partida_home',{'id_partida' : partida[0].id }) }}">
-                    <h3 class="text-center">{{ partida[0].nombre | capitalize }}</h3></a>
-                {# onclick="location.href='{{ path('partida_home',{'id_partida' : partida[0].id }) }}'"#}
-                <br>
+                <a href="{{ path('partida_home',{'id_partida' : partida.id }) }}">
+                    <h4 class="titles"><span class="fa fa-arrow-circle-o-left"></span>&nbsp;{{ 'partida.volver'|trans({}, 'BaseBundle') }}
+                        {{ partida.nombre | capitalize }}</h4></a>
 
                 <div class="row">
                     <div class="col-xs-6 col-md-3 col-md-offset-3 text-right">
@@ -47,9 +46,9 @@
                             <div class="col-md-3 col-md-offset-2"><b>{{ 'oferta.status'|trans({}, 'BaseBundle') }}</b>
                             </div>
                             <div class="col-md-3">{{ 'oferta.alu-blanca'|trans({}, 'BaseBundle') }}
-                                : {{ partida[0].alu_blanca_actual }}</div>
+                                : {{ userPartida.aluBlancaActual }}</div>
                             <div class="col-md-3">{{ 'oferta.alu-roja'|trans({}, 'BaseBundle') }}
-                                : {{ partida[0].alu_roja_actual }}</div>
+                                : {{ userPartida.aluRojaActual }}</div>
                         </div>
                     </div>
 
@@ -66,6 +65,13 @@
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                                         aria-hidden="true">×</span></button>
                             {{ 'oferta.allSame'|trans({}, 'BaseBundle') }}
+                        </div>
+                    {% endfor %}
+                    {% for flashMessage in app.session.flashbag.get('notStarted') %}
+                        <div class="alert alert-danger alert-dismissible text-center fade in" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                            {{ 'oferta.waitStart'|trans({}, 'BaseBundle') }}
                         </div>
                     {% endfor %}
                     {% for flashMessage in app.session.flashbag.get('max_reached') %}
@@ -89,35 +95,44 @@
                             {{ form_errors(form) }}
 
                             <div class="form-inline text-center">
+                                <div class="row">
                                 <span class="fa fa-2x fa-arrow-down green" data-toggle="tooltip" data-placement="top"
                                       title="{{ 'oferta.in'|trans({}, 'BaseBundle') }}"></span>
 
-                                {# aluBlancaIn#}
-                                {{ form_errors(form.aluBlancaIn) }}
-                                {{ form_label(form.aluBlancaIn) }}
-                                {{ form_widget(form.aluBlancaIn, { 'attr': {'class': 'form-control input-sm'} }) }}
-
-                                {# aluRojaIn #}
-                                {{ form_errors(form.aluRojaIn) }}
-                                {{ form_label(form.aluRojaIn) }}
-                                {{ form_widget(form.aluRojaIn, { 'attr': {'class': 'form-control input-sm'} }) }}
-
+                                    <div class="form-group">
+                                        {# aluBlancaIn#}
+                                        {{ form_errors(form.aluBlancaIn) }}
+                                        {{ form_label(form.aluBlancaIn) }}&nbsp;&nbsp;
+                                        {{ form_widget(form.aluBlancaIn, { 'attr': {'class': 'form-control input-sm'} }) }}
+                                    </div>
+                                    <div class="form-group">
+                                        {# aluRojaIn #}
+                                        {{ form_errors(form.aluRojaIn) }}
+                                        {{ form_label(form.aluRojaIn) }}&nbsp;&nbsp;
+                                        {{ form_widget(form.aluRojaIn, { 'attr': {'class': 'form-control input-sm'} }) }}
+                                    </div>
+                                </div>
                             </div>
                             <br>
 
                             <div class="form-inline text-center">
+                                <div class="row">
                                 <span class="fa fa-2x fa-arrow-up red" data-toggle="tooltip" data-placement="bottom"
                                       title="{{ 'oferta.out'|trans({}, 'BaseBundle') }}"></span>
-                                {# aluBlancaOut #}
-                                {{ form_errors(form.aluBlancaOut) }}
-                                {{ form_label(form.aluBlancaOut) }}
-                                {{ form_widget(form.aluBlancaOut, { 'attr': {'class': 'form-control input-sm', 'max': partida[0].alu_blanca_actual } }) }}
 
-                                {# aluRojaOut #}
-                                {{ form_errors(form.aluRojaOut) }}
-                                {{ form_label(form.aluRojaOut) }}
-                                {{ form_widget(form.aluRojaOut, { 'attr': {'class': 'form-control input-sm', 'max': partida[0].alu_roja_actual } }) }}
-
+                                    <div class="form-group">
+                                        {# aluBlancaOut #}
+                                        {{ form_errors(form.aluBlancaOut) }}
+                                        {{ form_label(form.aluBlancaOut) }}&nbsp;&nbsp;
+                                        {{ form_widget(form.aluBlancaOut, { 'attr': {'class': 'form-control input-sm'} }) }}
+                                    </div>
+                                    <div class="form-group">
+                                        {# aluRojaOut #}
+                                        {{ form_errors(form.aluRojaOut) }}
+                                        {{ form_label(form.aluRojaOut) }}&nbsp;&nbsp;
+                                        {{ form_widget(form.aluRojaOut, { 'attr': {'class': 'form-control input-sm'} }) }}
+                                    </div>
+                                </div>
                             </div>
 
                             {{ form_rest(form) }}
@@ -136,7 +151,7 @@
                 <table class="table table-responsive table-striped text-center">
                     {% for jugador in jugadores %}
                         {% if  app.user.id != jugador.id_user %}
-                            <tr onclick="location.href='{{ path('user_profile',{'id_partida' : partida[0].id,
+                            <tr onclick="location.href='{{ path('user_profile',{'id_partida' : partida.id,
                                 'username' : jugador.username}) }}'">
                                 <td> {{ jugador.username | capitalize }} </td>
                             </tr>

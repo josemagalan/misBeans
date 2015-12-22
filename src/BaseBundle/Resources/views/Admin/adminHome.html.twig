@@ -32,9 +32,9 @@
                         </tr>
                         </thead>
                         {% for partida in partidasEnCurso %}
-                            <tr onclick="location.href='{{ path('game_statistics',{'id_partida' : partida.id,}) }}'">
-                                <td> {{ partida.id }} </td>
-                                <td> {{ partida.nombre | capitalize }} </td>
+                            <tr onclick="location.href='{{ path('game_statistics',{'id_partida' : partida.partida.id,}) }}'">
+                                <td> {{ partida.partida.id }} </td>
+                                <td> {{ partida.partida.nombre | capitalize }} </td>
                                 <td>
                                     <timer end-time="{{ partida.ms }}">{% verbatim %}
                                     {{days}} d  {{hours}} h  {{minutes}} m {{seconds}} s{% endverbatim %}</timer>

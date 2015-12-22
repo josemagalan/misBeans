@@ -5,7 +5,10 @@
 {% block header %}
     <meta name="title" content="{{ app.user.username }} - MisBeans. Juegos de economía experimental">
     <meta name="description" content="Juegos de economía experimental - TFG GII UBU">
-    <title>{{ app.user.username }} - MisBeans</title>
+    <title>{{ app.user.username }} - MisBeans Admin</title>
+    {% if terminado == false %}
+        <meta http-equiv="refresh" content="30">
+    {% endif %}
 {% endblock header %}
 
 {% block body %}
@@ -20,11 +23,20 @@
         <div class="col-xs-12 col-lg-10 col-lg-offset-1">
             <h2 class="text-center">{{ partida.nombre | capitalize }}</h2><br>
             {# 0 -> en curso // 1 -> ha terminado#}
-            {% if partida.terminado == 0 %}
-                <p class="text-center">
-                    <timer end-time="{{ partida.ms }}">{% verbatim %}
-                        {{days}} d  {{hours}} h  {{minutes}} m {{seconds}} s{% endverbatim %}</timer>
-                </p>
+            {% if terminado == false %}
+                {{ form_start(form, { 'attr': {'class': ''}}) }} {{ form_rest(form) }}
+                <div class="form-inline">
+                    <div class="text-center">
+                        <timer end-time="{{ fin }}">{% verbatim %}
+                        {{days}} d  {{hours}} h  {{minutes}} m {{seconds}} s  {% endverbatim %}
+                        </timer>
+                    </div>
+                    <div class="text-right">
+                        <input type="submit" class="btn btn-primary btn-sm"
+                               value="{{ 'form.stop'|trans({}, 'BaseBundle') }}"/>
+                    </div>
+                </div>
+                {{ form_end(form) }}
             {% else %}
                 <p class="text-danger text-center">{{ 'partida.ended'|trans({}, 'BaseBundle') }}</p>
             {% endif %}
@@ -50,9 +62,9 @@
                     <!-- Tab panels -->
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="stats">
-                            {% if  partida.empezado == 0 %}
+                            {% if  partida.empezado == false %}
                                 <div class="col-xs-12 col-md-6 col-md-offset-2 text-center">
-                                    <a href="{{ path('distribute_beans', {'id_partida' : idPartida }) }}"><span
+                                    <a href="{{ path('distribute_beans', {'id_partida' : partida.id }) }}"><span
                                                 class="fa fa-2x fa-dashboard">&nbsp;&nbsp;{{ 'adminhome.repartir'|trans({}, 'BaseBundle') }}</span></a>
                                 </div>
                             {% else %}
@@ -87,6 +99,9 @@
                                         </p>
                                     </div>
                                 </div>
+                                <a href="{{ path('statistics_download_deals',{'id_partida' : partida.id,}) }}">
+                                    <span class="fa fa-download fa-2x"> {{ 'form.download'|trans({}, 'BaseBundle') }}</span>
+                                </a><br>
                             {% endif %}
                         </div>
 

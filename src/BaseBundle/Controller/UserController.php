@@ -14,6 +14,10 @@ use FOS\UserBundle\FOSUserEvents;
 use FOS\UserBundle\Event\FormEvent;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
 
+/**
+ * Class UserController
+ * @package BaseBundle\Controller
+ */
 class UserController extends Controller
 {
     /**
@@ -29,8 +33,7 @@ class UserController extends Controller
         $request->getSession()->set('_locale', $locale);
 
         //Security control. Check user roles.
-        $checkAdmin =1;
-        $response = $this->checkUserRole($request, $checkAdmin);
+        $response = $this->checkUserRole($request, $checkAdmin = true);
         if ($response instanceof RedirectResponse) {
             return $response;
         }
@@ -82,15 +85,13 @@ class UserController extends Controller
         $gravatar = $this->getGravatar($user->getEmail());
         $em = $this->getDoctrine()->getManager();
 
-        $userData = $em->getRepository('BaseBundle:User')->findOneById($user_id);
-
-        $form = $this->createForm(new UpdateUserType($userData));
+        $form = $this->createForm(new UpdateUserType($user));
         $form->handleRequest($request);
         if ($request->isMethod('POST') && $form->isValid()) {
             $data = $form->getData();
 
-            $userData->setFullName($data['fullName']);
-            $userData->setEmail($data['email']);
+            $user->setFullName($data['fullName']);
+            $user->setEmail($data['email']);
             $em->flush();
 
             $this->get('session')->getFlashBag()->add('correct', '');
@@ -98,7 +99,7 @@ class UserController extends Controller
 
         //buscar log de usuario
         $logLogic = new Loglogic();
-        $logger = $logLogic->getLog($user_id, $locale, $em);
+        $logger = $logLogic->getLog($user_id, $em, $this->get('translator'));
 
         //actualizar password
         /** @var $formFactory \FOS\UserBundle\Form\Factory\FactoryInterface */
@@ -107,7 +108,7 @@ class UserController extends Controller
         $formPassword->setData($user);
 
         return $this->render('BaseBundle:User:profile.html.twig',
-            array('userData' => $userData,
+            array('userData' => $user,
                 'form' => $form->createView(),
                 'logger' => $logger,
                 'gravatar' => $gravatar,
@@ -171,17 +172,16 @@ class UserController extends Controller
      * Checks user Role. Is User_Role is not granted -> Redirect to index homepage
      *
      * @param Request $request
-     * @param int $checkadmin
+     * @param bool $checkadmin
      * @return RedirectResponse
      * @internal param $securityContext
      */
-    private function checkUserRole(Request $request, $checkadmin = 0)
+    private function checkUserRole(Request $request, $checkadmin = false)
     {
         $securityContext = $this->get('security.authorization_checker');
         if (false === $securityContext->isGranted('ROLE_USER')) {
             return new RedirectResponse($this->container->get('router')->generate('base_homepage'));
-        }
-        elseif($checkadmin && $securityContext->isGranted('ROLE_ADMIN')){
+        } elseif ($checkadmin && $securityContext->isGranted('ROLE_ADMIN')) {
             return new RedirectResponse($this->container->get('router')->generate('admin_homepage'));
         }
     }

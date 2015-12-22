@@ -35,8 +35,8 @@ class PartidaControllerTest extends Auth
 
     public function testJugadorAction()
     {
-        $crawler = $this->client->request('GET', '/es/userhome/1/peteten',
-            array('id_partida' => 1, 'username' => 'peteten'));
+        $crawler = $this->client->request('GET', '/es/userhome/1/userTest',
+            array('id_partida' => 1, 'username' => 'userTest'));
 
         $this->assertTrue($crawler->filter('html:contains("Proposición de cambio")')->count() > 0);
     }

@@ -91,3 +91,4 @@ easy_admin:
     entities:
         - BaseBundle\Entity\User
         - BaseBundle\Entity\Partida
+        - BaseBundle\Entity\Log

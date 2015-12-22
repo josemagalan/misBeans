@@ -1,0 +1,48 @@
+<?php
+
+namespace BaseBundle\Tests\Logic;
+
+
+use BaseBundle\Controller\Logic\AdminLogic;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+
+class AdminLogicTest extends KernelTestCase
+{
+    private $adminLogic;
+    private $em;
+
+    protected function setUp()
+    {
+        static::bootKernel();
+        $this->adminLogic = new AdminLogic();
+        $this->em = static::$kernel->getContainer()->get('doctrine')->getManager();
+    }
+
+    public function testBarChartGraphics()
+    {
+        $resultado = $this->adminLogic->barChartGraphics($this->em, 1);
+        $resultadoEsperado = array();
+        array_push($resultadoEsperado, array('ratio' => 0.75, 'rojas' => 3, 'blancas' => 4));
+        array_push($resultadoEsperado, array('ratio' => 0.5, 'rojas' => 2, 'blancas' => 4));
+        array_push($resultadoEsperado, array('ratio' => 0.6, 'rojas' => 3, 'blancas' => 5));
+
+        $this->assertEquals($resultado[0]['ratio'], $resultadoEsperado[0]['ratio']);
+        $this->assertEquals($resultado[1]['rojas'], $resultadoEsperado[1]['rojas']);
+        $this->assertEquals($resultado[2]['blancas'], $resultadoEsperado[2]['blancas']);
+    }
+
+    public function testDealsToArray()
+    {
+        $resultado = $this->adminLogic->dealsToArray($this->em, 1);
+
+        $resultadoEsperado= array   (array('creador' => 'petete', 'destinatario' => 'userTest',
+                                        'fecha' => '21/12/2015 15:24:47', 'ratio' => 0.75, 'rojas' => 3, 'blancas' => 4),
+                                    array('creador' => 'userTest', 'destinatario' => 'petete',
+                                        'fecha' => '21/12/2015 15:24:21', 'ratio' => 0.5, 'rojas' => 2, 'blancas' => 4),
+                                    array('creador' => 'userTest', 'destinatario' => 'petete',
+                                        'fecha' => '21/12/2015 15:29:06', 'ratio' => 0.6, 'rojas' => 3, 'blancas' => 5));
+
+        $this->assertEquals($resultado, $resultadoEsperado);
+    }
+
+}

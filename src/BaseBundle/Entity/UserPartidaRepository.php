@@ -2,7 +2,6 @@
 
 namespace BaseBundle\Entity;
 
-use BaseBundle\Controller\Logic\PartidaLogic;
 use Doctrine\ORM\EntityRepository;
 
 class UserPartidaRepository extends EntityRepository
@@ -11,7 +10,7 @@ class UserPartidaRepository extends EntityRepository
     /**
      * Partidas en las que está registrado un usuario.
      *
-     * @param $user_id
+     * @param int $user_id
      * @return array
      */
     public function findMisPardidas($user_id)
@@ -30,47 +29,9 @@ class UserPartidaRepository extends EntityRepository
     }
 
     /**
-     * Información de una partida dado el identificador, el id de de usuario, e id de persona a la que se hace la oferta
-     * @param $user_id
-     * @param $id_partida
-     * @param $player_username
-     * @return array
-     * @throws \Doctrine\DBAL\DBALException
-     */
-    public function findOtherUserInPartidaInfo($user_id, $id_partida, $player_username)
-    {
-        $entityManager = $this->getEntityManager();
-        $connection = $entityManager->getConnection();
-
-        $sql1 = "SELECT user.id , user.email FROM user user WHERE user.username = :playerUsername";
-        $statement = $connection->prepare($sql1);
-        $statement->bindValue('playerUsername', $player_username);
-        $statement->execute();
-        $player = $statement->fetchAll();
-
-        $sql2 = "SELECT partida.id, partida.nombre, :idPlayer AS idPlayer, :playerEmail AS playerEmail,
-        userpartida.alu_blanca_actual, userpartida.alu_roja_actual
-        FROM partida
-        INNER JOIN userpartida ON partida.id = userpartida.id_partida
-        WHERE userpartida.id_user = :idUser AND userpartida.id_partida = :idPartida AND
-        :idPlayer IN (SELECT userpartida.id_user FROM userpartida WHERE userpartida.id_partida = :idPartida )";
-
-        $statement = $connection->prepare($sql2);
-        $statement->bindValue('idPartida', $id_partida);
-        $statement->bindValue('idUser', $user_id);
-        $statement->bindValue('idPlayer', $player[0]['id']);
-        $statement->bindValue('playerEmail', $player[0]['email']);
-
-        $statement->execute();
-
-        return $statement->fetchAll();
-
-    }
-
-    /**
      * Todos los jugadores que se encuentran en una partida.
      *
-     * @param $id_partida
+     * @param int $id_partida
      * @return array
      * @throws \Doctrine\DBAL\DBALException
      */
@@ -90,6 +51,13 @@ class UserPartidaRepository extends EntityRepository
         return $statement->fetchAll();
     }
 
+    /**
+     * @param int $idUser
+     * @param int $idPartida
+     * @return UserPartida
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function findByIDS($idUser, $idPartida)
     {
         $entityManager = $this->getEntityManager();
@@ -105,44 +73,8 @@ class UserPartidaRepository extends EntityRepository
     }
 
     /**
-     * Actualiza las alubias de un determinado jugador
-     *
-     * @param $idUser
-     * @param $idPartida
-     * @param $aluRoja
-     * @param $aluBlanca
-     * @return array
-     */
-    public function updateBeans($idUser, $idPartida, $aluRoja, $aluBlanca)
-    {
-        try {
-            $entityManager = $this->getEntityManager();
-
-            $userPartida = $this->findByIDS($idUser, $idPartida);
-
-            //el método de cálculo de la utilidad necesita el objeto partida para extraer datos
-            $partida = $entityManager->getRepository('BaseBundle:Partida')->findOneById($idPartida);
-            //clase con los métodos de cáclculo de fUtilidad
-            $logic = new PartidaLogic();
-            $fUtilidad = $logic->calculateFUtilidad($userPartida->getAluRojaActual() + $aluRoja,
-                $userPartida->getAluBlancaActual() + $aluBlanca, $partida);
-
-            //añadir a las ya existentes las nuevas
-            $userPartida->setAluRojaActual($userPartida->getAluRojaActual() + $aluRoja);
-            $userPartida->setAluBlancaActual($userPartida->getAluBlancaActual() + $aluBlanca);
-            $userPartida->setFUtilidad($fUtilidad);
-
-            $entityManager->flush($userPartida);
-            return true;
-
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    /**
-     * @param $user_id
-     * @param $id_partida
+     * @param int $user_id
+     * @param int $id_partida
      * @return bool
      * @throws \Doctrine\DBAL\DBALException
      */
@@ -165,7 +97,7 @@ class UserPartidaRepository extends EntityRepository
     /**
      * Consulta el ranking de la partida indicada
      *
-     * @param $id_partida
+     * @param int $id_partida
      * @return array
      */
     public function getRanking($id_partida)
@@ -185,13 +117,13 @@ class UserPartidaRepository extends EntityRepository
     }
 
     /**
-     * Actualiza el estado de usuario en la partida ocn nuevos datos
+     * Actualiza el estado de usuario en la partida com nuevos datos
      *
-     * @param $idUser
-     * @param $idPartida
-     * @param $aluRoja
-     * @param $aluBlanca
-     * @param $fUtilidad
+     * @param int $idUser
+     * @param int $idPartida
+     * @param int $aluRoja
+     * @param int $aluBlanca
+     * @param int $fUtilidad
      * @return array
      */
     public function distributeBeans($idUser, $idPartida, $aluRoja, $aluBlanca, $fUtilidad)

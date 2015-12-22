@@ -11,7 +11,10 @@ use FOS\UserBundle\Event\FilterUserResponseEvent;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-
+/**
+ * Class RegistrationController
+ * @package BaseBundle\Controller
+ */
 class RegistrationController extends BaseController
 {
 

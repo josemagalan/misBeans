@@ -1,0 +1,115 @@
+<?php
+
+namespace BaseBundle\Controller\Logic;
+
+
+use BaseBundle\Controller\PartidaController;
+use BaseBundle\Entity\Ofertas;
+use BaseBundle\Entity\Partida;
+use BaseBundle\Entity\UserPartida;
+use Doctrine\Common\Persistence\ObjectManager;
+
+/**
+ * Class UserPartidaLogic
+ * @package BaseBundle\Controller\Logic
+ */
+class UserPartidaLogic extends PartidaController
+{
+    /**
+     * Updates Userpartida params
+     *
+     * @param int $idUser
+     * @param int $idPartida
+     * @param int $aluRoja
+     * @param int $aluBlanca
+     * @param ObjectManager $entityManager
+     * @return bool
+     */
+    public function updateBeans($idUser, $idPartida, $aluRoja, $aluBlanca, $entityManager)
+    {
+        try {
+            /** @var UserPartida $userPartida */
+            $userPartida = $entityManager->getRepository('BaseBundle:UserPartida')->findByIDS($idUser, $idPartida);
+            /** @var Partida $partida */
+            $partida = $entityManager->getRepository('BaseBundle:Partida')->findOneById($idPartida);
+
+            $logic = new PartidaLogic();
+            $fUtilidad = $logic->calculateFUtilidad($userPartida->getAluRojaActual() + $aluRoja,
+                $userPartida->getAluBlancaActual() + $aluBlanca, $partida);
+
+            //añadir a las ya existentes las nuevas
+            $userPartida->setAluRojaActual($userPartida->getAluRojaActual() + $aluRoja);
+            $userPartida->setAluBlancaActual($userPartida->getAluBlancaActual() + $aluBlanca);
+            $userPartida->setFUtilidad($fUtilidad);
+
+            $entityManager->flush($userPartida);
+            return true;
+
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Distributes the beans among the players.
+     *
+     * @param Partida $partida
+     * @param array $jugadores
+     * @param ObjectManager $em
+     */
+    public function distributeBeans($partida, $jugadores, $em)
+    {
+        $partidaLogic = new PartidaLogic();
+        $data = $partidaLogic->calculateBeans($partida, count($jugadores));
+
+        //array con alubias rojas y blancas
+        $alubiasArray = array();
+        for ($i = 1; $i <= $data['total']; $i++) {
+            $letra = null;
+            if ($i <= $data['aluBlanca']) {
+                $letra = 'B';
+            } else {
+                $letra = 'R';
+            }
+            array_push($alubiasArray, $letra);
+        }
+
+        shuffle($alubiasArray);
+        //dividimos el array en montones de "alubias por usuario" alubias
+        $alubiasArray = array_chunk($alubiasArray, $partida->getAluPorUsuario());
+
+        for ($i = 0; $i < count($jugadores); $i++) {
+            $rojas = count(array_keys($alubiasArray[$i], 'R'));
+            $blancas = count(array_keys($alubiasArray[$i], 'B'));
+            $fUtilidad = $partidaLogic->calculateFUtilidad($rojas, $blancas, $partida);
+            // Asignar a cada jugador sus alubias y función de utilidad
+            $em->getRepository('BaseBundle:UserPartida')->distributeBeans($jugadores[$i]->getIdUser(),
+                $partida->getId(), $rojas, $blancas, $fUtilidad);
+        }
+    }
+
+    /**
+     * Cálculo de alubias que ha habido en una transacción, dependiendo de si se envía o se recibe la oferta
+     *
+     * @param Ofertas $oferta
+     * @param int $mode  1:player->creador || 2:player->destinatario
+     * @return array
+     */
+    public function beansStatus($oferta, $mode)
+    {
+        $resultado = array();
+        switch ($mode) {
+            case 1:
+                $roja = $oferta->getAlurojaIn() - $oferta->getAluRojaOut();
+                $blanca = $oferta->getAluBlancaIn() - $oferta->getAluBlancaOut();
+                $resultado = array('aluRoja' => $roja, 'aluBlanca' => $blanca);
+                break;
+            case 2:
+                $roja = $oferta->getAluRojaOut() - $oferta->getAlurojaIn();
+                $blanca = $oferta->getAluBlancaOut() - $oferta->getAluBlancaIn();
+                $resultado = array('aluRoja' => $roja, 'aluBlanca' => $blanca);
+                break;
+        }
+        return $resultado;
+    }
+}

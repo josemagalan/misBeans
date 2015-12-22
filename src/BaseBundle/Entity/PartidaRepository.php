@@ -21,7 +21,7 @@ class PartidaRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
 
-        $dql = "SELECT partida.nombre, partida.fin,partida.creado,partida.id FROM BaseBundle:Partida partida
+        $dql = "SELECT partida FROM BaseBundle:Partida partida
         WHERE partida.idCreador = :id";
 
         $query = $entityManager->createQuery($dql);
@@ -39,36 +39,13 @@ class PartidaRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
 
-        $dql = "SELECT partida.nombre, partida.fin,partida.creado,partida.id FROM BaseBundle:Partida partida
+        $dql = "SELECT partida FROM BaseBundle:Partida partida
         WHERE CURRENT_TIMESTAMP() < partida.fin";
 
         $query = $entityManager->createQuery($dql);
 
         return $query->getResult();
     }
-
-    /**
-     * Información de una determinada partida dado el jugador y el identificador de partida
-     * @param int $user_id
-     * @param int $id_partida
-     * @return array
-     */
-    public function findPartidaInfo($user_id, $id_partida)
-    {
-        $entityManager = $this->getEntityManager();
-
-        $dql = "SELECT partida, userpartida.aluRojaActual, userpartida.aluBlancaActual, userpartida.fUtilidad
-        FROM BaseBundle:Partida partida
-        JOIN BaseBundle:UserPartida userpartida WITH partida.id = userpartida.idPartida
-        WHERE userpartida.idUser = :idUser AND userpartida.idPartida = :idPartida";
-
-        $query = $entityManager->createQuery($dql);
-        $query->setParameter('idUser', $user_id);
-        $query->setParameter('idPartida', $id_partida);
-
-        return $query->getResult();
-    }
-
 
     /**
      * Guarda una nueva partida
@@ -117,7 +94,7 @@ class PartidaRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
 
-        $dql = "SELECT partida.id, partida.nombre, partida.creado, partida.fin, partida.empezado
+        $dql = "SELECT partida
         FROM BaseBundle:Partida partida
         WHERE partida.id = :id AND partida.idCreador = :idCreador";
 
@@ -125,6 +102,6 @@ class PartidaRepository extends EntityRepository
         $query->setParameter('id', $idPartida);
         $query->setParameter('idCreador', $idAdmin);
 
-        return $query->getResult();
+        return $query->getSingleResult();
     }
 }

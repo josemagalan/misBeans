@@ -13,6 +13,7 @@ form:
     delete: Eliminar
     cancel: Cancelar
     download: Descargar
+    stop: Terminar partida
 
 userhome:
     buscar-partida: Buscar partida
@@ -45,13 +46,15 @@ partida:
     alu-roja: Alubia roja
     proportion: Proporción de rojas sobre blancas
     started: Empezado
-    expY: Exponente Y
-    expZ: Exponente Z
+    expY: Exponente alubia blanca
+    expZ: Exponente alubia roja
     aluPUsuario: Alubias por usuario
     cobDouExp: Exponentes de Cobb Douglas
     successful: ¡Su partida ha sido creada!
     error: Su partida no ha sido registrada
     ended: Partida Terminada
+    evoGraphic: Evolución en la partida
+    volver: Volver a
 
 oferta:
     propuesta-cambio: Proposición de cambio
@@ -67,9 +70,10 @@ oferta:
     accepted: Oferta aceptada
     rejected: Oferta rechazada
     error: Problemas en la transacción
-    delete?: ¿Quiere eliminar la oferta?
+    delete: ¿Quiere eliminar la oferta?
     correctDel: Oferta eliminada
     allSame: Los valores son todos iguales
+    waitStart: Espere a que comience la partida
 
 adminhome:
     game-current: Partidas en curso

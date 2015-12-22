@@ -47,10 +47,10 @@ class NewGameType extends AbstractType
             //proporcion de alubia roja sobre blanca
             ->add('ratio', 'number', array('required' => true,
                 'label' => 'partida.proportion', 'translation_domain' => 'BaseBundle',
-                'scale' => 1,
-                'attr' => array('step' => '0.1',
-                    'min' => '0.1',
-                    'max' => '0.9'),
+                'scale' => 2,
+                'attr' => array('step' => '0.01',
+                    'min' => '0.01',
+                    'max' => '0.99'),
             ))
             ->add('expY', 'integer', array('required' => true,
                 'label' => 'partida.expY', 'translation_domain' => 'BaseBundle',

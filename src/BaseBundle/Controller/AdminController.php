@@ -8,7 +8,12 @@ use BaseBundle\Controller\Logic\GraphicsLogic;
 use BaseBundle\Controller\Logic\Gravatar;
 use BaseBundle\Controller\Logic\Loglogic;
 use BaseBundle\Controller\Logic\PartidaLogic;
+use BaseBundle\Controller\Logic\UserPartidaLogic;
+use BaseBundle\Entity\Partida;
 use BaseBundle\Form\Type\NewGameType;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\DBAL\Query\QueryBuilder;
+use FOS\UserBundle\Model\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Form\FormError;
@@ -16,6 +21,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
+/**
+ * Class AdminController
+ * @package BaseBundle\Controller
+ */
 class AdminController extends Controller
 {
 
@@ -36,16 +45,12 @@ class AdminController extends Controller
         if ($response instanceof RedirectResponse) {
             return $response;
         }
-
-        //get User info
-        $admin = $this->get('security.context')->getToken()->getUser();
-        $admin_id = $admin->getId();
-
+        /** @var User $admin */
+        $admin = $this->getUser();
         $gravatar = $this->getGravatar($admin->getEmail());
-
         $em = $this->getDoctrine()->getManager();
-        //Partidas creadas por ese administrador
-        $partidas = $em->getRepository('BaseBundle:Partida')->findAdminPardidas($admin_id);
+        /** @var Partida $partidas */
+        $partidas = $em->getRepository('BaseBundle:Partida')->findAdminPardidas($admin->getId());
 
         $partidasEnCurso = array();
         $partidasHistorico = array();
@@ -53,19 +58,15 @@ class AdminController extends Controller
         $now = new \DateTime('NOW');
 
         foreach ($partidas as $partida) {
-
-            $dateBD = $partida['creado'];
-            $fin = $partida['fin'];
-
+            /** @var Partida $partida */
+            $fin = $partida->getFin();
             if ($now < $fin) {
                 $ms = $fin->getTimestamp() * 1000;
-                $partida['ms'] = $ms;
-                array_push($partidasEnCurso, $partida);
+                array_push($partidasEnCurso, array('partida' => $partida, 'ms' => $ms));
             } else {
                 array_push($partidasHistorico, $partida);
             }
         }
-
         return $this->render('BaseBundle:Admin:adminHome.html.twig',
             array('partidasEnCurso' => $partidasEnCurso,
                 'partidasHistorico' => $partidasHistorico,
@@ -92,41 +93,29 @@ class AdminController extends Controller
             return $response;
         }
 
+        /** @var User $admin */
         $admin = $this->getUser();
         $admin_id = $admin->getId();
         $gravatar = $this->getGravatar($admin->getEmail());
         $em = $this->getDoctrine()->getManager();
 
-        //create form
         $form = $this->createForm(new NewGameType());
         $form->handleRequest($request);
         if ($form->isValid()) {
             $data = $form->getData();
-            print_r($data);
-            // ¿La fecha que introducida es correcta?
+
             if ($data['fin'] <= new \DateTime('NOW')) {
-                if ($locale == 'es') {
-                    $form->get('fin')->addError(new FormError('La fecha introducida es incorrecta'));
-                } else {
-                    $form->get('fin')->addError(new FormError('The entered date is incorrect'));
-                }
+                $form->get('fin')->addError(new FormError($this->get('translator')->trans('Inserted date is not correct')));
             } elseif ($data['ratio'] <= 0 || $data['ratio'] >= 1) {
-                if ($locale == 'es') {
-                    $form->get('ratio')->addError(new FormError('El valor ha de estar en rango (0.1 - 0.9)'));
-                } else {
-                    $form->get('ratio')->addError(new FormError('Value must be in range (0.1 - 0.9)'));
-                }
+                $form->get('ratio')->addError(new FormError($this->get('translator')->trans('Value must be in range (0.01 - 0.99)')));
             } else {
                 //Esta correcto -> Guardar partida.
                 $result = $em->getRepository('BaseBundle:Partida')->SetNewPartida($data, $admin_id);
-
                 if ($result) {
-                    $this->get('session')->getFlashBag()->add(
-                        'correct', '');
+                    $this->get('session')->getFlashBag()->add('correct', '');
                     $em->getRepository('BaseBundle:Log')->action2log($admin_id, Loglogic::NUEVAPARTIDA, null);
                 } else {
-                    $this->get('session')->getFlashBag()->add(
-                        'error', '');
+                    $this->get('session')->getFlashBag()->add('error', '');
                 }
             }
         }
@@ -156,31 +145,30 @@ class AdminController extends Controller
             return $response;
         }
 
+        /** @var User $admin */
         $admin = $this->getUser();
         $admin_id = $admin->getId();
         $gravatar = $this->getGravatar($admin->getEmail());
         $em = $this->getDoctrine()->getManager();
 
-        //Check: Yo soy el creador de la partida y tengo acceso
-        $partidaInfo = $em->getRepository('BaseBundle:Partida')->isMyAdminGame($id_partida, $admin_id);
-        if (!count($partidaInfo) > 0) {
-            return new AccessDeniedException('You shall not pass!');
-        } else {
-            $partidaInfo = $partidaInfo[0];
-            //pasar a ms el fin de la partida
-            $fin = $partidaInfo['fin'];
-            $ms = $fin->getTimestamp() * 1000;
-            $partidaInfo['ms'] = $ms;
+        try {
+            /** @var Partida $partida */
+            $partida = $em->getRepository('BaseBundle:Partida')->isMyAdminGame($id_partida, $admin_id);
+
+            $form = $this->createFormBuilder()->getForm();
+            $form->handleRequest($request);
+            if ($form->isValid() && $request->isMethod('POST')) {
+                $now = new \DateTime('now');
+                $partida->setFin($now);
+                $em->flush();
+            }
+            //pasar a ms para Angular
+            $fin = $partida->getFin()->getTimestamp() * 1000;
 
             //la partida está en curso?
-            $now = new \DateTime('NOW');
-            $now >= $fin ? $partidaInfo['terminado'] = PartidaLogic::TERMINADO : $partidaInfo['terminado'] = PartidaLogic::ENCURSO;
+            new \DateTime('NOW') >= $partida->getFin() ? $terminado = PartidaLogic::TERMINADO : $terminado = PartidaLogic::ENCURSO;
 
             $ranking = $em->getRepository('BaseBundle:UserPartida')->getRanking($id_partida);
-
-            $session = $this->container->get('session');
-            $session->set('ranking', $ranking);
-            $session->set('Pnombre', $partidaInfo['nombre']);
 
             $graphics = new GraphicsLogic();
             $adminLogic = new AdminLogic();
@@ -196,18 +184,23 @@ class AdminController extends Controller
             $lineChart = $graphics->linesRatioJsArray($ofertasMod);
             //creamos el array para graficar las alubias
             $barChart = $graphics->barBeansJsArray($ofertasMod);
+
+            return $this->render('BaseBundle:Admin:stats.html.twig',
+                array('ranking' => $ranking,
+                    'partida' => $partida,
+                    'terminado' => $terminado,
+                    'fin' => $fin,
+                    'rankingFutilidadStats' => $rankingFutlitidadStats,
+                    'rankingAluRojaStats' => $rankingAluRojaStats,
+                    'rankingAluBlancaStats' => $rankingAluBlancaStats,
+                    'lineChart' => $lineChart,
+                    'barChart' => $barChart,
+                    'gravatar' => $gravatar,
+                    'form' => $form->createView(),
+                ));
+        } catch (\Exception $e) {
+            return new AccessDeniedException('You shall not pass!');
         }
-        return $this->render('BaseBundle:Admin:stats.html.twig',
-            array('ranking' => $ranking,
-                'partida' => $partidaInfo,
-                'rankingFutilidadStats' => $rankingFutlitidadStats,
-                'rankingAluRojaStats' => $rankingAluRojaStats,
-                'rankingAluBlancaStats' => $rankingAluBlancaStats,
-                'lineChart' => $lineChart,
-                'barChart' => $barChart,
-                'gravatar' => $gravatar,
-                'idPartida' => $id_partida,
-            ));
     }
 
 
@@ -217,24 +210,60 @@ class AdminController extends Controller
      * @param Request $request
      * @return CsvResponse
      */
-    public function rankingDownloadAction(Request $request)
+    public function rankingDownloadAction(Request $request, $id_partida)
     {
+        /** @var ObjectManager $em */
+        $em = $this->getDoctrine()->getManager();
 
-        //Security control. Check user roles.
-        $response = $this->checkSecurity($request);
-        if ($response instanceof RedirectResponse) {
+        try {
+            //Security control. Check user roles.
+            $response = $this->checkSecurity($request);
+            if (!$response instanceof RedirectResponse) {
+                /** @var Partida $partida */
+                $partida = $em->getRepository('BaseBundle:Partida')->isMyAdminGame($id_partida, $this->getUser()->getId());
+
+                $ranking = $em->getRepository('BaseBundle:UserPartida')->getRanking($id_partida);
+
+                $filename = "Ranking" . $partida->getNombre() . ".csv";
+                $response = new CsvResponse($ranking, $filename);
+            }
             return $response;
+        } catch
+        (\Exception $e) {
+            return new AccessDeniedException('You shall not pass!');
         }
+    }
 
-        $session = $this->container->get('session');
+    /**
+     * Takes accepted deals of a game and builds a downloadable csv
+     * @param Request $request
+     * @param int $id_partida
+     * @return CsvResponse|RedirectResponse|AccessDeniedException
+     */
+    public function dealDownloadAction(Request $request, $id_partida)
+    {
+        /** @var ObjectManager $em */
+        $em = $this->getDoctrine()->getManager();
 
-        $ranking = $session->get('ranking');
-        $nombre = $session->get('Pnombre');
-        $filename = "Ranking" . $nombre . ".csv";
+        try {
+            //Security control. Check user roles.
+            $response = $this->checkSecurity($request);
+            if (!$response instanceof RedirectResponse) {
+                /** @var Partida $partida */
+                $partida = $em->getRepository('BaseBundle:Partida')->isMyAdminGame($id_partida, $this->getUser()->getId());
 
-        $response = new CsvResponse($ranking, $filename);
+                $adminLogic = new AdminLogic();
+                $ofertasPartida = $adminLogic->dealsToArray($em, $id_partida);
 
-        return $response;
+                $filename = "Ranking" . $partida->getNombre() . ".csv";
+                $response = new CsvResponse($ofertasPartida, $filename);
+            }
+
+            return $response;
+        } catch
+        (\Exception $e) {
+            return new AccessDeniedException('You shall not pass!');
+        }
     }
 
     /**
@@ -259,13 +288,11 @@ class AdminController extends Controller
         $admin_id = $this->getUser()->getId();
         $em = $this->getDoctrine()->getManager();
 
-        //Check: Yo soy el creador de la partida y tengo acceso
-        $partidaInfo = $em->getRepository('BaseBundle:Partida')->isMyAdminGame($id_partida, $admin_id);
-        if (!count($partidaInfo) > 0) {
-            return new AccessDeniedException('You shall not pass!');
-        } else {
-            $partida = $em->getRepository('BaseBundle:Partida')->findOneById($id_partida);
+        try {
+            /** @var Partida $partida */
+            $partida = $em->getRepository('BaseBundle:Partida')->isMyAdminGame($id_partida, $admin_id);
 
+            /** @var QueryBuilder $qb */
             $qb = $em->createQueryBuilder();
             //localizamos el objeto
             $qb->select('u')
@@ -277,14 +304,17 @@ class AdminController extends Controller
             $query = $qb->getQuery();
             $jugadores = $query->getResult();
 
-            $logic = new PartidaLogic();
-            $logic->distributeBeansLogic($partida, $jugadores, $em);
+            $logic = new UserPartidaLogic();
+            $logic->distributeBeans($partida, $jugadores, $em);
 
             //actualizar partida a empezado
             $partida->setEmpezado(true);
             $em->flush();
 
             return new RedirectResponse($this->get('router')->generate('game_statistics', array('id_partida' => $id_partida)));
+
+        } catch (\Exception $e) {
+            return new AccessDeniedException('You shall not pass!');
         }
     }
 

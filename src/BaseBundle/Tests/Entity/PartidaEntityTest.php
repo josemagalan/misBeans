@@ -2,6 +2,7 @@
 
 namespace BaseBundle\Tests\Entity;
 
+use BaseBundle\Entity\Partida;
 use DateInterval;
 use DateTime;
 
@@ -39,13 +40,6 @@ class PartidaEntityTest extends Entity
         $this->assertTrue(count($partidas) > 0);
     }
 
-    public function testFindPartidaInfo()
-    {
-        $partida = $this->em->getRepository('BaseBundle:Partida')->findPartidaInfo(2, 1);
-        $id = $partida[0][0]->getId();
-        $this->assertEquals(1, $id);
-    }
-
     public function testNewPartida()
     {
         $now = new DateTime('now');
@@ -63,8 +57,9 @@ class PartidaEntityTest extends Entity
 
     public function testIsMyAdminGame()
     {
+        /** @var Partida $partida */
         $partida = $this->em->getRepository('BaseBundle:Partida')->isMyAdminGame(1, 2);
-        $id = $partida[0]['id'];
+        $id = $partida->getId();
         $this->assertEquals(1, $id);
     }
 }

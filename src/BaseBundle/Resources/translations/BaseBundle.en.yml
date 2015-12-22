@@ -13,6 +13,7 @@ form:
     delete: Delete
     cancel: Cancel
     download: Download
+    stop: Stop game
 
 userhome:
     buscar-partida: Search game
@@ -43,8 +44,8 @@ partida:
     alu-blanca: White bean
     alu-roja: Red bean
     started: Started
-    expY: Exponent Y
-    expZ: Exponent Z
+    expY: Exponent white bean
+    expZ: Exponent red bean
     aluPUsuario: Beans per user
     cobDouExp: Cobb Douglas exponents
     successful: Game created!
@@ -52,6 +53,8 @@ partida:
     proportion: Ratio red beans over white beans
     alreadyStarted: Game has already started and you can't
     ended: Game ended
+    evoGraphic: Evolution in game
+    volver: Return to
 
 oferta:
     propuesta-cambio: Deal proposal
@@ -67,9 +70,10 @@ oferta:
     accepted: Accepted deal
     rejected: Rejected deal
     error: Problems with the transaction
-    delete?: Do you want to delete the deal?
+    delete: Do you want to delete the deal?
     correctDel: Deal deleted
     allSame: All values are the same
+    waitStart: Wait till game starts
 
 adminhome:
     game-current: Current games

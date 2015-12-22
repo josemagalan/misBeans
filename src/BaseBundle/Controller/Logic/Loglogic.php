@@ -2,6 +2,12 @@
 
 namespace BaseBundle\Controller\Logic;
 
+use BaseBundle\Entity\Log;
+use BaseBundle\Entity\Partida;
+use BaseBundle\Entity\User;
+use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\Translation\Translator;
+
 /**
  * Class Loglogic
  * @package BaseBundle\Controller\Logic
@@ -13,71 +19,78 @@ class Loglogic
     const ACEPTAROFERTA = 3;
     const RECHAZAROFERTA = 4;
     const NUEVAPARTIDA = 5;
+    private $maxResultados = 15;
 
     /**
      * Obtener Log de un usuario
      *
      * @param int $user_id
-     * @param $locale
      * @param ObjectManager $em
+     * @param Translator $translator
      * @return array
      */
-    public function getLog($user_id, $locale, $em)
+    public function getLog($user_id, $em, $translator)
     {
         $logger = array();
-        $maxResultados = 15;
-        $log = $em->getRepository('BaseBundle:Log')->getUserLog($user_id, $maxResultados);
+        /** @var Log $log */
+        $log = $em->getRepository('BaseBundle:Log')->getUserLog($user_id, $this->maxResultados);
 
         foreach ($log as $logData) {
-            $time = $logData['fecha']->format('d-m H:i');
-            switch ($logData['actionId']) {
-                case 1:
-                    $nPartida = $em->getRepository('BaseBundle:Partida')->findOneById($logData['actionData']);
-                    if ($locale == 'es') {
-                        $tmp = $time . ': Te has unido a la partida ' . $nPartida->getNombre();
-                    } else {
-                        $tmp = $time . ': You have joined ' . $nPartida->getNombre();
-                    }
+            /** @var Log $logData */
+            $time = $logData->getFecha()->format('d-m H:i');
+            switch ($logData->getActionId()) {
+                case Loglogic::INGRESARENPARTIDA:
+                    /** @var Partida $partida */
+                    $partida = $em->getRepository('BaseBundle:Partida')->findOneById($logData->getActionData());
+                    $tmp = $time . ': ' . $translator->trans('You have joined ') . $partida->getNombre();
                     array_push($logger, $tmp);
                     break;
-                case 2:
-                    $username = $em->getRepository('BaseBundle:User')->findOneById($logData['actionData']);
-                    if ($locale == 'es') {
-                        $tmp = $time . ': Has enviado una oferta a ' . $username->getUsername();
-                    } else {
-                        $tmp = $time . ': You have sent a deal to ' . $username->getUsername();
-                    }
+                case Loglogic::NUEVAOFERTA:
+
+                    /** @var User $username */
+                    $username = $em->getRepository('BaseBundle:User')->findOneById($logData->getActionData());
+                    $tmp = $time . ': ' . $translator->trans('You have sent a deal to ') . $username->getUsername();
                     array_push($logger, $tmp);
                     break;
-                case 3:
-                    $username = $em->getRepository('BaseBundle:User')->findOneById($logData['actionData']);
-                    if ($locale == 'es') {
-                        $tmp = $time . ': Has aceptado una oferta de ' . $username->getUsername();
-                    } else {
-                        $tmp = $time . ': You have accepted ' . $username->getUsername() . '\'s deal';
-                    }
+                case Loglogic::ACEPTAROFERTA:
+                    /** @var User $username */
+                    $username = $em->getRepository('BaseBundle:User')->findOneById($logData->getActionData());
+                    $tmp = $time . ': ' . $translator->trans(
+                            'You have accepted %username%\'s deal', array('%username%' => $username->getUsername()));
                     array_push($logger, $tmp);
                     break;
-                case 4:
-                    $username = $em->getRepository('BaseBundle:User')->findOneById($logData['actionData']);
-                    if ($locale == 'es') {
-                        $tmp = $time . ': Has rechazado una oferta de ' . $username->getUsername();
-                    } else {
-                        $tmp = $time . ': You have rejected ' . $username->getUsername() . '\'s deal';
-                    }
+                case Loglogic::RECHAZAROFERTA:
+                    /** @var User $username */
+                    $username = $em->getRepository('BaseBundle:User')->findOneById($logData->getActionData());
+                    $tmp = $time . ': ' . $translator->trans(
+                            'You have rejected %username%\'s deal', array('%username%' => $username->getUsername()));
                     array_push($logger, $tmp);
                     break;
 
-                case 5:
-                    if ($locale == 'es') {
-                        $tmp = $time . ': Has creado una nueva partida';
-                    } else {
-                        $tmp = $time . ': You have created a new game';
-                    }
+                case Loglogic::NUEVAPARTIDA:
+                    $tmp = $time . ': ' . $translator->trans('You have created a new game');
                     array_push($logger, $tmp);
                     break;
             }
         }
         return $logger;
+    }
+
+    /**
+     * Get resultados
+     * @return int
+     */
+    public function getMaxResultados()
+    {
+        return $this->maxResultados;
+    }
+
+    /**
+     * Set resultados
+     * @param int $maxResultados
+     */
+    public function setMaxResultados($maxResultados)
+    {
+        $this->maxResultados = $maxResultados;
     }
 }

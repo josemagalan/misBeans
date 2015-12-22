@@ -73,7 +73,7 @@ class Partida
     /**
      * @var float
      *
-     * @ORM\Column(name="ratio", type="float", precision=2, scale=1, nullable=false)
+     * @ORM\Column(name="ratio", type="float", precision=3, scale=2, nullable=false)
      */
     private $ratio;
 
@@ -493,5 +493,10 @@ class Partida
     public function getIdUser()
     {
         return $this->idUser;
+    }
+
+    public function __toString()
+    {
+        return (string) $this->getId();
     }
 }

@@ -57,8 +57,7 @@ class LogRepository extends EntityRepository
     {
         $entityManager = $this->getEntityManager();
 
-        $dql = "SELECT IDENTITY(log.user) AS user, log.fecha, log.actionId, log.actionData
-        FROM BaseBundle:Log log
+        $dql = "SELECT log FROM BaseBundle:Log log
         WHERE log.user= :userId ORDER BY log.fecha DESC";
 
         $query = $entityManager->createQuery($dql);

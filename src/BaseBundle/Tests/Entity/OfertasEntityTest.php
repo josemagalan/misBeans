@@ -2,6 +2,8 @@
 
 namespace BaseBundle\Tests\Entity;
 
+use Doctrine\ORM\EntityNotFoundException;
+
 class OfertasEntityTest extends Entity
 {
 
@@ -23,15 +25,15 @@ class OfertasEntityTest extends Entity
         $this->assertEquals(10, $ofertas->getAluBlancaIn());
         $ofertas->setAluBlancaIn(123456789);
         $ofertas->setAlurojaIn(987654321);
-        $this->assertEquals(123456789,$ofertas->getAluBlancaIn());
-        $this->assertEquals(987654321,$ofertas->getAlurojaIn());
+        $this->assertEquals(123456789, $ofertas->getAluBlancaIn());
+        $this->assertEquals(987654321, $ofertas->getAlurojaIn());
 
     }
 
     public function testSetNewOffer()
     {
         $data = ['aluBlancaIn' => 112345, 'aluBlancaOut' => 98745621, 'aluRojaIn' => 854132655, 'aluRojaOut' => 12547851];
-        $this->em->getRepository('BaseBundle:Ofertas')->SetNewOffer(2, 7, 1, $data);
+        $this->em->getRepository('BaseBundle:Ofertas')->SetNewOffer(7, 8, 1, $data);
 
         $result = $this->selectOferta();
         $this->assertEquals(112345, $result->getAluBlancaIn());
@@ -44,26 +46,23 @@ class OfertasEntityTest extends Entity
         $this->assertEquals(0, $oferta[0]['estado']);
     }
 
-
-    public function testCountOffers()
-    {
-        $ofertas = $this->em->getRepository('BaseBundle:Ofertas')->countOffers(2, 1);
-        $this->assertTrue(count($ofertas) > 0);
-    }
-
     public function testCheckDeal()
     {
-        $result = $this->selectOferta();
-        $oferta = $this->em->getRepository('BaseBundle:Ofertas')->checkDeal(2, 1, $result->getId(), 7);
-        $this->assertTrue(count($oferta) > 0);
+        try {
+            $result = $this->selectOferta();
+            $this->em->getRepository('BaseBundle:Ofertas')->checkDeal(7, 1, $result->getId(), 8);
+        } catch (\Exception $e) {
+            throw new EntityNotFoundException;
+        }
     }
 
-    public function testFindAllGameDeals(){
+    public function testFindAllGameDeals()
+    {
         $result = $this->selectOferta();
         $result->setEstado(1);
         $this->em->flush();
 
-        $ofertas = $this->em->getRepository('BaseBundle:Ofertas')->findAllGameDeals(1);
+        $ofertas = $this->em->getRepository('BaseBundle:Ofertas')->findAllGameDeals(1,1);
 
         $result->setEstado(0);
         $this->em->flush();
@@ -75,7 +74,7 @@ class OfertasEntityTest extends Entity
     public function testDeleteDeal()
     {
         $result = $this->selectOferta();
-        $this->em->getRepository('BaseBundle:Ofertas')->deleteDeal(2, 1, $result->getId(), 7);
+        $this->em->getRepository('BaseBundle:Ofertas')->deleteDeal(7, 1, $result->getId(), 8);
 
         $qb = $this->em->createQueryBuilder();
         $qb->select('o')
@@ -96,6 +95,19 @@ class OfertasEntityTest extends Entity
 
         $this->assertFalse(count($ofertas) > 0);
 
+    }
+
+    public function testFindSentOffers()
+    {
+        $ofertas = $this->em->getRepository('BaseBundle:Ofertas')->findSentOffers(7, 1, 1);
+        $this->assertTrue(count($ofertas) > 0);
+    }
+
+
+    public function testFindRecievedOffers()
+    {
+        $ofertas = $this->em->getRepository('BaseBundle:Ofertas')->findRecievedOffers(7, 1, 1);
+        $this->assertTrue(count($ofertas) > 0);
     }
 
     private function selectOferta()

@@ -79,6 +79,11 @@ statistics_download_ranking:
     defaults: { _controller: BaseBundle:Admin:rankingDownload, _locale: es }
     requirements: {id_partida: "\d+", _locale: es|en }
 
+statistics_download_deals:
+    path:     /{_locale}/adminhome/stats/{id_partida}/download_deals/
+    defaults: { _controller: BaseBundle:Admin:dealDownload, _locale: es }
+    requirements: {id_partida: "\d+", _locale: es|en }
+
 distribute_beans:
     path:     /{_locale}/adminhome/distribute/{id_partida}
     defaults: { _controller: BaseBundle:Admin:distributeBeans, _locale: es }
