@@ -47,6 +47,7 @@ class PartidaController extends Controller
         $user = $this->getUser();
         $user_id = $user->getId();
         $gravatar = $this->getGravatar($user->getEmail());
+        /** @var ObjectManager $em */
         $em = $this->getDoctrine()->getManager();
         $router = $this->container->get('router');
 
