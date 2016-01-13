@@ -105,7 +105,12 @@ class PartidaController extends Controller
      */
     public function partidaAction(Request $request, $id_partida)
     {
-        $this->denyAccessUnlessGranted('ROLE_USER', null, 'Unable to access this page!');
+        //$this->denyAccessUnlessGranted('ROLE_USER', null, 'Unable to access this page!');
+        //Security control. Check user roles.
+        $securityContext = $this->get('security.authorization_checker');
+        if (false === $securityContext->isGranted('ROLE_USER')) {
+            return new RedirectResponse($this->container->get('router')->generate('base_homepage'));
+        }
 
         //set language
         $locale = $request->get('_locale');
